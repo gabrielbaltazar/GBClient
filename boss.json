@@ -1,0 +1,9 @@
+{
+	"name": "GBClient",
+	"description": "",
+	"version": "1.0.2",
+	"homepage": "",
+	"mainsrc": "Source",
+	"projects": [],
+	"dependencies": {}
+}
