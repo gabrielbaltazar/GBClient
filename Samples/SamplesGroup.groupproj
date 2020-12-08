@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{A070DEF5-6943-4287-9656-2208DA72630A}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="ViaCEP\ViaCEP.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="GetBinary\SampleBinary.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="ViaCEP">
+        <MSBuild Projects="ViaCEP\ViaCEP.dproj"/>
+    </Target>
+    <Target Name="ViaCEP:Clean">
+        <MSBuild Projects="ViaCEP\ViaCEP.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ViaCEP:Make">
+        <MSBuild Projects="ViaCEP\ViaCEP.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="SampleBinary">
+        <MSBuild Projects="GetBinary\SampleBinary.dproj"/>
+    </Target>
+    <Target Name="SampleBinary:Clean">
+        <MSBuild Projects="GetBinary\SampleBinary.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SampleBinary:Make">
+        <MSBuild Projects="GetBinary\SampleBinary.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="ViaCEP;SampleBinary"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="ViaCEP:Clean;SampleBinary:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="ViaCEP:Make;SampleBinary:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

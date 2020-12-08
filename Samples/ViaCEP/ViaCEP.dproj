@@ -3,7 +3,7 @@
         <ProjectGuid>{BA6399B8-3C80-4E3F-B8B8-B388ED938664}</ProjectGuid>
         <ProjectVersion>18.8</ProjectVersion>
         <FrameworkType>VCL</FrameworkType>
-        <MainSource>Sample01.dpr</MainSource>
+        <MainSource>ViaCEP.dpr</MainSource>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Debug</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
@@ -58,8 +58,8 @@
         <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
         <UWP_DelphiLogo44>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_44.png</UWP_DelphiLogo44>
         <UWP_DelphiLogo150>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_150.png</UWP_DelphiLogo150>
-        <SanitizedProjectName>Sample01</SanitizedProjectName>
-        <DCC_UnitSearchPath>..\Source;..\Source\libs\GBJSON;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <SanitizedProjectName>ViaCEP</SanitizedProjectName>
+        <DCC_UnitSearchPath>..\..\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <VerInfo_Locale>1046</VerInfo_Locale>
         <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
     </PropertyGroup>
@@ -108,25 +108,6 @@
             <Form>Form1</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="..\Source\GBClient.Helpers.pas"/>
-        <DCCReference Include="..\Source\GBClient.Interfaces.pas"/>
-        <DCCReference Include="..\Source\GBClient.RestClient.Request.Body.pas"/>
-        <DCCReference Include="..\Source\GBClient.RestClient.Request.Header.pas"/>
-        <DCCReference Include="..\Source\GBClient.RestClient.Request.ParamPath.pas"/>
-        <DCCReference Include="..\Source\GBClient.RestClient.Request.pas"/>
-        <DCCReference Include="..\Source\GBClient.RestClient.Request.Query.pas"/>
-        <DCCReference Include="..\Source\GBClient.RestClient.Response.pas"/>
-        <DCCReference Include="..\Source\GBClient.Exceptions.pas"/>
-        <DCCReference Include="..\Source\GBClient.RestClient.Request.Auth.Basic.pas"/>
-        <DCCReference Include="..\Source\GBClient.RestClient.Request.Auth.Bearer.pas"/>
-        <DCCReference Include="..\Source\GBClient.RestClient.Request.Auth.pas"/>
-        <DCCReference Include="..\Source\GBClient.Types.pas"/>
-        <DCCReference Include="..\Source\GBClient.NetHTTPClient.Request.pas"/>
-        <DCCReference Include="..\Source\GBClient.Base.Request.ParamPath.pas"/>
-        <DCCReference Include="..\Source\GBClient.IdHTTP.Request.pas"/>
-        <DCCReference Include="..\Source\GBClient.IdHTTP.Response.pas"/>
-        <DCCReference Include="..\Source\GBClient.IdHTTP.Exceptions.pas"/>
-        <DCCReference Include="..\Source\GBClient.Settings.Default.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -145,18 +126,17 @@
         <BorlandProject>
             <Delphi.Personality>
                 <Source>
-                    <Source Name="MainSource">Sample01.dpr</Source>
+                    <Source Name="MainSource">ViaCEP.dpr</Source>
                 </Source>
                 <Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k260.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dclofficexp260.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
-                    <Excluded_Packages Name="C:\Program Files (x86)\FastReports\LibD26\dclfrxtee26.bpl">FastReport 6.0 Tee Components</Excluded_Packages>
                 </Excluded_Packages>
             </Delphi.Personality>
             <Deployment Version="3">
-                <DeployFile LocalName="Win32\Debug\Sample01.exe" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="Win32\Debug\ViaCEP.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
-                        <RemoteName>Sample01.exe</RemoteName>
+                        <RemoteName>ViaCEP.exe</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>

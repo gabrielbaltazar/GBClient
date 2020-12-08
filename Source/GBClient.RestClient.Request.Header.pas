@@ -5,6 +5,7 @@ interface
 uses
   GBClient.Interfaces,
   GBClient.Helpers,
+  REST.Types,
   REST.Client,
   System.SysUtils;
 
@@ -16,10 +17,10 @@ type TGBClientRestClientRequestHeader = class(TInterfacedObject, IGBClientParamH
     FRequest : TRESTRequest;
 
   protected
-    function AddOrSet(Key: string; Value: String)   : IGBClientParamHeader; overload;
-    function AddOrSet(Key: string; Value: Integer)  : IGBClientParamHeader; overload;
-    function AddOrSet(Key: string; Value: Extended) : IGBClientParamHeader; overload;
-    function AddOrSet(Key: string; Value: TDateTime): IGBClientParamHeader; overload;
+    function AddOrSet(Key: string; Value: String; bEncode: Boolean = True)   : IGBClientParamHeader; overload;
+    function AddOrSet(Key: string; Value: Integer; bEncode: Boolean = True)  : IGBClientParamHeader; overload;
+    function AddOrSet(Key: string; Value: Extended; bEncode: Boolean = True) : IGBClientParamHeader; overload;
+    function AddOrSet(Key: string; Value: TDateTime; bEncode: Boolean = True): IGBClientParamHeader; overload;
 
     function &End: IGBClientRequest;
   public
@@ -32,20 +33,25 @@ implementation
 
 { TGBClientRestClientRequestHeader }
 
-function TGBClientRestClientRequestHeader.AddOrSet(Key, Value: String): IGBClientParamHeader;
+function TGBClientRestClientRequestHeader.AddOrSet(Key, Value: String; bEncode: Boolean = True): IGBClientParamHeader;
+var
+  parameter : TRESTRequestParameter;
 begin
   result := Self;
-  FRequest.Params.AddHeader(Key, Value);
+  parameter := FRequest.Params.AddHeader(Key, Value);
+
+  if not bEncode then
+    parameter.Options := [poDoNotEncode];
 end;
 
-function TGBClientRestClientRequestHeader.AddOrSet(Key: string; Value: Integer): IGBClientParamHeader;
+function TGBClientRestClientRequestHeader.AddOrSet(Key: string; Value: Integer; bEncode: Boolean = True): IGBClientParamHeader;
 begin
-  result := AddOrSet(Key, Value.ToString);
+  result := AddOrSet(Key, Value.ToString, bEncode);
 end;
 
-function TGBClientRestClientRequestHeader.AddOrSet(Key: string; Value: Extended): IGBClientParamHeader;
+function TGBClientRestClientRequestHeader.AddOrSet(Key: string; Value: Extended; bEncode: Boolean = True): IGBClientParamHeader;
 begin
-  result := AddOrSet(Key, Value.ToString);
+  result := AddOrSet(Key, Value.ToString, bEncode);
 end;
 
 function TGBClientRestClientRequestHeader.&End: IGBClientRequest;
@@ -53,9 +59,9 @@ begin
   result := FParent;
 end;
 
-function TGBClientRestClientRequestHeader.AddOrSet(Key: string; Value: TDateTime): IGBClientParamHeader;
+function TGBClientRestClientRequestHeader.AddOrSet(Key: string; Value: TDateTime; bEncode: Boolean = True): IGBClientParamHeader;
 begin
-  result := AddOrSet(Key, Value.DateTimeToIso8601);
+  result := AddOrSet(Key, Value.DateTimeToIso8601, bEncode);
 end;
 
 constructor TGBClientRestClientRequestHeader.create(Parent: IGBClientRequest; Request: TRESTRequest);

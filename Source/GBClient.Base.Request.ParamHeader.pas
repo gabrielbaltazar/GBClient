@@ -16,10 +16,10 @@ type TGBClientBaseRequestParamHeader = class(TInterfacedObject, IGBClientParamHe
     FParams: TStrings;
 
   protected
-    function AddOrSet(Key: string; Value: String)   : IGBClientParamHeader; overload;
-    function AddOrSet(Key: string; Value: Integer)  : IGBClientParamHeader; overload;
-    function AddOrSet(Key: string; Value: Extended) : IGBClientParamHeader; overload;
-    function AddOrSet(Key: string; Value: TDateTime): IGBClientParamHeader; overload;
+    function AddOrSet(Key: string; Value: String; bEncode: Boolean = True)   : IGBClientParamHeader; overload;
+    function AddOrSet(Key: string; Value: Integer; bEncode: Boolean = True)  : IGBClientParamHeader; overload;
+    function AddOrSet(Key: string; Value: Extended; bEncode: Boolean = True) : IGBClientParamHeader; overload;
+    function AddOrSet(Key: string; Value: TDateTime; bEncode: Boolean = True): IGBClientParamHeader; overload;
 
     function &End: IGBClientRequest;
 
@@ -36,18 +36,18 @@ implementation
 
 { TGBClientBaseRequestParamHeader }
 
-function TGBClientBaseRequestParamHeader.AddOrSet(Key, Value: String): IGBClientParamHeader;
+function TGBClientBaseRequestParamHeader.AddOrSet(Key, Value: String; bEncode: Boolean): IGBClientParamHeader;
 begin
   result := Self;
   FParams.Values[Key] := Value;
 end;
 
-function TGBClientBaseRequestParamHeader.AddOrSet(Key: string; Value: Integer): IGBClientParamHeader;
+function TGBClientBaseRequestParamHeader.AddOrSet(Key: string; Value: Integer; bEncode: Boolean): IGBClientParamHeader;
 begin
   result := AddOrSet(Key, Value.ToString);
 end;
 
-function TGBClientBaseRequestParamHeader.AddOrSet(Key: string; Value: TDateTime): IGBClientParamHeader;
+function TGBClientBaseRequestParamHeader.AddOrSet(Key: string; Value: TDateTime; bEncode: Boolean): IGBClientParamHeader;
 begin
   result := AddOrSet(Key, Value.DateTimeToIso8601);
 end;
@@ -57,7 +57,7 @@ begin
   FParams.Clear;
 end;
 
-function TGBClientBaseRequestParamHeader.AddOrSet(Key: string; Value: Extended): IGBClientParamHeader;
+function TGBClientBaseRequestParamHeader.AddOrSet(Key: string; Value: Extended; bEncode: Boolean): IGBClientParamHeader;
 begin
   result := AddOrSet(Key, Value.ToString)
 end;
