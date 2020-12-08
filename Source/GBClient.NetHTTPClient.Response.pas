@@ -149,7 +149,7 @@ end;
 function TGBClientNetHTTPClientResponse.GetStream: TBytesStream;
 begin
   FreeAndNil(FByteStream);
-  FByteStream := TBytesStream.Create(FByteStream);
+  FByteStream := TBytesStream.Create(GetBytes);
   Result := FByteStream;
 end;
 

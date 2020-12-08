@@ -30,6 +30,7 @@ type TGBClientRestClientRequestBody = class(TInterfacedObject, IGBClientBodyRequ
     function AddOrSet(Value : TObject;  AOwner: Boolean = False): IGBClientBodyRequest; overload;
     function AddOrSet(Value : TDataSet; ACurrent: Boolean = True): IGBClientBodyRequest; overload;
     function AddOrSet(Value : TList<TObject>; AOwner: Boolean = False): IGBClientBodyRequest; overload;
+    function AddOrSet(Name, Value: String): IGBClientBodyRequest; overload;
 
     function &End: IGBClientRequest;
 
@@ -277,6 +278,17 @@ begin
     if AOwner then
       FreeAndNil(Value);
   end;
+end;
+
+function TGBClientRestClientRequestBody.AddOrSet(Name, Value: String): IGBClientBodyRequest;
+var
+  parameter: TRESTRequestParameter;
+begin
+  result := Self;
+  parameter := FRequest.Params.AddItem;
+  parameter.Name := Name;
+  parameter.Value := Value;
+  parameter.Kind := TRESTRequestParameterKind.pkREQUESTBODY;
 end;
 
 end.

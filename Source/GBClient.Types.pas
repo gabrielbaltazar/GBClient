@@ -5,7 +5,9 @@ interface
 type
   TGBMethodType = (gmtGET, gmtPOST, gmtPUT, gmtDELETE, gmtPATCH);
 
-  TGBContentType = (ctApplicationJson, ctApplicationXml);
+  TGBContentType = (ctApplicationJson,
+                    ctApplicationXml,
+                    ctApplication_x_www_form_urlencoded);
 
   TGBContentTypeHelper = record helper for TGBContentType
     public
@@ -26,6 +28,7 @@ begin
   case Self of
     ctApplicationJson : result := 'application/json';
     ctApplicationXml  : result := 'application/xml';
+    ctApplication_x_www_form_urlencoded : result := 'application/x-www-form-urlencoded';
   end;
 end;
 

@@ -15,6 +15,7 @@ uses
   GBClient.IdHTTP.Exceptions,
   GBClient.IdHTTP.Response,
   IdBaseComponent,
+  IdMultipartFormData,
   IdComponent,
   IdTCPConnection,
   IdTCPClient,
@@ -46,6 +47,7 @@ type TGBClientIdHTTPRequest = class(TInterfacedObject, IGBClientRequest,
     FBaseUrl        : string;
     FResource       : string;
 
+    FBodyForm : TIdMultiPartFormDataStream;
     FParamPath: IGBClientParamPath;
     FHeader   : IGBClientParamHeader;
     FQuery    : IGBClientParamQuery;
@@ -92,7 +94,8 @@ type TGBClientIdHTTPRequest = class(TInterfacedObject, IGBClientRequest,
     function OnPreExecute(Value: TOnPreExecute): IGBClientRequest;
 
     // Body
-    function AddOrSet(Value : String)                              : IGBClientBodyRequest; overload;
+    function AddOrSet(Value : String): IGBClientBodyRequest; overload;
+    function AddOrSet(Name, Value: String): IGBClientBodyRequest; overload;
     function AddOrSet(Value : TJSONObject; AOwner: Boolean = False): IGBClientBodyRequest; overload;
     function AddOrSet(Value : TJSONArray;  AOwner: Boolean = False): IGBClientBodyRequest; overload;
     function AddOrSet(Value : TObject;  AOwner: Boolean = False): IGBClientBodyRequest; overload;
@@ -167,6 +170,12 @@ begin
     AddOrSet(Value.ToJSONArray, True);
 end;
 
+function TGBClientIdHTTPRequest.AddOrSet(Name, Value: String): IGBClientBodyRequest;
+begin
+  result := Self;
+  FBodyForm.AddFormField(Name, Value);
+end;
+
 function TGBClientIdHTTPRequest.AddOrSet(Value: TList<TObject>; AOwner: Boolean): IGBClientBodyRequest;
 var
   parse: TGBOnParseObjectToJSON;
@@ -215,6 +224,7 @@ end;
 
 procedure TGBClientIdHTTPRequest.ClearRequest;
 begin
+  FBodyForm.Clear;
   if Assigned(FHeader) then
     TGBClientBaseRequestParamHeader(FHeader).Clear;
 
@@ -239,7 +249,7 @@ end;
 
 constructor TGBClientIdHTTPRequest.create;
 begin
-  FBodyStream := TStringStream.Create;
+  FBodyForm   := TIdMultiPartFormDataStream.Create;
   FResponseStream := TStringStream.Create;
   FIdHTTP := TIdHTTP.Create(nil);
   FIdHTTP.Request.ContentType := 'application/json';
@@ -262,6 +272,7 @@ destructor TGBClientIdHTTPRequest.Destroy;
 begin
   FResponseStream.Free;
   FBodyStream.Free;
+  FBodyForm.Free;
   FHandler.Free;
   FIdHTTP.Free;
   inherited;
@@ -444,10 +455,22 @@ begin
     try
       case FMethodType of
         gmtGET    : FIdHTTP.Get(url, FResponseStream);
-        gmtPOST   : FIdHTTP.Post(url, FBodyStream, FResponseStream);
-        gmtPUT    : FIdHTTP.Put(url, FBodyStream, FResponseStream);
         gmtDELETE : FIdHTTP.Delete(url, FResponseStream);
         gmtPATCH  : FIdHTTP.Patch(url, FResponseStream);
+
+        gmtPOST: begin
+          if FBodyForm.Size > 0 then
+            FIdHTTP.Post(url, FBodyForm, FResponseStream)
+          else
+            FIdHTTP.Post(url, FBodyStream, FResponseStream);
+        end;
+
+        gmtPUT: begin
+          if FBodyForm.Size > 0 then
+            FIdHTTP.Put(url, FBodyForm, FResponseStream)
+          else
+            FIdHTTP.Put(url, FBodyStream, FResponseStream);
+        end;
       end;
 
       FResponse := TGBClientIdHTTPResponse.New(Self, FIdHTTP);

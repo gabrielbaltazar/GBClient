@@ -9,6 +9,9 @@
         <Projects Include="GetBinary\SampleBinary.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="GetTokenOAuth2\GetTokenOAuth2.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -35,14 +38,23 @@
     <Target Name="SampleBinary:Make">
         <MSBuild Projects="GetBinary\SampleBinary.dproj" Targets="Make"/>
     </Target>
+    <Target Name="GetTokenOAuth2">
+        <MSBuild Projects="GetTokenOAuth2\GetTokenOAuth2.dproj"/>
+    </Target>
+    <Target Name="GetTokenOAuth2:Clean">
+        <MSBuild Projects="GetTokenOAuth2\GetTokenOAuth2.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GetTokenOAuth2:Make">
+        <MSBuild Projects="GetTokenOAuth2\GetTokenOAuth2.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="ViaCEP;SampleBinary"/>
+        <CallTarget Targets="ViaCEP;SampleBinary;GetTokenOAuth2"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="ViaCEP:Clean;SampleBinary:Clean"/>
+        <CallTarget Targets="ViaCEP:Clean;SampleBinary:Clean;GetTokenOAuth2:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="ViaCEP:Make;SampleBinary:Make"/>
+        <CallTarget Targets="ViaCEP:Make;SampleBinary:Make;GetTokenOAuth2:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
