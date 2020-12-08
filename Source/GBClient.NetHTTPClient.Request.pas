@@ -18,6 +18,7 @@ uses
   System.Classes,
   System.JSON,
   System.NetEncoding,
+  System.Net.Mime,
   System.Generics.Collections,
   System.Net.URLClient,
   System.Net.HttpClient,
@@ -41,6 +42,7 @@ type TGBClientNetHttpClientRequest = class(TInterfacedObject, IGBClientRequest,
     FHeader   : IGBClientParamHeader;
     FQuery    : IGBClientParamQuery;
     FSettings : IGBClientSettings;
+    FFormData : TMultipartFormData;
 
     function GetFullUrl: string;
 
@@ -84,7 +86,8 @@ type TGBClientNetHttpClientRequest = class(TInterfacedObject, IGBClientRequest,
     function OnPreExecute(Value: TOnPreExecute): IGBClientRequest;
 
     // Body
-    function AddOrSet(Value : String)                              : IGBClientBodyRequest; overload;
+    function AddOrSet(Value : String): IGBClientBodyRequest; overload;
+    function AddOrSet(Name, Value: String): IGBClientBodyRequest; overload;
     function AddOrSet(Value : TJSONObject; AOwner: Boolean = False): IGBClientBodyRequest; overload;
     function AddOrSet(Value : TJSONArray;  AOwner: Boolean = False): IGBClientBodyRequest; overload;
     function AddOrSet(Value : TObject;  AOwner: Boolean = False): IGBClientBodyRequest; overload;
@@ -166,6 +169,8 @@ end;
 
 procedure TGBClientNetHttpClientRequest.ClearRequest;
 begin
+  FreeAndNil(FFormData);
+
   if Assigned(FHeader) then
     TGBClientBaseRequestParamHeader(FHeader).Clear;
 
@@ -206,6 +211,7 @@ begin
   FRequest.Free;
   FClient.Free;
   FBodyStream.Free;
+  FFormData.Free;
   inherited;
 end;
 
@@ -288,6 +294,11 @@ end;
 
 procedure TGBClientNetHttpClientRequest.PrepareRequestBody;
 begin
+  if Assigned(FFormData) then
+  begin
+    FreeAndNil(FBodyStream);
+    FBodyStream := FFormData.Stream;
+  end;
 end;
 
 procedure TGBClientNetHttpClientRequest.PrepareRequestHeaders;
@@ -435,6 +446,14 @@ begin
     AddOrSet(Value.ToJSONObject, True)
   else
     AddOrSet(Value.ToJSONArray, True);
+end;
+
+function TGBClientNetHttpClientRequest.AddOrSet(Name, Value: String): IGBClientBodyRequest;
+begin
+  Result := Self;
+  if not Assigned(FFormData) then
+    FFormData := TMultipartFormData.Create;
+  FFormData.AddField(Name, Value);
 end;
 
 function TGBClientNetHttpClientRequest.AddOrSet(Value: TList<TObject>; AOwner: Boolean): IGBClientBodyRequest;

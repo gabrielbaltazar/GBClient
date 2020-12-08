@@ -13,6 +13,7 @@ uses
 
 type
   EGBRestException = GBClient.Exceptions.EGBRestException;
+  TGBContentType = GBClient.Types.TGBContentType;
 
   TGBOnParseJSONToObject = procedure (AJSON: TJSONObject; AObject: TObject);
   TGBOnParseObjectToJSON = function  (AObject: TObject): TJSONObject;
@@ -121,12 +122,13 @@ type
 
   IGBClientBodyRequest = interface
     ['{EDD14993-3C98-4334-AB6C-AAAF54647F03}']
-    function AddOrSet(Value : String)                              : IGBClientBodyRequest; overload;
+    function AddOrSet(Value : String) : IGBClientBodyRequest; overload;
     function AddOrSet(Value : TJSONObject; AOwner: Boolean = False): IGBClientBodyRequest; overload;
     function AddOrSet(Value : TJSONArray;  AOwner: Boolean = False): IGBClientBodyRequest; overload;
     function AddOrSet(Value : TObject;  AOwner: Boolean = False): IGBClientBodyRequest; overload;
     function AddOrSet(Value : TList<TObject>; AOwner: Boolean = False): IGBClientBodyRequest; overload;
     function AddOrSet(Value : TDataSet; ACurrent: Boolean = True): IGBClientBodyRequest; overload;
+    function AddOrSet(Name, Value: String): IGBClientBodyRequest; overload;
 
     function &End: IGBClientRequest;
   end;
