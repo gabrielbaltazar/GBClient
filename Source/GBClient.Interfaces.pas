@@ -6,6 +6,7 @@ uses
   Data.DB,
   GBClient.Types,
   GBClient.Exceptions,
+  System.Classes,
   System.SysUtils,
   System.JSON,
   System.Generics.Collections;
@@ -90,10 +91,10 @@ type
 
   IGBClientParamHeader = interface
     ['{E79EC294-59C1-45FF-951F-ABD1FE6F8268}']
-    function AddOrSet(Key: string; Value: String)   : IGBClientParamHeader; overload;
-    function AddOrSet(Key: string; Value: Integer)  : IGBClientParamHeader; overload;
-    function AddOrSet(Key: string; Value: Extended) : IGBClientParamHeader; overload;
-    function AddOrSet(Key: string; Value: TDateTime): IGBClientParamHeader; overload;
+    function AddOrSet(Key: string; Value: String; bEncode: Boolean = True)   : IGBClientParamHeader; overload;
+    function AddOrSet(Key: string; Value: Integer; bEncode: Boolean = True)  : IGBClientParamHeader; overload;
+    function AddOrSet(Key: string; Value: Extended; bEncode: Boolean = True) : IGBClientParamHeader; overload;
+    function AddOrSet(Key: string; Value: TDateTime; bEncode: Boolean = True): IGBClientParamHeader; overload;
 
     function &End: IGBClientRequest;
   end;
@@ -141,6 +142,8 @@ type
     function DataSet(Value: TDataSet): IGBClientResponse;
     function GetObject(Value: TObject): IGBClientResponse;
     function GetList(Value: TList<TObject>; AType: TClass): IGBClientResponse;
+    function GetBytes: TBytes;
+    function GetStream: TBytesStream;
 
     function HeaderAsString   (Name: String): string;
     function HeaderAsInteger  (Name: String): Integer;

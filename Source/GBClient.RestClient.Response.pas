@@ -9,6 +9,7 @@ uses
   REST.Json,
   REST.Client,
   REST.Types,
+  System.Classes,
   System.JSON,
   System.Generics.Collections,
   System.SysUtils;
@@ -19,6 +20,7 @@ type TGBClientRestClientResponse = class(TInterfacedObject, IGBClientResponse)
     [Weak]
     FParent   : IGBClientRequest;
     FResponse : TRESTResponse;
+    FByteStream: TBytesStream;
 
   protected
     function StatusCode: Integer;
@@ -29,6 +31,8 @@ type TGBClientRestClientResponse = class(TInterfacedObject, IGBClientResponse)
     function GetJSONArray  : TJSONArray;
     function GetObject(Value: TObject): IGBClientResponse;
     function GetList(Value: TList<TObject>; AType: TClass): IGBClientResponse;
+    function GetBytes: TBytes;
+    function GetStream: TBytesStream;
     function DataSet(Value: TDataSet): IGBClientResponse;
 
     function HeaderAsString   (Name: String): string;
@@ -65,13 +69,18 @@ end;
 
 destructor TGBClientRestClientResponse.Destroy;
 begin
-
+  FByteStream.Free;
   inherited;
 end;
 
 function TGBClientRestClientResponse.&End: IGBClientRequest;
 begin
   result := FParent;
+end;
+
+function TGBClientRestClientResponse.GetBytes: TBytes;
+begin
+  result := FResponse.RawBytes;
 end;
 
 function TGBClientRestClientResponse.GetJSONArray: TJSONArray;
@@ -119,6 +128,13 @@ begin
   parse  := FParent.Settings.OnParseJSONToObject;
   if Assigned( FParent.Settings.OnParseJSONToObject ) then
     parse(GetJSONObject, Value);
+end;
+
+function TGBClientRestClientResponse.GetStream: TBytesStream;
+begin
+  FreeAndNil(FByteStream);
+  FByteStream := TBytesStream.Create(GetBytes);
+  result := FByteStream;
 end;
 
 function TGBClientRestClientResponse.GetText: string;

@@ -19,6 +19,7 @@ type TGBClientIdHTTPResponse = class(TInterfacedObject, IGBClientResponse)
   private
     [Weak]
     FParent : IGBClientRequest;
+    FBytes  : TBytesStream;
 
     FIdHTTP     : TIdHTTP;
     FJSONArray  : TJSONArray;
@@ -33,6 +34,8 @@ type TGBClientIdHTTPResponse = class(TInterfacedObject, IGBClientResponse)
     function GetJSONArray  : TJSONArray;
     function GetObject(Value: TObject): IGBClientResponse;
     function GetList(Value: TList<TObject>; AType: TClass): IGBClientResponse;
+    function GetBytes: TBytes;
+    function GetStream: TBytesStream;
     function DataSet(Value: TDataSet): IGBClientResponse;
 
     function HeaderAsString   (Name: String): string;
@@ -76,7 +79,21 @@ destructor TGBClientIdHTTPResponse.Destroy;
 begin
   FJSONArray.Free;
   FJSONObject.Free;
+  FBytes.Free;
   inherited;
+end;
+
+function TGBClientIdHTTPResponse.GetBytes: TBytes;
+var
+  stream: TBytesStream;
+begin
+  stream := TBytesStream.Create;
+  try
+    stream.LoadFromStream(FIdHTTP.Response.ContentStream);
+    result := stream.Bytes;
+  finally
+    stream.Free;
+  end;
 end;
 
 function TGBClientIdHTTPResponse.GetJSONArray: TJSONArray;
@@ -124,6 +141,13 @@ function TGBClientIdHTTPResponse.GetObject(Value: TObject): IGBClientResponse;
 begin
   result := Self;
   TJson.JsonToObject(Value, GetJSONObject);
+end;
+
+function TGBClientIdHTTPResponse.GetStream: TBytesStream;
+begin
+  FreeAndNil(FBytes);
+  FBytes := TBytesStream.Create(GetBytes);
+  result := FBytes;
 end;
 
 function TGBClientIdHTTPResponse.GetText: string;
