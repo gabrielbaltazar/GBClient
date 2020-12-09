@@ -62,6 +62,7 @@
         <DCC_UnitSearchPath>..\..\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <VerInfo_Locale>1046</VerInfo_Locale>
         <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <DCC_Define>NetHTTP;$(DCC_Define)</DCC_Define>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
         <DCC_UsePackage>DBXSqliteDriver;dxSpreadSheetCoreDialogsRS25;dxRibbonCustomizationFormRS25;DBXDb2Driver;dxPSPrVwRibbonRS25;BemaSQLXE;vclactnband;vclFireDAC;cxExportRS25;dxHttpIndyRequestRS25;tethering;dxPScxCommonRS25;FireDACADSDriver;cxPivotGridOLAPRS25;rbRCL1825;rbDAD1825;FireDACMSSQLDriver;cxSchedulerGridRS25;vcltouch;dclRBE1825;vcldb;Intraweb;svn;TopGridXE;rbUSER1825;rbFireDAC1825;xhChartRtl250;Skype4Delphi;dxGaugeControlRS25;cxLibraryRS25;vclib;MultilizerDXE;spdNFCe_D10T;CalWidgets;FireDACDBXDriver;rbIDE1825;rbRTL1825;vclx;BemaCompoXE;dclRBDBE1825;xhCntrlsRtl250;dxTileControlRS25;rbDIDE1825;dxMapControlRS25;spdNotaSegura_D10T;dxDockingRS25;VCLRESTComponents;cxPageControlRS25;dxPSLnksRS25;dxWizardControlRS25;vclie;bindengine;dxFireDACServerModeRS25;FireDACMySQLDriver;rbTCUI1825;DataSnapClient;rbRIDE1825;bindcompdbx;dxPSdxLCLnkRS25;DBXSybaseASEDriver;IndyIPServer;IndySystem;dsnapcon;dxLayoutControlRS25;FireDACMSAccDriver;fmxFireDAC;FireDACInfxDriver;vclimg;rbTC1825;dxdbtrRS25;Jcl;dxPScxTLLnkRS25;rbRAP1825;emshosting;dxSpreadSheetRS25;xhHierCubeRtl250;rbBDE1825;rbTDBC1825;DBXOdbcDriver;FireDACTDataDriver;FMXTee;ipstudiowinclient;cxGridRS25;DbxCommonDriver;dxPScxSchedulerLnkRS25;dxorgcRS25;BemaAddXE;xmlrtl;DataSnapNativeClient;fmxobj;dxPScxGridLnkRS25;rtl;DbxClientDriver;DBXSybaseASADriver;dxPSCoreRS25;dxmdsRS25;ipstudiowin;appanalytics;IndyIPClient;bindcompvcl;dxThemeRS25;TeeUI;rbDBE1825;VclSmp;FireDACODBCDriver;JclVcl;DataSnapIndy10ServerTransport;TopGridXEd;DataSnapProviderClient;FireDACMongoDBDriver;cxVerticalGridRS25;dclRBFireDAC1825;dxADOServerModeRS25;DataSnapServerMidas;dxCoreRS25;cxSchedulerTreeBrowserRS25;BemaBaseCompoXE;DBXInterBaseDriver;ZComponent;ZCore;dxPSTeeChartRS25;svnui;spdNFE_D10T;DBXMSSQLDriver;dxPSdxFCLnkRS25;rbADO1825;DatasnapConnectorsFreePascal;BemaProxiesXE;bindcompfmx;DBXOracleDriver;ipstudiowinwordxp;inetdb;EpsonPF300;dxOfficeCoreRS25;FmxTeeUI;emsedge;fmx;fmxdae;dxPScxPivotGridLnkRS25;dxBarDBNavRS25;dxTabbedMDIRS25;ZipMasterR;dbexpress;IndyCore;dxFlowChartRS25;ZParseSql;dsnap;DataSnapCommon;dxBarRS25;bdertl;dxPSDBTeeChartRS25;dxdborRS25;DataSnapConnectors;dxPScxExtCommonRS25;rbUSERDesign1825;cxPivotGridRS25;BemaUtilsXE;xhExportDsgn250;dxPSdxSpreadSheetLnkRS25;dxNavBarRS25;JclDeveloperTools;BemaAddXEd;QR5RunNBDEDXE;cxSchedulerRibbonStyleEventEditorRS25;dclRBADO1825;FireDACOracleDriver;DBXMySQLDriver;DBXFirebirdDriver;FireDACCommonODBC;cxTreeListRS25;IndyIPCommon;vcl;dxPScxVGridLnkRS25;dxBarExtItemsRS25;TopGridBDXE;FireDACDb2Driver;dxComnRS25;dxPSdxDBTVLnkRS25;BemaToolBarXE;ZDbc;TeeDB;dxSpreadSheetCoreRS25;dxServerModeRS25;dxPScxPCProdRS25;FireDACPgDriver;ibmonitor;FireDACASADriver;cxEditorsRS25;rbDB1825;ibxpress;Tee;DataSnapServer;ibxbindings;dxPsPrVwAdvRS25;rbCIDE1825;vclwinx;FireDACDSDriver;fcstudiowin;cxDataRS25;cxTreeListdxBarPopupMenuRS25;CustomIPTransport;vcldsnap;dxPSdxOCLnkRS25;DOSCommandDR;xhExportRtl250;bindcomp;ZPlain;DBXInformixDriver;officeXPrt;cxPivotGridChartRS25;cxSchedulerRS25;dxBarExtDBItemsRS25;spdGov16_D10T;dxDBXServerModeRS25;dxGDIPlusRS25;rbRest1825;dmvcframeworkRT;dbxcds;adortl;dmvcframeworkDT;dxPSdxDBOCLnkRS25;dxRibbonRS25;dsnapxml;dxSpellCheckerRS25;dbrtl;inetdbxpress;IndyProtocols;JclContainers;fmxase;$(DCC_UsePackage)</DCC_UsePackage>
@@ -129,8 +130,7 @@
                     <Source Name="MainSource">ViaCEP.dpr</Source>
                 </Source>
                 <Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k260.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp260.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k250.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
                 </Excluded_Packages>
             </Delphi.Personality>
             <Deployment Version="3">
@@ -149,15 +149,12 @@
                         <Operation>1</Operation>
                     </Platform>
                     <Platform Name="Win32">
+                        <RemoteDir>Contents\MacOS</RemoteDir>
                         <Operation>0</Operation>
                     </Platform>
                 </DeployClass>
                 <DeployClass Name="AndroidClassesDexFile">
                     <Platform Name="Android">
-                        <RemoteDir>classes</RemoteDir>
-                        <Operation>1</Operation>
-                    </Platform>
-                    <Platform Name="Android64">
                         <RemoteDir>classes</RemoteDir>
                         <Operation>1</Operation>
                     </Platform>
@@ -183,10 +180,6 @@
                         <RemoteDir>library\lib\armeabi</RemoteDir>
                         <Operation>1</Operation>
                     </Platform>
-                    <Platform Name="Android64">
-                        <RemoteDir>library\lib\armeabi</RemoteDir>
-                        <Operation>1</Operation>
-                    </Platform>
                 </DeployClass>
                 <DeployClass Name="AndroidLibnativeArmeabiv7aFile">
                     <Platform Name="Android64">
@@ -199,18 +192,10 @@
                         <RemoteDir>library\lib\mips</RemoteDir>
                         <Operation>1</Operation>
                     </Platform>
-                    <Platform Name="Android64">
-                        <RemoteDir>library\lib\mips</RemoteDir>
-                        <Operation>1</Operation>
-                    </Platform>
                 </DeployClass>
                 <DeployClass Name="AndroidServiceOutput">
                     <Platform Name="Android">
                         <RemoteDir>library\lib\armeabi-v7a</RemoteDir>
-                        <Operation>1</Operation>
-                    </Platform>
-                    <Platform Name="Android64">
-                        <RemoteDir>library\lib\arm64-v8a</RemoteDir>
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
@@ -225,17 +210,9 @@
                         <RemoteDir>res\drawable</RemoteDir>
                         <Operation>1</Operation>
                     </Platform>
-                    <Platform Name="Android64">
-                        <RemoteDir>res\drawable</RemoteDir>
-                        <Operation>1</Operation>
-                    </Platform>
                 </DeployClass>
                 <DeployClass Name="AndroidSplashStyles">
                     <Platform Name="Android">
-                        <RemoteDir>res\values</RemoteDir>
-                        <Operation>1</Operation>
-                    </Platform>
-                    <Platform Name="Android64">
                         <RemoteDir>res\values</RemoteDir>
                         <Operation>1</Operation>
                     </Platform>
@@ -265,17 +242,9 @@
                         <RemoteDir>res\drawable</RemoteDir>
                         <Operation>1</Operation>
                     </Platform>
-                    <Platform Name="Android64">
-                        <RemoteDir>res\drawable</RemoteDir>
-                        <Operation>1</Operation>
-                    </Platform>
                 </DeployClass>
                 <DeployClass Name="Android_LauncherIcon144">
                     <Platform Name="Android">
-                        <RemoteDir>res\drawable-xxhdpi</RemoteDir>
-                        <Operation>1</Operation>
-                    </Platform>
-                    <Platform Name="Android64">
                         <RemoteDir>res\drawable-xxhdpi</RemoteDir>
                         <Operation>1</Operation>
                     </Platform>
@@ -285,17 +254,9 @@
                         <RemoteDir>res\drawable-ldpi</RemoteDir>
                         <Operation>1</Operation>
                     </Platform>
-                    <Platform Name="Android64">
-                        <RemoteDir>res\drawable-ldpi</RemoteDir>
-                        <Operation>1</Operation>
-                    </Platform>
                 </DeployClass>
                 <DeployClass Name="Android_LauncherIcon48">
                     <Platform Name="Android">
-                        <RemoteDir>res\drawable-mdpi</RemoteDir>
-                        <Operation>1</Operation>
-                    </Platform>
-                    <Platform Name="Android64">
                         <RemoteDir>res\drawable-mdpi</RemoteDir>
                         <Operation>1</Operation>
                     </Platform>
@@ -305,17 +266,9 @@
                         <RemoteDir>res\drawable-hdpi</RemoteDir>
                         <Operation>1</Operation>
                     </Platform>
-                    <Platform Name="Android64">
-                        <RemoteDir>res\drawable-hdpi</RemoteDir>
-                        <Operation>1</Operation>
-                    </Platform>
                 </DeployClass>
                 <DeployClass Name="Android_LauncherIcon96">
                     <Platform Name="Android">
-                        <RemoteDir>res\drawable-xhdpi</RemoteDir>
-                        <Operation>1</Operation>
-                    </Platform>
-                    <Platform Name="Android64">
                         <RemoteDir>res\drawable-xhdpi</RemoteDir>
                         <Operation>1</Operation>
                     </Platform>
@@ -375,17 +328,9 @@
                         <RemoteDir>res\drawable-small</RemoteDir>
                         <Operation>1</Operation>
                     </Platform>
-                    <Platform Name="Android64">
-                        <RemoteDir>res\drawable-small</RemoteDir>
-                        <Operation>1</Operation>
-                    </Platform>
                 </DeployClass>
                 <DeployClass Name="Android_SplashImage470">
                     <Platform Name="Android">
-                        <RemoteDir>res\drawable-normal</RemoteDir>
-                        <Operation>1</Operation>
-                    </Platform>
-                    <Platform Name="Android64">
                         <RemoteDir>res\drawable-normal</RemoteDir>
                         <Operation>1</Operation>
                     </Platform>
@@ -395,17 +340,9 @@
                         <RemoteDir>res\drawable-large</RemoteDir>
                         <Operation>1</Operation>
                     </Platform>
-                    <Platform Name="Android64">
-                        <RemoteDir>res\drawable-large</RemoteDir>
-                        <Operation>1</Operation>
-                    </Platform>
                 </DeployClass>
                 <DeployClass Name="Android_SplashImage960">
                     <Platform Name="Android">
-                        <RemoteDir>res\drawable-xlarge</RemoteDir>
-                        <Operation>1</Operation>
-                    </Platform>
-                    <Platform Name="Android64">
                         <RemoteDir>res\drawable-xlarge</RemoteDir>
                         <Operation>1</Operation>
                     </Platform>
@@ -438,11 +375,6 @@
                         <Operation>1</Operation>
                         <Extensions>.framework</Extensions>
                     </Platform>
-                    <Platform Name="OSX64">
-                        <RemoteDir>Contents\MacOS</RemoteDir>
-                        <Operation>1</Operation>
-                        <Extensions>.framework</Extensions>
-                    </Platform>
                     <Platform Name="Win32">
                         <Operation>0</Operation>
                     </Platform>
@@ -461,11 +393,6 @@
                         <Extensions>.dylib</Extensions>
                     </Platform>
                     <Platform Name="OSX32">
-                        <RemoteDir>Contents\MacOS</RemoteDir>
-                        <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
-                    </Platform>
-                    <Platform Name="OSX64">
                         <RemoteDir>Contents\MacOS</RemoteDir>
                         <Operation>1</Operation>
                         <Extensions>.dylib</Extensions>
@@ -493,11 +420,6 @@
                         <Operation>1</Operation>
                         <Extensions>.dylib</Extensions>
                     </Platform>
-                    <Platform Name="OSX64">
-                        <RemoteDir>Contents\MacOS</RemoteDir>
-                        <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
-                    </Platform>
                     <Platform Name="Win32">
                         <Operation>0</Operation>
                         <Extensions>.bpl</Extensions>
@@ -505,9 +427,6 @@
                 </DeployClass>
                 <DeployClass Name="File">
                     <Platform Name="Android">
-                        <Operation>0</Operation>
-                    </Platform>
-                    <Platform Name="Android64">
                         <Operation>0</Operation>
                     </Platform>
                     <Platform Name="iOSDevice32">
@@ -520,10 +439,6 @@
                         <Operation>0</Operation>
                     </Platform>
                     <Platform Name="OSX32">
-                        <RemoteDir>Contents\Resources\StartUp\</RemoteDir>
-                        <Operation>0</Operation>
-                    </Platform>
-                    <Platform Name="OSX64">
                         <RemoteDir>Contents\Resources\StartUp\</RemoteDir>
                         <Operation>0</Operation>
                     </Platform>
@@ -843,9 +758,6 @@
                     <Platform Name="Android">
                         <Operation>1</Operation>
                     </Platform>
-                    <Platform Name="Android64">
-                        <Operation>1</Operation>
-                    </Platform>
                 </DeployClass>
                 <DeployClass Name="ProjectiOSDeviceDebug">
                     <Platform Name="iOSDevice32">
@@ -908,17 +820,9 @@
                         <RemoteDir>..\</RemoteDir>
                         <Operation>1</Operation>
                     </Platform>
-                    <Platform Name="OSX64">
-                        <RemoteDir>..\</RemoteDir>
-                        <Operation>1</Operation>
-                    </Platform>
                 </DeployClass>
                 <DeployClass Name="ProjectOSXInfoPList">
                     <Platform Name="OSX32">
-                        <RemoteDir>Contents</RemoteDir>
-                        <Operation>1</Operation>
-                    </Platform>
-                    <Platform Name="OSX64">
                         <RemoteDir>Contents</RemoteDir>
                         <Operation>1</Operation>
                     </Platform>
@@ -928,18 +832,10 @@
                         <RemoteDir>Contents\Resources</RemoteDir>
                         <Operation>1</Operation>
                     </Platform>
-                    <Platform Name="OSX64">
-                        <RemoteDir>Contents\Resources</RemoteDir>
-                        <Operation>1</Operation>
-                    </Platform>
                 </DeployClass>
                 <DeployClass Required="true" Name="ProjectOutput">
                     <Platform Name="Android">
                         <RemoteDir>library\lib\armeabi-v7a</RemoteDir>
-                        <Operation>1</Operation>
-                    </Platform>
-                    <Platform Name="Android64">
-                        <RemoteDir>library\lib\arm64-v8a</RemoteDir>
                         <Operation>1</Operation>
                     </Platform>
                     <Platform Name="iOSDevice32">
@@ -955,10 +851,6 @@
                         <Operation>1</Operation>
                     </Platform>
                     <Platform Name="OSX32">
-                        <RemoteDir>Contents\MacOS</RemoteDir>
-                        <Operation>1</Operation>
-                    </Platform>
-                    <Platform Name="OSX64">
                         <RemoteDir>Contents\MacOS</RemoteDir>
                         <Operation>1</Operation>
                     </Platform>

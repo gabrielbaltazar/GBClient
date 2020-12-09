@@ -62,6 +62,8 @@ type TGBClientIdHTTPRequest = class(TInterfacedObject, IGBClientRequest,
     procedure PrepareRequestQuery;
     procedure PrepareRequestBody;
   protected
+    function Component: TComponent;
+
     function POST  : IGBClientRequest;
     function PUT   : IGBClientRequest;
     function GET   : IGBClientRequest;
@@ -239,6 +241,11 @@ function TGBClientIdHTTPRequest.ContentType(Value: TGBContentType): IGBClientReq
 begin
   result := Self;
   ContentType(Value.value);
+end;
+
+function TGBClientIdHTTPRequest.Component: TComponent;
+begin
+  result := FIdHTTP;
 end;
 
 function TGBClientIdHTTPRequest.ContentType(Value: String): IGBClientRequest;

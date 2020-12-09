@@ -12,6 +12,7 @@ uses
   System.Generics.Collections;
 
 type
+  EGBRestExceptionTimeout = GBClient.Exceptions.EGBRestExceptionTimeout;
   EGBRestException = GBClient.Exceptions.EGBRestException;
   TGBContentType = GBClient.Types.TGBContentType;
 
@@ -38,6 +39,8 @@ type
 
   IGBClientRequest = interface
     ['{9287B63B-BF21-4C69-B2B1-7D27FCD1F7FE}']
+    function Component: TComponent;
+
     function POST  : IGBClientRequest;
     function PUT   : IGBClientRequest;
     function GET   : IGBClientRequest;

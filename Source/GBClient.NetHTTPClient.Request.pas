@@ -54,6 +54,8 @@ type TGBClientNetHttpClientRequest = class(TInterfacedObject, IGBClientRequest,
 
     procedure ClearRequest;
   protected
+    function Component: TComponent;
+
     function POST  : IGBClientRequest;
     function PUT   : IGBClientRequest;
     function GET   : IGBClientRequest;
@@ -179,6 +181,11 @@ begin
 
   if Assigned(FParamPath) then
     TGBClientBaseRequestParamPath(FParamPath).Clear;
+end;
+
+function TGBClientNetHttpClientRequest.Component: TComponent;
+begin
+  result := FClient;
 end;
 
 function TGBClientNetHttpClientRequest.ContentType(Value: String): IGBClientRequest;
