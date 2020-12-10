@@ -133,6 +133,9 @@ type
     function AddOrSet(Value : TDataSet; ACurrent: Boolean = True): IGBClientBodyRequest; overload;
     function AddOrSet(Name, Value: String): IGBClientBodyRequest; overload;
 
+    function Binary(AFileName: String): IGBClientBodyRequest; overload;
+    function Binary(AStream : TStream; AOwner: Boolean = False): IGBClientBodyRequest; overload;
+
     function &End: IGBClientRequest;
   end;
 
