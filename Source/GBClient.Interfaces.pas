@@ -12,6 +12,7 @@ uses
   System.Generics.Collections;
 
 type
+  EGBRestExceptionTimeout = GBClient.Exceptions.EGBRestExceptionTimeout;
   EGBRestException = GBClient.Exceptions.EGBRestException;
   TGBContentType = GBClient.Types.TGBContentType;
 
@@ -38,6 +39,8 @@ type
 
   IGBClientRequest = interface
     ['{9287B63B-BF21-4C69-B2B1-7D27FCD1F7FE}']
+    function Component: TComponent;
+
     function POST  : IGBClientRequest;
     function PUT   : IGBClientRequest;
     function GET   : IGBClientRequest;
@@ -129,6 +132,9 @@ type
     function AddOrSet(Value : TList<TObject>; AOwner: Boolean = False): IGBClientBodyRequest; overload;
     function AddOrSet(Value : TDataSet; ACurrent: Boolean = True): IGBClientBodyRequest; overload;
     function AddOrSet(Name, Value: String): IGBClientBodyRequest; overload;
+
+    function Binary(AFileName: String): IGBClientBodyRequest; overload;
+    function Binary(AStream : TStream; AOwner: Boolean = False): IGBClientBodyRequest; overload;
 
     function &End: IGBClientRequest;
   end;

@@ -43,6 +43,8 @@ type TGBClientRequest = class(TInterfacedObject, IGBClientRequest)
 
     procedure PrepareRequest;
   protected
+    function Component: TComponent;
+
     function POST  : IGBClientRequest;
     function PUT   : IGBClientRequest;
     function GET   : IGBClientRequest;
@@ -122,6 +124,11 @@ begin
   if not Assigned(FBody) then
     FBody := TGBClientRestClientRequestBody.New(Self, FRestRequest);
   result := FBody;
+end;
+
+function TGBClientRequest.Component: TComponent;
+begin
+  result := Self.FRestRequest;
 end;
 
 function TGBClientRequest.ContentType(Value: String): IGBClientRequest;
@@ -266,7 +273,17 @@ var
 begin
   PrepareRequest;
 
-  FRestRequest.Execute;
+  try
+    FRestRequest.Execute;
+  except
+    on e: Exception do
+    begin
+      if e.Message.Contains('(12002)') then
+        raise EGBRestExceptionTimeout.CreateFmt(e.Message, []);
+      raise;
+    end;
+  end;
+
   if FRestResponse.StatusCode >= 400 then
   begin
     LException := EGBRestRequestException.create(FRestRequest);

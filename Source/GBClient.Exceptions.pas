@@ -7,6 +7,9 @@ uses
   System.SysUtils;
 
 type
+  EGBRestExceptionTimeout = class(Exception)
+  end;
+
   EGBRestException = class(Exception)
   protected
     function GetStatusCode: Integer; virtual; abstract;

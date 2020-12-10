@@ -54,6 +54,8 @@ type TGBClientNetHttpClientRequest = class(TInterfacedObject, IGBClientRequest,
 
     procedure ClearRequest;
   protected
+    function Component: TComponent;
+
     function POST  : IGBClientRequest;
     function PUT   : IGBClientRequest;
     function GET   : IGBClientRequest;
@@ -93,6 +95,9 @@ type TGBClientNetHttpClientRequest = class(TInterfacedObject, IGBClientRequest,
     function AddOrSet(Value : TObject;  AOwner: Boolean = False): IGBClientBodyRequest; overload;
     function AddOrSet(Value : TList<TObject>; AOwner: Boolean = False): IGBClientBodyRequest; overload;
     function AddOrSet(Value : TDataSet; ACurrent: Boolean = True): IGBClientBodyRequest; overload;
+
+    function Binary(AFileName: String): IGBClientBodyRequest; overload;
+    function Binary(AStream : TStream; AOwner: Boolean = False): IGBClientBodyRequest; overload;
 
     function &End: IGBClientRequest;
 
@@ -162,6 +167,24 @@ begin
   FBaseUrl := Value;
 end;
 
+function TGBClientNetHttpClientRequest.Binary(AStream: TStream; AOwner: Boolean): IGBClientBodyRequest;
+begin
+  FreeAndNil(FBodyStream);
+  result := Self;
+  FBodyStream := TMemoryStream.Create;
+  TMemoryStream(FBodyStream).LoadFromStream(AStream);
+
+  if AOwner then
+    AStream.Free;
+end;
+
+function TGBClientNetHttpClientRequest.Binary(AFileName: String): IGBClientBodyRequest;
+begin
+  FreeAndNil(FBodyStream);
+  result := Self;
+  FBodyStream := TFileStream.Create(AFileName, fmOpenRead);
+end;
+
 function TGBClientNetHttpClientRequest.Body: IGBClientBodyRequest;
 begin
   result := Self;
@@ -179,6 +202,11 @@ begin
 
   if Assigned(FParamPath) then
     TGBClientBaseRequestParamPath(FParamPath).Clear;
+end;
+
+function TGBClientNetHttpClientRequest.Component: TComponent;
+begin
+  result := FClient;
 end;
 
 function TGBClientNetHttpClientRequest.ContentType(Value: String): IGBClientRequest;

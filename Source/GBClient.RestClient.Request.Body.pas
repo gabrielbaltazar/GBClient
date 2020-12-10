@@ -10,7 +10,8 @@ uses
   REST.Types,
   System.Generics.Collections,
   System.JSON,
-  System.SysUtils;
+  System.SysUtils,
+  System.Classes;
 
 type TGBClientRestClientRequestBody = class(TInterfacedObject, IGBClientBodyRequest)
 
@@ -31,6 +32,9 @@ type TGBClientRestClientRequestBody = class(TInterfacedObject, IGBClientBodyRequ
     function AddOrSet(Value : TDataSet; ACurrent: Boolean = True): IGBClientBodyRequest; overload;
     function AddOrSet(Value : TList<TObject>; AOwner: Boolean = False): IGBClientBodyRequest; overload;
     function AddOrSet(Name, Value: String): IGBClientBodyRequest; overload;
+
+    function Binary(AFileName: String): IGBClientBodyRequest; overload;
+    function Binary(AStream : TStream; AOwner: Boolean = False): IGBClientBodyRequest; overload;
 
     function &End: IGBClientRequest;
 
@@ -289,6 +293,27 @@ begin
   parameter.Name := Name;
   parameter.Value := Value;
   parameter.Kind := TRESTRequestParameterKind.pkREQUESTBODY;
+end;
+
+function TGBClientRestClientRequestBody.Binary(AStream: TStream; AOwner: Boolean): IGBClientBodyRequest;
+begin
+  result := Self;
+  FRequest.AddBody(AStream, ctAPPLICATION_OCTET_STREAM);
+
+  if AOwner then
+    AStream.Free;
+end;
+
+function TGBClientRestClientRequestBody.Binary(AFileName: String): IGBClientBodyRequest;
+var
+  fileStream: TFileStream;
+begin
+  fileStream := TFileStream.Create(AFileName, fmOpenRead);
+  try
+    result := Binary(fileStream, False);
+  finally
+    fileStream.Free;
+  end;
 end;
 
 end.
