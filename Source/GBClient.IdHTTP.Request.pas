@@ -38,7 +38,7 @@ type TGBClientIdHTTPRequest = class(TInterfacedObject, IGBClientRequest,
   private
     FIdHTTP         : TIdHTTP;
     FHandler        : TIdSSLIOHandlerSocketOpenSSL;
-    FBodyStream     : TStringStream;
+    FBodyStream     : TStream;
     FResponseStream : TStringStream;
     FOnException    : TGBOnException;
     FResponse       : IGBClientResponse;
@@ -103,6 +103,9 @@ type TGBClientIdHTTPRequest = class(TInterfacedObject, IGBClientRequest,
     function AddOrSet(Value : TObject;  AOwner: Boolean = False): IGBClientBodyRequest; overload;
     function AddOrSet(Value : TList<TObject>; AOwner: Boolean = False): IGBClientBodyRequest; overload;
     function AddOrSet(Value : TDataSet; ACurrent: Boolean = True): IGBClientBodyRequest; overload;
+
+    function Binary(AFileName: String): IGBClientBodyRequest; overload;
+    function Binary(AStream : TStream; AOwner: Boolean = False): IGBClientBodyRequest; overload;
 
     function &End: IGBClientRequest;
 
@@ -217,6 +220,35 @@ function TGBClientIdHTTPRequest.BaseURL(Value: String): IGBClientRequest;
 begin
   result   := Self;
   FBaseUrl := Value;
+end;
+
+function TGBClientIdHTTPRequest.Binary(AStream: TStream; AOwner: Boolean): IGBClientBodyRequest;
+begin
+  FreeAndNil(FBodyStream);
+  FBodyStream := TMemoryStream.Create;
+  try
+    TMemoryStream(FBodyStream).LoadFromStream(AStream);
+
+    if AOwner then
+      AStream.Free;
+  except
+    FBodyStream.Free;
+    raise;
+  end;
+end;
+
+function TGBClientIdHTTPRequest.Binary(AFileName: String): IGBClientBodyRequest;
+var
+  fileStream: TFileStream;
+begin
+  FreeAndNil(FBodyStream);
+  result := Self;
+  fileStream := TFileStream.Create(AFileName, fmOpenRead);
+  try
+    Binary(fileStream, False);
+  finally
+    fileStream.Free;
+  end;
 end;
 
 function TGBClientIdHTTPRequest.Body: IGBClientBodyRequest;
