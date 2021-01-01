@@ -275,6 +275,7 @@ begin
 
   try
     FRestRequest.Execute;
+    FRestRequest.Body.ClearBody;
     FRestRequest.Params.Clear;
   except
     on e: Exception do
