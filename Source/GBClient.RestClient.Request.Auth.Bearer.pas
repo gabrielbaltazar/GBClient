@@ -58,7 +58,7 @@ end;
 function TGBClientRestClientRequestAuthBearer.Token(Value: string): IGBClientAuthBearer;
 begin
   result := Self;
-  FParent.&End.Header.AddOrSet(HEADER_AUTH, HEADER_BEARER + Value);
+  FParent.&End.Header.AddOrSet(HEADER_AUTH, HEADER_BEARER + Value, False);
 end;
 
 end.
