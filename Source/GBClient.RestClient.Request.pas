@@ -4,235 +4,232 @@ interface
 
 uses
   GBClient.Interfaces,
+  GBClient.Request.Base,
+  GBClient.Helpers,
   GBClient.Types,
+  GBClient.RestClient.Auth,
   GBClient.RestClient.Exceptions,
-  GBClient.RestClient.Request.Header,
-  GBClient.RestClient.Request.Body,
-  GBClient.RestClient.Request.ParamPath,
-  GBClient.RestClient.Request.Query,
-  GBClient.RestClient.Request.Auth,
-  GBClient.RestClient.Response,
-  GBClient.Exceptions,
-  GBClient.Settings.Default,
+  Data.DB,
+  REST.Client,
+  REST.Types,
   IPPeerCommon,
   IPPeerAPI,
   IPPeerClient,
-  REST.Client,
-  Rest.Types,
   System.Classes,
-  System.TypInfo,
-  System.SysUtils;
+  System.SysUtils,
+  System.JSON,
+  System.Generics.Collections,
+  System.TypInfo;
 
-type TGBClientRequest = class(TInterfacedObject, IGBClientRequest)
-
+type TGBClientRestClientRequest = class(TGBClientRequestBase, IGBClientRequest,
+                                                              IGBClientRequestParams,
+                                                              IGBClientResponse)
   private
-    FRestClient   : TRESTClient;
-    FRestRequest  : TRESTRequest;
-    FRestResponse : TRESTResponse;
+    FRestClient: TRESTClient;
+    FRestRequest: TRESTRequest;
+    FRestResponse: TRESTResponse;
+    FByteStream: TBytesStream;
+    FAuthorization: IGBClientAuth;
 
-    FHeaders  : IGBClientParamHeader;
-    FParamPath: IGBClientParamPath;
-    FQueries  : IGBClientParamQuery;
-    FResponse : IGBClientResponse;
-    FBody     : IGBClientBodyRequest;
-    FAuth     : IGBClientAuth;
-    FSettings : IGBClientSettings;
-
-    FOnException : TGBOnException;
-    FOnPreExecute: TOnPreExecute;
+    procedure createComponents;
 
     procedure PrepareRequest;
+    procedure PrepareRequestHeaders;
+    procedure PrepareRequestQueries;
+    procedure PrepareRequestPathParams;
+    procedure PrepareRequestAuth;
+
   protected
-    function Component: TComponent;
+    function Component: TComponent; override;
+    function Authorization: IGBClientAuth; override;
 
-    function POST  : IGBClientRequest;
-    function PUT   : IGBClientRequest;
-    function GET   : IGBClientRequest;
-    function DELETE: IGBClientRequest;
-    function PATCH : IGBClientRequest;
+    function Send: IGBClientResponse; override;
+    function Response : IGBClientResponse; override;
 
-    function Authorization: IGBClientAuth;
+    // Response
+    function StatusCode: Integer;
+    function StatusText: string;
 
-    function Header    : IGBClientParamHeader;
-    function ParamPath : IGBClientParamPath;
-    function Query     : IGBClientParamQuery;
-    function Body      : IGBClientBodyRequest;
+    function GetText: string;
+    function GetJSONObject: TJSONObject;
+    function GetJSONArray: TJSONArray;
+    function DataSet(Value: TDataSet): IGBClientResponse;
+    function GetObject(Value: TObject): IGBClientResponse;
+    function GetList(Value: TList<TObject>; AType: TClass): IGBClientResponse;
+    function GetBytes: TBytes;
+    function GetStream: TBytesStream;
 
-    function AcceptCharset  (Value: string): IGBClientRequest;
-    function AcceptEncoding (Value: string): IGBClientRequest;
-    function Accept         (Value: string): IGBClientRequest;
-    function ContentType    (Value: TGBContentType): IGBClientRequest; overload;
-    function ContentType    (Value : String)       : IGBClientRequest; overload;
-    function BaseURL        (Value : String)       : IGBClientRequest;
-    function Resource       (Value : String)       : IGBClientRequest;
-    function TimeOut        (Value : Integer)      : IGBClientRequest;
+    function HeaderAsString(Name: String): string;
+    function HeaderAsInteger(Name: String): Integer;
+    function HeaderAsFloat(Name: String): Double;
+    function HeaderAsDateTime(Name: String): TDateTime;
 
-    function Execute  : IGBClientResponse;
-    function Send     : IGBClientResponse;
-    function Response : IGBClientResponse;
-
-    function Settings: IGBClientSettings;
-
-    function OnException (Value: TGBOnException): IGBClientRequest;
-    function OnPreExecute(Value: TOnPreExecute): IGBClientRequest;
   public
-    constructor create;
-    destructor  Destroy; override;
     class function New: IGBClientRequest;
+    destructor Destroy; override;
 end;
 
 implementation
 
-{ TGBClientRequest }
+{ TGBClientRestClientRequest }
 
-function TGBClientRequest.Accept(Value: string): IGBClientRequest;
+function TGBClientRestClientRequest.Authorization: IGBClientAuth;
 begin
-  result := Self;
-  FRestClient.Accept := Value;
-  FRestRequest.Accept := Value;
+  if not Assigned(FAuthorization) then
+    FAuthorization := TGBClientRestClientAuth.New(Self);
+  result := FAuthorization;
 end;
 
-function TGBClientRequest.AcceptCharset(Value: string): IGBClientRequest;
+function TGBClientRestClientRequest.Component: TComponent;
 begin
-  result := Self;
-  FRestClient.AcceptCharset := Value;
-  FRestRequest.AcceptCharset := Value;
+  result := FRestRequest;
 end;
 
-function TGBClientRequest.AcceptEncoding(Value: string): IGBClientRequest;
+procedure TGBClientRestClientRequest.createComponents;
 begin
-  result := Self;
-  FRestClient.AcceptEncoding := Value;
-  FRestRequest.AcceptEncoding := Value;
-end;
+  FreeAndNil(FRestResponse);
+  FreeAndNil(FRestRequest);
+  FreeAndNil(FRestClient);
 
-function TGBClientRequest.Authorization: IGBClientAuth;
-begin
-  if not Assigned(FAuth) then
-    FAuth := TGBClientRestClientAuth.New(Self, FRestRequest);
-  result := FAuth;
-end;
-
-function TGBClientRequest.BaseURL(Value: String): IGBClientRequest;
-begin
-  result := Self;
-  FRestClient.BaseURL := Value;
-end;
-
-function TGBClientRequest.Body: IGBClientBodyRequest;
-begin
-  if not Assigned(FBody) then
-    FBody := TGBClientRestClientRequestBody.New(Self, FRestRequest);
-  result := FBody;
-end;
-
-function TGBClientRequest.Component: TComponent;
-begin
-  result := Self.FRestRequest;
-end;
-
-function TGBClientRequest.ContentType(Value: String): IGBClientRequest;
-begin
-  result := Self;
-  FRestClient.ContentType := Value;
-end;
-
-function TGBClientRequest.ContentType(Value: TGBContentType): IGBClientRequest;
-begin
-  result := ContentType( Value.value );
-end;
-
-constructor TGBClientRequest.create;
-begin
-  FRestClient   := TRESTClient.Create('http://localhost:80');
-  FRestRequest  := TRESTRequest.Create(nil);
   FRestResponse := TRESTResponse.Create(nil);
-
-  FRestClient.ContentType := 'application/json';
+  FRestClient := TRESTClient.Create(nil);
+  FRestClient.SynchronizedEvents := False;
   FRestClient.RaiseExceptionOn500 := False;
+
+  FRestRequest := TRESTRequest.Create(nil);
+  FRestRequest.SynchronizedEvents := False;
 
   FRestRequest.Client := FRestClient;
   FRestRequest.Response := FRestResponse;
 end;
 
-function TGBClientRequest.DELETE: IGBClientRequest;
+function TGBClientRestClientRequest.DataSet(Value: TDataSet): IGBClientResponse;
+var
+  parse: TGBOnParseJSONToDataSet;
 begin
   result := Self;
-  FRestRequest.Method := rmDELETE;
+  parse := Settings.OnParseJSONToDataSet;
+  parse(GetJSONObject, Value);
 end;
 
-destructor TGBClientRequest.Destroy;
+destructor TGBClientRestClientRequest.Destroy;
 begin
-  FRestClient.Free;
-  FRestRequest.Free;
-  FRestResponse.Free;
+  FreeAndNil(FRestResponse);
+  FreeAndNil(FRestRequest);
+  FreeAndNil(FRestClient);
+  FreeAndNil(FByteStream);
   inherited;
 end;
 
-function TGBClientRequest.Resource(Value: String): IGBClientRequest;
+function TGBClientRestClientRequest.GetBytes: TBytes;
 begin
-  result := Self;
-  FRestRequest.Resource := Value;
+  result := FRestResponse.RawBytes;
 end;
 
-function TGBClientRequest.Execute: IGBClientResponse;
+function TGBClientRestClientRequest.GetJSONArray: TJSONArray;
 begin
-  result := Send;
+  result := TJSONArray(FRestResponse.JSONValue);
 end;
 
-function TGBClientRequest.GET: IGBClientRequest;
+function TGBClientRestClientRequest.GetJSONObject: TJSONObject;
 begin
-  result          := Self;
-  FRestRequest.Method := rmGET;
+  result := TJSONObject(FRestResponse.JSONValue);
 end;
 
-function TGBClientRequest.Header: IGBClientParamHeader;
-begin
-  if not Assigned(FHeaders) then
-    FHeaders := TGBClientRestClientRequestHeader.New(Self, FRestRequest);
-  result := FHeaders;
-end;
-
-class function TGBClientRequest.New: IGBClientRequest;
-begin
-  Result := Self.create;
-end;
-
-function TGBClientRequest.OnException(Value: TGBOnException): IGBClientRequest;
-begin
-  Result := Self;
-  FOnException := Value;
-end;
-
-function TGBClientRequest.OnPreExecute(Value: TOnPreExecute): IGBClientRequest;
-begin
-  result := Self;
-  FOnPreExecute := Value;
-end;
-
-function TGBClientRequest.ParamPath: IGBClientParamPath;
-begin
-  if not Assigned(FParamPath) then
-    FParamPath := TGBClientRestClientRequestParamPath.New(Self, FRestRequest);
-  result := FParamPath;
-end;
-
-function TGBClientRequest.PATCH: IGBClientRequest;
-begin
-  result          := Self;
-  FRestRequest.Method := rmPATCH;
-end;
-
-function TGBClientRequest.POST: IGBClientRequest;
-begin
-  result          := Self;
-  FRestRequest.Method := rmPOST;
-end;
-
-procedure TGBClientRequest.PrepareRequest;
+function TGBClientRestClientRequest.GetList(Value: TList<TObject>; AType: TClass): IGBClientResponse;
 var
+  parse : TGBOnParseJSONToObject;
+  jsonArray : TJSONArray;
+  LObject : TObject;
   i : Integer;
 begin
+  result := Self;
+  jsonArray := GetJSONArray;
+
+  for i := 0 to Pred(jsonArray.Count) do
+  begin
+    parse := Settings.OnParseJSONToObject;
+    if Assigned(parse) then
+    begin
+      LObject := AType.Create;
+      try
+        parse(TJSONObject( jsonArray.Items[i] ), LObject);
+        Value.Add(LObject);
+      except
+        LObject.Free;
+        raise;
+      end;
+    end;
+  end;
+end;
+
+function TGBClientRestClientRequest.GetObject(Value: TObject): IGBClientResponse;
+var
+  parse: TGBOnParseJSONToObject;
+begin
+  Result := Self;
+  parse := Settings.OnParseJSONToObject;
+  if Assigned( Settings.OnParseJSONToObject ) then
+    parse(GetJSONObject, Value);
+end;
+
+function TGBClientRestClientRequest.GetStream: TBytesStream;
+begin
+  FreeAndNil(FByteStream);
+  FByteStream := TBytesStream.Create(GetBytes);
+  result := FByteStream;
+end;
+
+function TGBClientRestClientRequest.GetText: string;
+begin
+  result := FRestResponse.Content;
+end;
+
+function TGBClientRestClientRequest.HeaderAsDateTime(Name: String): TDateTime;
+begin
+  result.fromIso8601ToDateTime( HeaderAsString(Name));
+end;
+
+function TGBClientRestClientRequest.HeaderAsFloat(Name: String): Double;
+begin
+  result := HeaderAsString(Name).ToDouble;
+end;
+
+function TGBClientRestClientRequest.HeaderAsInteger(Name: String): Integer;
+begin
+  result := HeaderAsString(Name).ToInteger;
+end;
+
+function TGBClientRestClientRequest.HeaderAsString(Name: String): string;
+begin
+  result := FRestResponse.Headers.Values[Name];
+end;
+
+class function TGBClientRestClientRequest.New: IGBClientRequest;
+begin
+  result := Self.create;
+end;
+
+procedure TGBClientRestClientRequest.PrepareRequest;
+var
+  i: Integer;
+begin
+  FRestClient.BaseURL := FBaseUrl;
+  FRestRequest.Resource := FResource;
+
+  case FMethod of
+    gmtGET: FRestRequest.Method := rmGET;
+    gmtPOST: FRestRequest.Method := rmPOST;
+    gmtPUT: FRestRequest.Method := rmPUT;
+    gmtDELETE: FRestRequest.Method := rmDELETE;
+    gmtPATCH: FRestRequest.Method := rmPATCH;
+  end;
+
+  PrepareRequestHeaders;
+  PrepareRequestQueries;
+  PrepareRequestPathParams;
+  PrepareRequestAuth;
+
   if Assigned(FOnPreExecute) then
   begin
     for i := 0 to Pred(FRestRequest.Params.Count) do
@@ -246,71 +243,93 @@ begin
   end;
 end;
 
-function TGBClientRequest.PUT: IGBClientRequest;
+procedure TGBClientRestClientRequest.PrepareRequestAuth;
 begin
-  result          := Self;
-  FRestRequest.Method := rmPUT;
+  if Assigned(FAuthorization) then
+    TGBClientRestClientAuth(FAuthorization).ApplyAuth;
 end;
 
-function TGBClientRequest.Query: IGBClientParamQuery;
-begin
-  if not Assigned(FQueries) then
-    FQueries := TGBClientRequestQuery.New(Self, FRestRequest);
-  result := FQueries;
-end;
-
-function TGBClientRequest.Response: IGBClientResponse;
-begin
-  if not Assigned(FResponse) then
-    FResponse := TGBClientRestClientResponse.New(Self, FRestResponse);
-
-  result := FResponse;
-end;
-
-function TGBClientRequest.Send: IGBClientResponse;
+procedure TGBClientRestClientRequest.PrepareRequestHeaders;
 var
-  LException : EGBRestException;
+  i: Integer;
+  parameter: TRESTRequestParameter;
 begin
-  PrepareRequest;
-
-  try
-    FRestRequest.Execute;
-    FRestRequest.Body.ClearBody;
-    FRestRequest.Params.Clear;
-  except
-    on e: Exception do
-    begin
-      if e.Message.Contains('(12002)') then
-        raise EGBRestExceptionTimeout.CreateFmt(e.Message, []);
-      raise;
-    end;
-  end;
-
-  if FRestResponse.StatusCode >= 400 then
+  for i := 0 to Pred(FHeaders.Count) do
   begin
-    LException := EGBRestRequestException.create(FRestRequest);
-    if Assigned(FOnException) then
-      FOnException(LException);
-    raise LException;
+    parameter := FRestRequest.Params.AddHeader(FHeaders[i].Key, FHeaders[i].Value);
+    if not FHeaders[i].Encoding then
+      parameter.Options := [poDoNotEncode];
   end;
-
-  if not Assigned(FResponse) then
-    FResponse := TGBClientRestClientResponse.New(Self, FRestResponse);
-
-  result := FResponse;
 end;
 
-function TGBClientRequest.Settings: IGBClientSettings;
+procedure TGBClientRestClientRequest.PrepareRequestPathParams;
+var
+  i: Integer;
 begin
-  if not Assigned(FSettings) then
-    FSettings := TGBClientSettingsDefault.New(Self);
-  result := FSettings;
+  for i := 0 to Pred(FPaths.Count) do
+    FRestRequest.Params.AddUrlSegment(FPaths[i].Key, FPaths[i].Value);
 end;
 
-function TGBClientRequest.TimeOut(Value: Integer): IGBClientRequest;
+procedure TGBClientRestClientRequest.PrepareRequestQueries;
+var
+  i: Integer;
+  options: TRESTRequestParameterOptions;
+begin
+  for i := 0 to Pred(FQueries.Count) do
+  begin
+    options := [];
+    if not FQueries[i].Encoding then
+      options := [poDoNotEncode];
+
+    FRestRequest.AddParameter(FQueries[i].Key, FQueries[i].Value, pkGETorPOST, options);
+  end;
+end;
+
+function TGBClientRestClientRequest.Response: IGBClientResponse;
 begin
   result := Self;
-  FRestRequest.Timeout := Value;
+end;
+
+function TGBClientRestClientRequest.Send: IGBClientResponse;
+var
+  LException: EGBRestException;
+begin
+  createComponents;
+  PrepareRequest;
+  try
+    try
+      FRestRequest.Execute;
+    except
+      on e: Exception do
+      begin
+        if e.Message.Contains('(12002)') then
+          raise EGBRestExceptionTimeout.CreateFmt(e.Message, []);
+        raise;
+      end;
+    end;
+
+    if FRestResponse.StatusCode >= 400 then
+    begin
+      LException := EGBRestRequestException.create(FRestRequest);
+      if Assigned(FOnException) then
+        FOnException(LException);
+      raise LException;
+    end;
+  finally
+    FRestRequest.Body.ClearBody;
+    FRestRequest.Params.Clear;
+    Clear;
+  end;
+end;
+
+function TGBClientRestClientRequest.StatusCode: Integer;
+begin
+  result := FRestResponse.StatusCode;
+end;
+
+function TGBClientRestClientRequest.StatusText: string;
+begin
+  result := FRestResponse.StatusText;
 end;
 
 end.

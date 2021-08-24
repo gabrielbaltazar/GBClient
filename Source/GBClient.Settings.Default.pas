@@ -87,11 +87,11 @@ constructor TGBClientSettingsDefault.create(Parent: IGBClientRequest);
 begin
   FParent := Parent;
 
-  FOnParseJSONToObject        := ParseJSONToObject;
-  FOnParseObjectToJSON        := ParseObjectToJSON;
-  FOnParseJSONToDataSet       := ParseJSONToDataSet;
+  FOnParseJSONToObject := ParseJSONToObject;
+  FOnParseObjectToJSON := ParseObjectToJSON;
+  FOnParseJSONToDataSet := ParseJSONToDataSet;
   FOnParseDataSetToJSONObject := ParseDataSetToJSONObject;
-  FOnParseDataSetToJSONArray  := ParseDataSetToJSONArray;
+  FOnParseDataSetToJSONArray := ParseDataSetToJSONArray;
 end;
 
 destructor TGBClientSettingsDefault.Destroy;
