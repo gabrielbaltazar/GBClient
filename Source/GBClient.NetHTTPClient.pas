@@ -33,8 +33,9 @@ type TGBClientNetHTTPClient = class(TGBClientCoreRequest, IGBClientRequest,
     FByteStream : TBytesStream;
     FJSONArray: TJSONArray;
     FJSONObject: TJSONObject;
-
     FContentType: string;
+
+    procedure OnAWSAuthorization(Auth, AmzDate: string);
 
     procedure createComponents;
 
@@ -44,8 +45,6 @@ type TGBClientNetHTTPClient = class(TGBClientCoreRequest, IGBClientRequest,
     procedure PrepareRequestPathParams;
     procedure PrepareRequestBody;
     procedure PrepareRequestAuth;
-
-    function GetFullUrl: string;
 
   protected
     function Component: TComponent; override;
@@ -149,21 +148,6 @@ begin
   end;
 end;
 
-function TGBClientNetHTTPClient.GetFullUrl: string;
-var
-  resource: string;
-begin
-  result := FBaseUrl;
-  if not FBaseUrl.EndsWith('/') then
-    Result := result + '/';
-
-  resource := FResource;
-  if resource.StartsWith('/') then
-    resource := Copy(resource, 2, resource.Length - 1);
-
-  result := result + resource;
-end;
-
 function TGBClientNetHTTPClient.GetJSONArray: TJSONArray;
 begin
   FreeAndNil(FJSONArray);
@@ -253,6 +237,12 @@ begin
   result := Self.create;
 end;
 
+procedure TGBClientNetHTTPClient.OnAWSAuthorization(Auth, AmzDate: string);
+begin
+  FRequest.CustomHeaders['x-amz-date'] := AmzDate;
+  FRequest.CustomHeaders['Authorization'] := Auth;
+end;
+
 procedure TGBClientNetHTTPClient.PrepareRequest;
 begin
   FResponse := nil;
@@ -270,7 +260,18 @@ end;
 procedure TGBClientNetHTTPClient.PrepareRequestAuth;
 begin
   if Assigned(FAuthorization) then
+  begin
+    if FAuthorization.AuthType = atAWSv4 then
+    begin
+      FAuthorization.AWSv4.OnAWSSignature(Self.OnAWSAuthorization);
+      FAuthorization.AWSv4
+        .Host(GetFullUrl)
+        .HTTPVerb(FMethod.value)
+        .Payload(FBody);
+    end;
+
     TGBClientNetHTTPClientAuth(FAuthorization).ApplyAuth;
+  end;
 end;
 
 procedure TGBClientNetHTTPClient.PrepareRequestBody;

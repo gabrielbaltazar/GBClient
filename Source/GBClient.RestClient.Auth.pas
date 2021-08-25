@@ -33,11 +33,12 @@ implementation
 
 procedure TGBClientRestClientAuth.ApplyAuth;
 begin
-  if not FUsername.Trim.IsEmpty then
-    ApplyBasicAuth
-  else
-  if not FToken.Trim.IsEmpty then
-    ApplyBearerAuth;
+  case FAuthType of
+    atNone:;
+    atBasic: ApplyBasicAuth;
+    atBearer: ApplyBearerAuth;
+    atAWSv4: ApplyAWSv4;
+  end;
 end;
 
 procedure TGBClientRestClientAuth.ApplyBasicAuth;

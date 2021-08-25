@@ -108,6 +108,24 @@
             <Form>Form1</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="..\..\Source\GBClient.Interfaces.pas"/>
+        <DCCReference Include="..\..\Source\GBClient.Core.Exceptions.pas"/>
+        <DCCReference Include="..\..\Source\GBClient.Core.Helpers.pas"/>
+        <DCCReference Include="..\..\Source\GBClient.Core.Request.Auth.pas"/>
+        <DCCReference Include="..\..\Source\GBClient.Core.Request.Param.pas"/>
+        <DCCReference Include="..\..\Source\GBClient.Core.Request.pas"/>
+        <DCCReference Include="..\..\Source\GBClient.Core.Settings.pas"/>
+        <DCCReference Include="..\..\Source\GBClient.Core.Types.pas"/>
+        <DCCReference Include="..\..\Source\GBClient.IdHTTP.Auth.pas"/>
+        <DCCReference Include="..\..\Source\GBClient.IdHTTP.Exceptions.pas"/>
+        <DCCReference Include="..\..\Source\GBClient.IdHTTP.pas"/>
+        <DCCReference Include="..\..\Source\GBClient.NetHTTPClient.Auth.pas"/>
+        <DCCReference Include="..\..\Source\GBClient.NetHTTPClient.Exceptions.pas"/>
+        <DCCReference Include="..\..\Source\GBClient.NetHTTPClient.pas"/>
+        <DCCReference Include="..\..\Source\GBClient.RestClient.Auth.pas"/>
+        <DCCReference Include="..\..\Source\GBClient.RestClient.Exceptions.pas"/>
+        <DCCReference Include="..\..\Source\GBClient.RestClient.pas"/>
+        <DCCReference Include="..\..\Source\GBClient.Core.Request.Auth.AWS.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

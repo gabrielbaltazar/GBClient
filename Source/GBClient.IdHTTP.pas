@@ -43,6 +43,8 @@ type TGBClientIdHTTP = class(TGBClientCoreRequest, IGBClientRequest,
     FJSONObject: TJSONObject;
     FBytes: TBytesStream;
 
+    procedure OnAWSAuthorization(Auth, AmzDate: string);
+
     procedure createComponents;
 
     procedure PrepareRequest;
@@ -278,6 +280,12 @@ begin
   result := Self.create;
 end;
 
+procedure TGBClientIdHTTP.OnAWSAuthorization(Auth, AmzDate: string);
+begin
+  FIdHTTP.Request.CustomHeaders.Values['x-amz-date'] := AmzDate;
+  FIdHTTP.Request.CustomHeaders.Values['Authorization'] := Auth;
+end;
+
 procedure TGBClientIdHTTP.PrepareRequest;
 begin
   createComponents;
@@ -293,7 +301,18 @@ end;
 procedure TGBClientIdHTTP.PrepareRequestAuth;
 begin
   if Assigned(FAuthorization) then
+  begin
+    if FAuthorization.AuthType = atAWSv4 then
+    begin
+      FAuthorization.AWSv4.OnAWSSignature(Self.OnAWSAuthorization);
+      FAuthorization.AWSv4
+        .Host(GetFullUrl)
+        .HTTPVerb(FMethod.value)
+        .Payload(FBody);
+    end;
+
     TGBClientIdHTTPAuth(FAuthorization).ApplyAuth;
+  end;
 end;
 
 procedure TGBClientIdHTTP.PrepareRequestBody;

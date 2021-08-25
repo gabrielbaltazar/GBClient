@@ -33,6 +33,8 @@ type TGBClientCoreRequest = class abstract (TInterfacedObject, IGBClientRequest,
     FOnException: TGBOnException;
     FOnPreExecute: TOnPreExecute;
 
+    function GetFullUrl: String;
+
     procedure Clear;
     function Component: TComponent; virtual; abstract;
     function Authorization: IGBClientAuth; virtual; abstract;
@@ -304,6 +306,21 @@ function TGBClientCoreRequest.GET: IGBClientRequest;
 begin
   result := Self;
   FMethod := gmtGET;
+end;
+
+function TGBClientCoreRequest.GetFullUrl: String;
+var
+  resource: string;
+begin
+  result := FBaseUrl;
+  if not FBaseUrl.EndsWith('/') then
+    Result := result + '/';
+
+  resource := FResource;
+  if resource.StartsWith('/') then
+    resource := Copy(resource, 2, resource.Length - 1);
+
+  result := result + resource;
 end;
 
 function TGBClientCoreRequest.HeaderAddOrSet(Key: string; Value: TDateTime; bEncode: Boolean): IGBClientRequestParams;

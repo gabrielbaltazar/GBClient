@@ -32,6 +32,8 @@ type TGBClientRestClient = class(TGBClientCoreRequest, IGBClientRequest,
     FAuthorization: IGBClientAuth;
     FContentType: TRESTContentType;
 
+    procedure OnAWSAuthorization(Auth, AmzDate: string);
+
     procedure createComponents;
 
     procedure PrepareRequest;
@@ -233,6 +235,12 @@ begin
   result := Self.create;
 end;
 
+procedure TGBClientRestClient.OnAWSAuthorization(Auth, AmzDate: string);
+begin
+  FRestRequest.Params.AddItem('x-amz-date', AmzDate, pkHTTPHEADER, [poDoNotEncode]);
+  FRestRequest.Params.AddItem('Authorization', Auth, pkHTTPHEADER, [poDoNotEncode]);
+end;
+
 procedure TGBClientRestClient.PrepareRequest;
 var
   i: Integer;
@@ -271,7 +279,18 @@ end;
 procedure TGBClientRestClient.PrepareRequestAuth;
 begin
   if Assigned(FAuthorization) then
+  begin
+    if FAuthorization.AuthType = atAWSv4 then
+    begin
+      FAuthorization.AWSv4.OnAWSSignature(Self.OnAWSAuthorization);
+      FAuthorization.AWSv4
+        .Host(GetFullUrl)
+        .HTTPVerb(FMethod.value)
+        .Payload(FBody);
+    end;
+
     TGBClientRestClientAuth(FAuthorization).ApplyAuth;
+  end;
 end;
 
 procedure TGBClientRestClient.PrepareRequestBody;

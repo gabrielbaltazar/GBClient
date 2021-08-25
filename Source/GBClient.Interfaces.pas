@@ -25,11 +25,16 @@ type
 
   TGBOnException = procedure (TheException: EGBRestException);
 
-  IGBClientResponse      = interface;
-  IGBClientAuth          = interface;
-  IGBClientAuthBasic     = interface;
-  IGBClientAuthBearer    = interface;
-  IGBClientSettings      = interface;
+  TGBOnAWSSignature = reference to procedure(Authorization, AmzDate: String);
+
+  TGBAuthType = (atNone, atBasic, atBearer, atAWSv4);
+
+  IGBClientResponse = interface;
+  IGBClientAuth  = interface;
+  IGBClientAuthBasic = interface;
+  IGBClientAuthBearer = interface;
+  IGBClientAuthAWSv4 = interface;
+  IGBClientSettings = interface;
   IGBClientRequestParams = interface;
 
   TOnPreExecute = reference to procedure(Value: String);
@@ -146,6 +151,9 @@ type
     ['{AFAC2F54-25F7-4345-A2C7-4481B79DFE12}']
     function Basic: IGBClientAuthBasic;
     function Bearer: IGBClientAuthBearer;
+    function AWSv4: IGBClientAuthAWSv4;
+
+    function AuthType: TGBAuthType;
 
     function &End: IGBClientRequest;
   end;
@@ -161,6 +169,27 @@ type
   IGBClientAuthBearer = interface
     ['{8384F5C6-77D6-4285-B274-1A415356D311}']
     function Token(Value: String): IGBClientAuthBearer;
+
+    function &End: IGBClientRequest;
+  end;
+
+  IGBClientAuthAWSv4 = interface
+    ['{F67B251F-C5D7-40E0-BA33-60DD02218C13}']
+    function AccessKey(Value: String): IGBClientAuthAWSv4;
+    function SecretKey(Value: String): IGBClientAuthAWSv4;
+    function Region(Value: String): IGBClientAuthAWSv4;
+    function Service(Value: String): IGBClientAuthAWSv4;
+
+    function HTTPVerb(Value: String): IGBClientAuthAWSv4;
+    function Host(Value: String): IGBClientAuthAWSv4;
+
+    function HeaderAddOrSet(Key, Value: String): IGBClientAuthAWSv4;
+    function QueryAddOrSet(Key, Value: String): IGBClientAuthAWSv4;
+
+    function Payload(Value: String): IGBClientAuthAWSv4; overload;
+    function Payload(Value: TStream): IGBClientAuthAWSv4; overload;
+
+    function OnAWSSignature(Value: TGBOnAWSSignature): IGBClientAuthAWSv4;
 
     function &End: IGBClientRequest;
   end;
