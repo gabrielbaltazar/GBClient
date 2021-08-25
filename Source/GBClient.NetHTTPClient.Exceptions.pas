@@ -3,7 +3,7 @@ unit GBClient.NetHTTPClient.Exceptions;
 interface
 
 uses
-  GBClient.Exceptions,
+  GBClient.Core.Exceptions,
   System.SysUtils,
   System.Net.HttpClient;
 
@@ -27,7 +27,9 @@ implementation
 constructor EGBNetHTTPClientException.create(Response: IHTTPResponse);
 begin
   FResponse := Response;
-  Self.Message := Response.StatusCode.ToString + ': ' + FResponse.StatusText;
+  Self.Message := Format('%s %s: %s', [Response.StatusCode.ToString,
+                                       Response.StatusText,
+                                       Response.ContentAsString]);
 end;
 
 function EGBNetHTTPClientException.GetContent: string;

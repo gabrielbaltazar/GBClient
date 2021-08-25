@@ -11,6 +11,7 @@ object Form1: TForm1
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object pnlTop: TPanel
@@ -55,6 +56,5 @@ object Form1: TForm1
     Lines.Strings = (
       '')
     TabOrder = 1
-    ExplicitHeight = 226
   end
 end

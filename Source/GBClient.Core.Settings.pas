@@ -1,15 +1,15 @@
-unit GBClient.Settings.Default;
+unit GBClient.Core.Settings;
 
 interface
 
 uses
   Data.DB,
   GBClient.Interfaces,
-  GBClient.Helpers,
+  GBClient.Core.Helpers,
   REST.Json,
   System.JSON;
 
-type TGBClientSettingsDefault = class(TInterfacedObject, IGBClientSettings)
+type TGBClientCoreSettings = class(TInterfacedObject, IGBClientSettings)
 
   private
     [Weak]
@@ -83,87 +83,87 @@ end;
 
 { TGBClientSettingsDefault }
 
-constructor TGBClientSettingsDefault.create(Parent: IGBClientRequest);
+constructor TGBClientCoreSettings.create(Parent: IGBClientRequest);
 begin
   FParent := Parent;
 
-  FOnParseJSONToObject        := ParseJSONToObject;
-  FOnParseObjectToJSON        := ParseObjectToJSON;
-  FOnParseJSONToDataSet       := ParseJSONToDataSet;
+  FOnParseJSONToObject := ParseJSONToObject;
+  FOnParseObjectToJSON := ParseObjectToJSON;
+  FOnParseJSONToDataSet := ParseJSONToDataSet;
   FOnParseDataSetToJSONObject := ParseDataSetToJSONObject;
-  FOnParseDataSetToJSONArray  := ParseDataSetToJSONArray;
+  FOnParseDataSetToJSONArray := ParseDataSetToJSONArray;
 end;
 
-destructor TGBClientSettingsDefault.Destroy;
+destructor TGBClientCoreSettings.Destroy;
 begin
 
   inherited;
 end;
 
-function TGBClientSettingsDefault.&End: IGBClientRequest;
+function TGBClientCoreSettings.&End: IGBClientRequest;
 begin
   result := FParent;
 end;
 
-class function TGBClientSettingsDefault.New(Parent: IGBClientRequest): IGBClientSettings;
+class function TGBClientCoreSettings.New(Parent: IGBClientRequest): IGBClientSettings;
 begin
   result := Self.create(Parent);
 end;
 
-function TGBClientSettingsDefault.OnParseDataSetToJSONArray: TGBOnParseDataSetToJSONArray;
+function TGBClientCoreSettings.OnParseDataSetToJSONArray: TGBOnParseDataSetToJSONArray;
 begin
   result := FOnParseDataSetToJSONArray;
 end;
 
-function TGBClientSettingsDefault.OnParseDataSetToJSONArray(Value: TGBOnParseDataSetToJSONArray): IGBClientSettings;
+function TGBClientCoreSettings.OnParseDataSetToJSONArray(Value: TGBOnParseDataSetToJSONArray): IGBClientSettings;
 begin
   result := Self;
   if Assigned(Value) then
     FOnParseDataSetToJSONArray := Value;
 end;
 
-function TGBClientSettingsDefault.OnParseDataSetToJSONObject(Value: TGBOnParseDataSetToJSONObject): IGBClientSettings;
+function TGBClientCoreSettings.OnParseDataSetToJSONObject(Value: TGBOnParseDataSetToJSONObject): IGBClientSettings;
 begin
   result := Self;
   if Assigned(Value) then
     FOnParseDataSetToJSONObject := Value;
 end;
 
-function TGBClientSettingsDefault.OnParseDataSetToJSONObject: TGBOnParseDataSetToJSONObject;
+function TGBClientCoreSettings.OnParseDataSetToJSONObject: TGBOnParseDataSetToJSONObject;
 begin
   result := FOnParseDataSetToJSONObject;
 end;
 
-function TGBClientSettingsDefault.OnParseJSONToDataSet(Value: TGBOnParseJSONToDataSet): IGBClientSettings;
+function TGBClientCoreSettings.OnParseJSONToDataSet(Value: TGBOnParseJSONToDataSet): IGBClientSettings;
 begin
   result := Self;
   if Assigned(Value) then
     FOnParseJSONToDataSet := Value;
 end;
 
-function TGBClientSettingsDefault.OnParseJSONToDataSet: TGBOnParseJSONToDataSet;
+function TGBClientCoreSettings.OnParseJSONToDataSet: TGBOnParseJSONToDataSet;
 begin
   result := FOnParseJSONToDataSet;
 end;
 
-function TGBClientSettingsDefault.OnParseJSONToObject: TGBOnParseJSONToObject;
+function TGBClientCoreSettings.OnParseJSONToObject: TGBOnParseJSONToObject;
 begin
   result := FOnParseJSONToObject;
 end;
 
-function TGBClientSettingsDefault.OnParseObjectToJSON: TGBOnParseObjectToJSON;
+function TGBClientCoreSettings.OnParseObjectToJSON: TGBOnParseObjectToJSON;
 begin
   result := FOnParseObjectToJSON;
 end;
 
-function TGBClientSettingsDefault.OnParseObjectToJSON(Value: TGBOnParseObjectToJSON): IGBClientSettings;
+function TGBClientCoreSettings.OnParseObjectToJSON(Value: TGBOnParseObjectToJSON): IGBClientSettings;
 begin
   result := Self;
   if Assigned(Value) then
     FOnParseObjectToJSON := Value;
 end;
 
-function TGBClientSettingsDefault.OnParseJSONToObject(Value: TGBOnParseJSONToObject): IGBClientSettings;
+function TGBClientCoreSettings.OnParseJSONToObject(Value: TGBOnParseJSONToObject): IGBClientSettings;
 begin
   result := Self;
   if Assigned(Value) then

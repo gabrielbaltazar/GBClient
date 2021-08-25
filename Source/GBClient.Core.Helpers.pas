@@ -1,4 +1,4 @@
-unit GBClient.Helpers;
+unit GBClient.Core.Helpers;
 
 interface
 
