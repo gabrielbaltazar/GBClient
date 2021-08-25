@@ -5,9 +5,9 @@ interface
 uses
   Data.DB,
   GBClient.Interfaces,
-  GBClient.Request.Base,
-  GBClient.Helpers,
-  GBClient.Types,
+  GBClient.Core.Request,
+  GBClient.Core.Helpers,
+  GBClient.Core.Types,
   GBClient.IdHTTP.Auth,
   GBClient.IdHTTP.Exceptions,
   IdBaseComponent,
@@ -28,7 +28,7 @@ uses
   System.Generics.Collections,
   System.TypInfo;
 
-type TGBClientIdHTTP = class(TGBClientRequestBase, IGBClientRequest,
+type TGBClientIdHTTP = class(TGBClientCoreRequest, IGBClientRequest,
                                                    IGBClientRequestParams,
                                                    IGBClientResponse)
   private

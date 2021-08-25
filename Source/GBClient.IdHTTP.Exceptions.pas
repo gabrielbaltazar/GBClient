@@ -3,7 +3,7 @@ unit GBClient.IdHTTP.Exceptions;
 interface
 
 uses
-  GBClient.Exceptions,
+  GBClient.Core.Exceptions,
   System.SysUtils,
   System.Classes,
   IdHTTP;

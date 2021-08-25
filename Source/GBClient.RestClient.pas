@@ -1,12 +1,12 @@
-unit GBClient.RestClient.Request;
+unit GBClient.RestClient;
 
 interface
 
 uses
   GBClient.Interfaces,
-  GBClient.Request.Base,
-  GBClient.Helpers,
-  GBClient.Types,
+  GBClient.Core.Request,
+  GBClient.Core.Helpers,
+  GBClient.Core.Types,
   GBClient.RestClient.Auth,
   GBClient.RestClient.Exceptions,
   Data.DB,
@@ -21,9 +21,9 @@ uses
   System.Generics.Collections,
   System.TypInfo;
 
-type TGBClientRestClientRequest = class(TGBClientRequestBase, IGBClientRequest,
-                                                              IGBClientRequestParams,
-                                                              IGBClientResponse)
+type TGBClientRestClient = class(TGBClientCoreRequest, IGBClientRequest,
+                                                       IGBClientRequestParams,
+                                                       IGBClientResponse)
   private
     FRestClient: TRESTClient;
     FRestRequest: TRESTRequest;
@@ -78,19 +78,19 @@ implementation
 
 { TGBClientRestClientRequest }
 
-function TGBClientRestClientRequest.Authorization: IGBClientAuth;
+function TGBClientRestClient.Authorization: IGBClientAuth;
 begin
   if not Assigned(FAuthorization) then
     FAuthorization := TGBClientRestClientAuth.New(Self);
   result := FAuthorization;
 end;
 
-function TGBClientRestClientRequest.Component: TComponent;
+function TGBClientRestClient.Component: TComponent;
 begin
   result := FRestRequest;
 end;
 
-function TGBClientRestClientRequest.ContentType(Value: TGBContentType): IGBClientRequest;
+function TGBClientRestClient.ContentType(Value: TGBContentType): IGBClientRequest;
 begin
   result := Self;
   inherited ContentType(Value);
@@ -102,13 +102,13 @@ begin
 
 end;
 
-constructor TGBClientRestClientRequest.create;
+constructor TGBClientRestClient.create;
 begin
   inherited;
   FContentType := ctAPPLICATION_JSON;
 end;
 
-procedure TGBClientRestClientRequest.createComponents;
+procedure TGBClientRestClient.createComponents;
 begin
   FreeAndNil(FRestResponse);
   FreeAndNil(FRestRequest);
@@ -126,7 +126,7 @@ begin
   FRestRequest.Response := FRestResponse;
 end;
 
-function TGBClientRestClientRequest.DataSet(Value: TDataSet): IGBClientResponse;
+function TGBClientRestClient.DataSet(Value: TDataSet): IGBClientResponse;
 var
   parse: TGBOnParseJSONToDataSet;
 begin
@@ -135,7 +135,7 @@ begin
   parse(GetJSONObject, Value);
 end;
 
-destructor TGBClientRestClientRequest.Destroy;
+destructor TGBClientRestClient.Destroy;
 begin
   FreeAndNil(FRestResponse);
   FreeAndNil(FRestRequest);
@@ -144,22 +144,22 @@ begin
   inherited;
 end;
 
-function TGBClientRestClientRequest.GetBytes: TBytes;
+function TGBClientRestClient.GetBytes: TBytes;
 begin
   result := FRestResponse.RawBytes;
 end;
 
-function TGBClientRestClientRequest.GetJSONArray: TJSONArray;
+function TGBClientRestClient.GetJSONArray: TJSONArray;
 begin
   result := TJSONArray(FRestResponse.JSONValue);
 end;
 
-function TGBClientRestClientRequest.GetJSONObject: TJSONObject;
+function TGBClientRestClient.GetJSONObject: TJSONObject;
 begin
   result := TJSONObject(FRestResponse.JSONValue);
 end;
 
-function TGBClientRestClientRequest.GetList(Value: TList<TObject>; AType: TClass): IGBClientResponse;
+function TGBClientRestClient.GetList(Value: TList<TObject>; AType: TClass): IGBClientResponse;
 var
   parse : TGBOnParseJSONToObject;
   jsonArray : TJSONArray;
@@ -186,7 +186,7 @@ begin
   end;
 end;
 
-function TGBClientRestClientRequest.GetObject(Value: TObject): IGBClientResponse;
+function TGBClientRestClient.GetObject(Value: TObject): IGBClientResponse;
 var
   parse: TGBOnParseJSONToObject;
 begin
@@ -196,44 +196,44 @@ begin
     parse(GetJSONObject, Value);
 end;
 
-function TGBClientRestClientRequest.GetStream: TBytesStream;
+function TGBClientRestClient.GetStream: TBytesStream;
 begin
   FreeAndNil(FByteStream);
   FByteStream := TBytesStream.Create(GetBytes);
   result := FByteStream;
 end;
 
-function TGBClientRestClientRequest.GetText: string;
+function TGBClientRestClient.GetText: string;
 begin
   result := FRestResponse.Content;
 end;
 
-function TGBClientRestClientRequest.HeaderAsDateTime(Name: String): TDateTime;
+function TGBClientRestClient.HeaderAsDateTime(Name: String): TDateTime;
 begin
   result.fromIso8601ToDateTime( HeaderAsString(Name));
 end;
 
-function TGBClientRestClientRequest.HeaderAsFloat(Name: String): Double;
+function TGBClientRestClient.HeaderAsFloat(Name: String): Double;
 begin
   result := HeaderAsString(Name).ToDouble;
 end;
 
-function TGBClientRestClientRequest.HeaderAsInteger(Name: String): Integer;
+function TGBClientRestClient.HeaderAsInteger(Name: String): Integer;
 begin
   result := HeaderAsString(Name).ToInteger;
 end;
 
-function TGBClientRestClientRequest.HeaderAsString(Name: String): string;
+function TGBClientRestClient.HeaderAsString(Name: String): string;
 begin
   result := FRestResponse.Headers.Values[Name];
 end;
 
-class function TGBClientRestClientRequest.New: IGBClientRequest;
+class function TGBClientRestClient.New: IGBClientRequest;
 begin
   result := Self.create;
 end;
 
-procedure TGBClientRestClientRequest.PrepareRequest;
+procedure TGBClientRestClient.PrepareRequest;
 var
   i: Integer;
 begin
@@ -268,13 +268,13 @@ begin
   end;
 end;
 
-procedure TGBClientRestClientRequest.PrepareRequestAuth;
+procedure TGBClientRestClient.PrepareRequestAuth;
 begin
   if Assigned(FAuthorization) then
     TGBClientRestClientAuth(FAuthorization).ApplyAuth;
 end;
 
-procedure TGBClientRestClientRequest.PrepareRequestBody;
+procedure TGBClientRestClient.PrepareRequestBody;
 var
   i: Integer;
   name: String;
@@ -293,7 +293,7 @@ begin
   end;
 end;
 
-procedure TGBClientRestClientRequest.PrepareRequestHeaders;
+procedure TGBClientRestClient.PrepareRequestHeaders;
 var
   i: Integer;
   parameter: TRESTRequestParameter;
@@ -310,7 +310,7 @@ begin
   end;
 end;
 
-procedure TGBClientRestClientRequest.PrepareRequestPathParams;
+procedure TGBClientRestClient.PrepareRequestPathParams;
 var
   i: Integer;
 begin
@@ -318,7 +318,7 @@ begin
     FRestRequest.Params.AddUrlSegment(FPaths[i].Key, FPaths[i].Value);
 end;
 
-procedure TGBClientRestClientRequest.PrepareRequestQueries;
+procedure TGBClientRestClient.PrepareRequestQueries;
 var
   i: Integer;
   options: TRESTRequestParameterOptions;
@@ -337,15 +337,16 @@ begin
   end;
 end;
 
-function TGBClientRestClientRequest.Response: IGBClientResponse;
+function TGBClientRestClient.Response: IGBClientResponse;
 begin
   result := Self;
 end;
 
-function TGBClientRestClientRequest.Send: IGBClientResponse;
+function TGBClientRestClient.Send: IGBClientResponse;
 var
   LException: EGBRestException;
 begin
+  result := Self;
   createComponents;
   PrepareRequest;
   try
@@ -374,12 +375,12 @@ begin
   end;
 end;
 
-function TGBClientRestClientRequest.StatusCode: Integer;
+function TGBClientRestClient.StatusCode: Integer;
 begin
   result := FRestResponse.StatusCode;
 end;
 
-function TGBClientRestClientRequest.StatusText: string;
+function TGBClientRestClient.StatusText: string;
 begin
   result := FRestResponse.StatusText;
 end;

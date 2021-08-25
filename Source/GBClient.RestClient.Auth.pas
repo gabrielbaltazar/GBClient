@@ -4,14 +4,14 @@ interface
 
 uses
   GBClient.Interfaces,
-  GBClient.Request.Base.Auth,
+  GBClient.Core.Request.Auth,
   REST.Client,
   REST.Authenticator.Basic,
   REST.Authenticator.OAuth,
   System.Classes,
   System.SysUtils;
 
-type TGBClientRestClientAuth = class(TGBClientRequestBaseAuth, IGBClientAuth,
+type TGBClientRestClientAuth = class(TGBClientCoreRequestAuth, IGBClientAuth,
                                                                IGBClientAuthBasic,
                                                                IGBClientAuthBearer)
   private

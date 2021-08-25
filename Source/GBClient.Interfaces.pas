@@ -4,17 +4,17 @@ interface
 
 uses
   Data.DB,
-  GBClient.Types,
-  GBClient.Exceptions,
+  GBClient.Core.Types,
+  GBClient.Core.Exceptions,
   System.Classes,
   System.SysUtils,
   System.JSON,
   System.Generics.Collections;
 
 type
-  EGBRestExceptionTimeout = GBClient.Exceptions.EGBRestExceptionTimeout;
-  EGBRestException = GBClient.Exceptions.EGBRestException;
-  TGBContentType = GBClient.Types.TGBContentType;
+  EGBRestExceptionTimeout = GBClient.Core.Exceptions.EGBRestExceptionTimeout;
+  EGBRestException = GBClient.Core.Exceptions.EGBRestException;
+  TGBContentType = GBClient.Core.Types.TGBContentType;
 
   TGBOnParseJSONToObject = procedure (AJSON: TJSONObject; AObject: TObject);
   TGBOnParseObjectToJSON = function  (AObject: TObject): TJSONObject;
@@ -171,22 +171,22 @@ function NewClientRequest(BaseUrl: String): IGBClientRequest; overload;
 implementation
 
 uses
-  GBClient.RestClient.Request,
-  {$IFDEF NetHTTP} GBClient.NetHTTPClient.Request, {$ENDIF}
-  {$IFDEF IdHTTP} GBClient.IdHTTP.Request, {$ENDIF}
+  GBClient.RestClient,
+  {$IFDEF NetHTTP} GBClient.NetHTTPClient, {$ENDIF}
+  {$IFDEF IdHTTP} GBClient.IdHTTP, {$ENDIF}
   REST.Json;
 
 function NewClientRequest: IGBClientRequest;
 begin
   {$IFDEF NetHTTP}
-    Exit( TGBClientNetHttpClientRequest.New );
+    Exit( TGBClientNetHttpClient.New );
   {$ENDIF}
 
   {$IFDEF IdHTTP}
-    Exit( TGBClientIdHTTPRequest.New );
+    Exit( TGBClientIdHTTP.New );
   {$ENDIF}
 
-  result := TGBClientRestClientRequest.New;
+  result := TGBClientRestClient.New;
 end;
 
 function NewClientRequest(BaseUrl: String): IGBClientRequest;

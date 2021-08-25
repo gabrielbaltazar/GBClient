@@ -3,7 +3,7 @@ unit GBClient.NetHTTPClient.Exceptions;
 interface
 
 uses
-  GBClient.Exceptions,
+  GBClient.Core.Exceptions,
   System.SysUtils,
   System.Net.HttpClient;
 

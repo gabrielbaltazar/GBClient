@@ -5,12 +5,12 @@ interface
 uses
   Data.DB,
   GBClient.Interfaces,
-  GBClient.Request.Base,
-  GBClient.Types,
-  GBClient.Helpers,
+  GBClient.Core.Request,
+  GBClient.Core.Types,
+  GBClient.Core.Helpers,
+  GBClient.Core.Settings,
   GBClient.NetHTTPClient.Auth,
   GBClient.NetHTTPClient.Exceptions,
-  GBClient.Settings.Default,
   System.SysUtils,
   System.Classes,
   System.JSON,
@@ -21,7 +21,7 @@ uses
   System.Net.HttpClient,
   System.Net.HttpClientComponent;
 
-type TGBClientNetHTTPClient = class(TGBClientRequestBase, IGBClientRequest,
+type TGBClientNetHTTPClient = class(TGBClientCoreRequest, IGBClientRequest,
                                                           IGBClientRequestParams,
                                                           IGBClientResponse)
   private

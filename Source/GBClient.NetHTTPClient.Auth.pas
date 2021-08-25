@@ -4,12 +4,12 @@ interface
 
 uses
   GBClient.Interfaces,
-  GBClient.Request.Base.Auth,
+  GBClient.Core.Request.Auth,
   System.Net.HttpClientComponent,
   System.Net.URLClient,
   System.SysUtils;
 
-type TGBClientNetHTTPClientAuth = class(TGBClientRequestBaseAuth, IGBClientAuth,
+type TGBClientNetHTTPClientAuth = class(TGBClientCoreRequestAuth, IGBClientAuth,
                                                                   IGBClientAuthBasic,
                                                                   IGBClientAuthBearer)
   private

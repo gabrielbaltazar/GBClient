@@ -1,4 +1,4 @@
-unit GBClient.Request.Base.Auth;
+unit GBClient.Core.Request.Auth;
 
 interface
 
@@ -7,7 +7,7 @@ uses
   System.SysUtils,
   System.Classes;
 
-type TGBClientRequestBaseAuth = class(TInterfacedObject, IGBClientAuth,
+type TGBClientCoreRequestAuth = class(TInterfacedObject, IGBClientAuth,
                                                          IGBClientAuthBasic,
                                                          IGBClientAuthBearer)
   protected
@@ -34,46 +34,46 @@ end;
 
 implementation
 
-{ TGBClientRequestBaseAuth }
+{ TGBClientCoreRequestAuth }
 
-function TGBClientRequestBaseAuth.Basic: IGBClientAuthBasic;
+function TGBClientCoreRequestAuth.Basic: IGBClientAuthBasic;
 begin
   Result := Self;
 end;
 
-function TGBClientRequestBaseAuth.Bearer: IGBClientAuthBearer;
+function TGBClientCoreRequestAuth.Bearer: IGBClientAuthBearer;
 begin
   Result := Self;
 end;
 
-constructor TGBClientRequestBaseAuth.create(Parent: IGBClientRequest);
+constructor TGBClientCoreRequestAuth.create(Parent: IGBClientRequest);
 begin
   FParent := Parent;
 end;
 
-function TGBClientRequestBaseAuth.&End: IGBClientRequest;
+function TGBClientCoreRequestAuth.&End: IGBClientRequest;
 begin
   result := FParent;
 end;
 
-class function TGBClientRequestBaseAuth.New(Parent: IGBClientRequest): IGBClientAuth;
+class function TGBClientCoreRequestAuth.New(Parent: IGBClientRequest): IGBClientAuth;
 begin
   result := Self.create(Parent);
 end;
 
-function TGBClientRequestBaseAuth.Password(Value: String): IGBClientAuthBasic;
+function TGBClientCoreRequestAuth.Password(Value: String): IGBClientAuthBasic;
 begin
   result := Self;
   FPassword := Value;
 end;
 
-function TGBClientRequestBaseAuth.Token(Value: String): IGBClientAuthBearer;
+function TGBClientCoreRequestAuth.Token(Value: String): IGBClientAuthBearer;
 begin
   result := Self;
   FToken := Value;
 end;
 
-function TGBClientRequestBaseAuth.Username(Value: String): IGBClientAuthBasic;
+function TGBClientCoreRequestAuth.Username(Value: String): IGBClientAuthBasic;
 begin
   result := Self;
   FUsername := Value;

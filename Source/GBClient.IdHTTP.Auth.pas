@@ -4,11 +4,11 @@ interface
 
 uses
   GBClient.Interfaces,
-  GBClient.Request.Base.Auth,
+  GBClient.Core.Request.Auth,
   IdHTTP,
   System.SysUtils;
 
-type TGBClientIdHTTPAuth = class(TGBClientRequestBaseAuth, IGBClientAuth,
+type TGBClientIdHTTPAuth = class(TGBClientCoreRequestAuth, IGBClientAuth,
                                                            IGBClientAuthBasic,
                                                            IGBClientAuthBearer)
   private
