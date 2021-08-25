@@ -275,8 +275,22 @@ begin
 end;
 
 procedure TGBClientRestClientRequest.PrepareRequestBody;
+var
+  i: Integer;
+  name: String;
+  value: string;
 begin
-  FRestRequest.AddBody(FBody, FContentType);
+  if (FUrlEncodedParams.Count = 0) and (Assigned(FBody)) then
+    FRestRequest.AddBody(FBody, FContentType)
+  else
+  begin
+    for i := 0 to Pred(FUrlEncodedParams.Count) do
+    begin
+      name := FUrlEncodedParams[i].Key;
+      value := FUrlEncodedParams[i].Value;
+      FRestRequest.AddParameter(name, value, pkGETorPOST);
+    end;
+  end;
 end;
 
 procedure TGBClientRestClientRequest.PrepareRequestHeaders;
@@ -315,7 +329,11 @@ begin
     if not FQueries[i].Encoding then
       options := [poDoNotEncode];
 
+    {$IF COMPILERVERSION < 33}
     FRestRequest.AddParameter(FQueries[i].Key, FQueries[i].Value, pkGETorPOST, options);
+    {$ELSE}
+    FRestRequest.AddParameter(FQueries[i].Key, FQueries[i].Value, pkQuery, options);
+    {$ENDIF}
   end;
 end;
 

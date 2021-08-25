@@ -16,7 +16,10 @@ uses
   GBClient.RestClient.Exceptions in '..\..\Source\GBClient.RestClient.Exceptions.pas',
   GBClient.IdHTTP in '..\..\Source\GBClient.IdHTTP.pas',
   GBClient.IdHTTP.Exceptions in '..\..\Source\GBClient.IdHTTP.Exceptions.pas',
-  GBClient.IdHTTP.Auth in '..\..\Source\GBClient.IdHTTP.Auth.pas';
+  GBClient.IdHTTP.Auth in '..\..\Source\GBClient.IdHTTP.Auth.pas',
+  GBClient.NetHTTPClient in '..\..\Source\GBClient.NetHTTPClient.pas',
+  GBClient.NetHTTPClient.Exceptions in '..\..\Source\GBClient.NetHTTPClient.Exceptions.pas',
+  GBClient.NetHTTPClient.Auth in '..\..\Source\GBClient.NetHTTPClient.Auth.pas';
 
 {$R *.res}
 

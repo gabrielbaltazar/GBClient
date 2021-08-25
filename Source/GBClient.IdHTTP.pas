@@ -279,8 +279,6 @@ begin
 end;
 
 procedure TGBClientIdHTTP.PrepareRequest;
-var
-  i: Integer;
 begin
   createComponents;
   FIdHTTP.Request.Method := Self.FMethod.value;

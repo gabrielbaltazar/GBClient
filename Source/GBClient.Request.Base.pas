@@ -277,6 +277,12 @@ begin
   FMethod := gmtGET;
   AcceptCharset('utf-8, *;q=0.8');
   ContentType('application/json');
+
+  {$IF CompilerVersion > 31}
+  HeaderAddOrSet('Accept', 'application/json', False);
+  {$ELSE}
+  Accept('application/json');
+  {$ENDIF}
 end;
 
 function TGBClientRequestBase.DELETE: IGBClientRequest;

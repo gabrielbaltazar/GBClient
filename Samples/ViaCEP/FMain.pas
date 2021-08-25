@@ -4,8 +4,7 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
-  GBClient.Interfaces;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls;
 
 type
   TForm1 = class(TForm)
@@ -17,7 +16,6 @@ type
     procedure btnConsultaClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
-    FClient: IGBClientRequest;
     { Private declarations }
   public
     { Public declarations }
@@ -31,43 +29,27 @@ implementation
 {$R *.dfm}
 
 uses
-  GBClient.RestClient.Request,
-  GBClient.IdHTTP,
-  System.JSON;
+  GBClient.Interfaces;
 
 procedure TForm1.btnConsultaClick(Sender: TObject);
 var
-  json: TJSONObject;
+  Client: IGBClientRequest;
 begin
-  json := TJSONObject.Create;
-  json.AddPair('teste', '123456');
-
-  FClient
+  Client := NewClientRequest;
+  Client
     .GET
-//    .BaseURL('https://webhook.site/3ac39100-30f8-4a74-bd83-5261db165529')
-    .BaseURL('http://127.0.0.1:9000/{ping}')
+    .BaseURL('https://viacep.com.br/ws/{cep}/json/')
     .Params
-      .HeaderAddOrSet('h1', 'aÁ„o«„')
-      .HeaderAddOrSet('h2', 'Á„ aa')
-      .QueryAddOrSet('cep', 'a1 as')
-      .QueryAddOrSet('cep2', 'a2 as«„')
-      .BodyAddOrSet(json, True)
-      .PathAddOrSet('ping', 'ping')
+      .PathAddOrSet('cep', edtCEP.Text)
     .&End
-    .Authorization
-      .Bearer
-        .Token('1234')
-      .&End
     .Send;
 
-  mmoReposta.Lines.Text := FClient.Response.GetText;
+  mmoReposta.Lines.Text := Client.Response.GetText;
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   ReportMemoryLeaksOnShutdown := True;
-//  FClient := TGBClientRestClientRequest.New;
-  FClient := TGBClientIdHTTP.New;
 end;
 
 end.

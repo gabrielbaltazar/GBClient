@@ -170,23 +170,23 @@ function NewClientRequest(BaseUrl: String): IGBClientRequest; overload;
 
 implementation
 
-//uses
-//  GBClient.RestClient.Request,
-//  {$IFDEF NetHTTP} GBClient.NetHTTPClient.Request, {$ENDIF}
-//  {$IFDEF IdHTTP} GBClient.IdHTTP.Request, {$ENDIF}
-//  REST.Json;
+uses
+  GBClient.RestClient.Request,
+  {$IFDEF NetHTTP} GBClient.NetHTTPClient.Request, {$ENDIF}
+  {$IFDEF IdHTTP} GBClient.IdHTTP.Request, {$ENDIF}
+  REST.Json;
 
 function NewClientRequest: IGBClientRequest;
 begin
-//  {$IFDEF NetHTTP}
-//    Exit( TGBClientNetHttpClientRequest.New );
-//  {$ENDIF}
-//
-//  {$IFDEF IdHTTP}
-//    Exit( TGBClientIdHTTPRequest.New );
-//  {$ENDIF}
-//
-//  result := TGBClientRequest.New;
+  {$IFDEF NetHTTP}
+    Exit( TGBClientNetHttpClientRequest.New );
+  {$ENDIF}
+
+  {$IFDEF IdHTTP}
+    Exit( TGBClientIdHTTPRequest.New );
+  {$ENDIF}
+
+  result := TGBClientRestClientRequest.New;
 end;
 
 function NewClientRequest(BaseUrl: String): IGBClientRequest;
