@@ -118,6 +118,9 @@
         <DCCReference Include="..\..\Source\GBClient.RestClient.Auth.pas"/>
         <DCCReference Include="..\..\Source\GBClient.Exceptions.pas"/>
         <DCCReference Include="..\..\Source\GBClient.RestClient.Exceptions.pas"/>
+        <DCCReference Include="..\..\Source\GBClient.IdHTTP.pas"/>
+        <DCCReference Include="..\..\Source\GBClient.IdHTTP.Exceptions.pas"/>
+        <DCCReference Include="..\..\Source\GBClient.IdHTTP.Auth.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

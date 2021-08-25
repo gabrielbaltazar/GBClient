@@ -46,7 +46,7 @@ type TGBClientRequestBase = class abstract (TInterfacedObject, IGBClientRequest,
     function Accept(Value: string): IGBClientRequest;
     function AcceptCharset(Value: string): IGBClientRequest;
     function AcceptEncoding(Value: string): IGBClientRequest;
-    function ContentType(Value: TGBContentType): IGBClientRequest; overload;
+    function ContentType(Value: TGBContentType): IGBClientRequest; overload; virtual;
     function ContentType(Value: String): IGBClientRequest; overload;
     function BaseURL(Value: String): IGBClientRequest;
     function Resource(Value: String): IGBClientRequest;
@@ -95,7 +95,7 @@ type TGBClientRequestBase = class abstract (TInterfacedObject, IGBClientRequest,
     function OnException (Value: TGBOnException): IGBClientRequest;
     function OnPreExecute(Value: TOnPreExecute): IGBClientRequest;
   public
-    constructor create;
+    constructor create; virtual;
     destructor Destroy; override;
 end;
 
@@ -141,7 +141,7 @@ begin
   parse := Settings.OnParseObjectToJSON;
   json := parse(Value);
   try
-    BodyAddOrSet(parse(Value));
+    BodyAddOrSet(json, False);
 
     if AOwner then
       FreeAndNil(Value);
@@ -176,6 +176,7 @@ function TGBClientRequestBase.BodyAddOrSet(Key, Value: String): IGBClientRequest
 begin
   result := Self;
   TGBClientRequestBaseParam.AddOrSet(FUrlEncodedParams, Key, Value);
+  ContentType(TGBContentType.ctApplication_x_www_form_urlencoded);
 end;
 
 function TGBClientRequestBase.BodyAddOrSet(Value: TDataSet; ACurrent: Boolean): IGBClientRequestParams;
@@ -263,7 +264,7 @@ end;
 function TGBClientRequestBase.ContentType(Value: String): IGBClientRequest;
 begin
   result := Self;
-  HeaderAddOrSet('content-type', Value);
+  HeaderAddOrSet('content-type', Value, False);
 end;
 
 constructor TGBClientRequestBase.create;

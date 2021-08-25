@@ -13,7 +13,10 @@ uses
   GBClient.Request.Base.Auth in '..\..\Source\GBClient.Request.Base.Auth.pas',
   GBClient.RestClient.Auth in '..\..\Source\GBClient.RestClient.Auth.pas',
   GBClient.Exceptions in '..\..\Source\GBClient.Exceptions.pas',
-  GBClient.RestClient.Exceptions in '..\..\Source\GBClient.RestClient.Exceptions.pas';
+  GBClient.RestClient.Exceptions in '..\..\Source\GBClient.RestClient.Exceptions.pas',
+  GBClient.IdHTTP in '..\..\Source\GBClient.IdHTTP.pas',
+  GBClient.IdHTTP.Exceptions in '..\..\Source\GBClient.IdHTTP.Exceptions.pas',
+  GBClient.IdHTTP.Auth in '..\..\Source\GBClient.IdHTTP.Auth.pas';
 
 {$R *.res}
 

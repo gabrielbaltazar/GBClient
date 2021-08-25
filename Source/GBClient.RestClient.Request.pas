@@ -30,6 +30,7 @@ type TGBClientRestClientRequest = class(TGBClientRequestBase, IGBClientRequest,
     FRestResponse: TRESTResponse;
     FByteStream: TBytesStream;
     FAuthorization: IGBClientAuth;
+    FContentType: TRESTContentType;
 
     procedure createComponents;
 
@@ -37,11 +38,14 @@ type TGBClientRestClientRequest = class(TGBClientRequestBase, IGBClientRequest,
     procedure PrepareRequestHeaders;
     procedure PrepareRequestQueries;
     procedure PrepareRequestPathParams;
+    procedure PrepareRequestBody;
     procedure PrepareRequestAuth;
 
   protected
     function Component: TComponent; override;
     function Authorization: IGBClientAuth; override;
+
+    function ContentType(Value: TGBContentType): IGBClientRequest; override;
 
     function Send: IGBClientResponse; override;
     function Response : IGBClientResponse; override;
@@ -65,6 +69,7 @@ type TGBClientRestClientRequest = class(TGBClientRequestBase, IGBClientRequest,
     function HeaderAsDateTime(Name: String): TDateTime;
 
   public
+    constructor create; override;
     class function New: IGBClientRequest;
     destructor Destroy; override;
 end;
@@ -83,6 +88,24 @@ end;
 function TGBClientRestClientRequest.Component: TComponent;
 begin
   result := FRestRequest;
+end;
+
+function TGBClientRestClientRequest.ContentType(Value: TGBContentType): IGBClientRequest;
+begin
+  result := Self;
+  inherited ContentType(Value);
+  case Value of
+    ctApplicationJson: FContentType := ctAPPLICATION_JSON;
+    ctApplicationXml: FContentType := ctAPPLICATION_XML;
+    TGBContentType.ctApplication_x_www_form_urlencoded: FContentType := TRESTContentType.ctAPPLICATION_X_WWW_FORM_URLENCODED;
+  end;
+
+end;
+
+constructor TGBClientRestClientRequest.create;
+begin
+  inherited;
+  FContentType := ctAPPLICATION_JSON;
 end;
 
 procedure TGBClientRestClientRequest.createComponents;
@@ -216,6 +239,7 @@ var
 begin
   FRestClient.BaseURL := FBaseUrl;
   FRestRequest.Resource := FResource;
+  FRestRequest.Timeout := FTimeOut;
 
   case FMethod of
     gmtGET: FRestRequest.Method := rmGET;
@@ -228,6 +252,7 @@ begin
   PrepareRequestHeaders;
   PrepareRequestQueries;
   PrepareRequestPathParams;
+  PrepareRequestBody;
   PrepareRequestAuth;
 
   if Assigned(FOnPreExecute) then
@@ -249,6 +274,11 @@ begin
     TGBClientRestClientAuth(FAuthorization).ApplyAuth;
 end;
 
+procedure TGBClientRestClientRequest.PrepareRequestBody;
+begin
+  FRestRequest.AddBody(FBody, FContentType);
+end;
+
 procedure TGBClientRestClientRequest.PrepareRequestHeaders;
 var
   i: Integer;
@@ -256,7 +286,11 @@ var
 begin
   for i := 0 to Pred(FHeaders.Count) do
   begin
-    parameter := FRestRequest.Params.AddHeader(FHeaders[i].Key, FHeaders[i].Value);
+    parameter := FRestRequest.Params.AddItem;
+    parameter.Kind := pkHTTPHEADER;
+    parameter.name := FHeaders[i].Key;
+    parameter.Value := FHeaders[i].Value;
+
     if not FHeaders[i].Encoding then
       parameter.Options := [poDoNotEncode];
   end;
