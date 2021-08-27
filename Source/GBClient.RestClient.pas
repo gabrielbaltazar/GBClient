@@ -7,8 +7,8 @@ uses
   GBClient.Core.Request,
   GBClient.Core.Helpers,
   GBClient.Core.Types,
+  GBClient.Core.Exceptions,
   GBClient.RestClient.Auth,
-  GBClient.RestClient.Exceptions,
   Data.DB,
   REST.Client,
   REST.Types,
@@ -29,7 +29,6 @@ type TGBClientRestClient = class(TGBClientCoreRequest, IGBClientRequest,
     FRestRequest: TRESTRequest;
     FRestResponse: TRESTResponse;
     FByteStream: TBytesStream;
-    FAuthorization: IGBClientAuth;
     FContentType: TRESTContentType;
 
     procedure OnAWSAuthorization(Auth, AmzDate: string);
@@ -382,7 +381,7 @@ begin
 
     if FRestResponse.StatusCode >= 400 then
     begin
-      LException := EGBRestRequestException.create(FRestRequest);
+      LException := EGBRestException.create(StatusCode, StatusText, GetText, GetJSONObject);
       if Assigned(FOnException) then
         FOnException(LException);
       raise LException;

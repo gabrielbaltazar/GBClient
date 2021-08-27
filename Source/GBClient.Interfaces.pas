@@ -12,8 +12,6 @@ uses
   System.Generics.Collections;
 
 type
-  EGBRestExceptionTimeout = GBClient.Core.Exceptions.EGBRestExceptionTimeout;
-  EGBRestException = GBClient.Core.Exceptions.EGBRestException;
   TGBContentType = GBClient.Core.Types.TGBContentType;
 
   TGBOnParseJSONToObject = procedure (AJSON: TJSONObject; AObject: TObject);

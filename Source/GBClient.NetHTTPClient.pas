@@ -9,8 +9,8 @@ uses
   GBClient.Core.Types,
   GBClient.Core.Helpers,
   GBClient.Core.Settings,
+  GBClient.Core.Exceptions,
   GBClient.NetHTTPClient.Auth,
-  GBClient.NetHTTPClient.Exceptions,
   System.SysUtils,
   System.Classes,
   System.JSON,
@@ -28,7 +28,6 @@ type TGBClientNetHTTPClient = class(TGBClientCoreRequest, IGBClientRequest,
     FClient : TNetHTTPClient;
     FRequest : TNetHTTPRequest;
     FResponse : IHTTPResponse;
-    FAuthorization : IGBClientAuth;
     FFormData : TMultipartFormData;
     FByteStream : TBytesStream;
     FJSONArray: TJSONArray;
@@ -350,7 +349,7 @@ end;
 
 function TGBClientNetHTTPClient.Send: IGBClientResponse;
 var
-  LException: EGBNetHTTPClientException;
+  LException: EGBRestException;
 begin
   FResponse := nil;
   Result := Self;
@@ -360,7 +359,7 @@ begin
 
     if FResponse.StatusCode >= 400 then
     begin
-      LException := EGBNetHTTPClientException.create(FResponse);
+      LException := EGBRestException.create(StatusCode, StatusText, GetText, GetJSONObject);
       if Assigned(FOnException) then
         FOnException(LException);
       raise LException;
