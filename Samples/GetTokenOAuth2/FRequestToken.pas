@@ -44,11 +44,10 @@ begin
   Request
     .POST
     .BaseURL(edtBaseURL.Text)
-    .ContentType(TGBContentType.ctApplication_x_www_form_urlencoded)
-    .Body
-      .AddOrSet('client_id', edtClientId.Text)
-      .AddOrSet('client_secret', edtClientSecret.Text)
-      .AddOrSet('grant_type', edtGrantType.Text)
+    .Params
+      .BodyAddOrSet('client_id', edtClientId.Text)
+      .BodyAddOrSet('client_secret', edtClientSecret.Text)
+      .BodyAddOrSet('grant_type', edtGrantType.Text)
     .&End
     .Send;
 

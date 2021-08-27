@@ -1,4 +1,4 @@
-unit GBClient.Exceptions;
+unit GBClient.Core.Exceptions;
 
 interface
 

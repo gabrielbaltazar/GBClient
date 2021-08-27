@@ -5,7 +5,7 @@ interface
 uses
   REST.Client,
   System.SysUtils,
-  GBClient.Exceptions;
+  GBClient.Core.Exceptions;
 
 type
   EGBRestRequestException = class(EGBRestException)

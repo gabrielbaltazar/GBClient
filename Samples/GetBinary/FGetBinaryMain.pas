@@ -4,8 +4,7 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls,
-  GBClient.Interfaces;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls;
 
 type
   TForm1 = class(TForm)
@@ -33,6 +32,9 @@ var
 
 implementation
 
+uses
+  GBClient.Interfaces;
+
 {$R *.dfm}
 
 procedure TForm1.btnDownloadFileClick(Sender: TObject);
@@ -56,8 +58,8 @@ begin
   Request
     .POST
     .BaseURL(edtURLSendFile.Text)
-    .Body
-      .Binary(edtFileName.Text)
+    .Params
+      .BodyBinary(edtFileName.Text)
     .&End
     .Send;
 end;
@@ -72,8 +74,8 @@ begin
   Request
     .POST
     .BaseURL(edtURLSendFile.Text)
-    .Body
-      .Binary(stream, True)
+    .Params
+      .BodyBinary(stream, True)
     .&End
     .Send;
 end;

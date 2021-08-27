@@ -4,9 +4,7 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
-  System.Net.URLClient, System.Net.HttpClient,
-  System.Net.HttpClientComponent;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls;
 
 type
   TForm1 = class(TForm)
@@ -16,6 +14,7 @@ type
     btnConsulta: TButton;
     mmoReposta: TMemo;
     procedure btnConsultaClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
   public
@@ -34,18 +33,23 @@ uses
 
 procedure TForm1.btnConsultaClick(Sender: TObject);
 var
-  client: IGBClientRequest;
+  Client: IGBClientRequest;
 begin
-  client := NewClientRequest;
-  client
+  Client := NewClientRequest;
+  Client
     .GET
-    .BaseURL('https://viacep.com.br/ws/{cep}/json')
-    .ParamPath
-      .AddOrSet('cep', edtCEP.Text)
+    .BaseURL('https://viacep.com.br/ws/{cep}/json/')
+    .Params
+      .PathAddOrSet('cep', edtCEP.Text)
     .&End
-    .Execute;
+    .Send;
 
-  mmoReposta.Lines.Text := client.Response.GetText;
+  mmoReposta.Lines.Text := Client.Response.GetText;
+end;
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  ReportMemoryLeaksOnShutdown := True;
 end;
 
 end.

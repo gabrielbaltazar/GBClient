@@ -1,4 +1,4 @@
-unit GBClient.Types;
+unit GBClient.Core.Types;
 
 interface
 
