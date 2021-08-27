@@ -429,6 +429,9 @@ function TGBClientCoreRequest.QueryAddOrSet(Key: string; Value: Integer): IGBCli
 begin
   Result := Self;
   TGBClientCoreRequestParam.AddOrSet(FQueries, Key, Value, False);
+
+  if (Assigned(FAuthorization)) and (FAuthorization.AuthType = atAWSv4) then
+    FAuthorization.AWSv4.QueryAddOrSet(Key, Value.ToString);
 end;
 
 function TGBClientCoreRequest.QueryAddOrSet(Key, Value: String): IGBClientRequestParams;
@@ -444,12 +447,18 @@ function TGBClientCoreRequest.QueryAddOrSet(Key: string; Value: TDateTime): IGBC
 begin
   Result := Self;
   TGBClientCoreRequestParam.AddOrSet(FQueries, Key, Value, False);
+
+  if (Assigned(FAuthorization)) and (FAuthorization.AuthType = atAWSv4) then
+    FAuthorization.AWSv4.QueryAddOrSet(Key, Value.DateTimeToIso8601);
 end;
 
 function TGBClientCoreRequest.QueryAddOrSet(Key: string; Value: Extended): IGBClientRequestParams;
 begin
   Result := Self;
   TGBClientCoreRequestParam.AddOrSet(FQueries, Key, Value, False);
+
+  if (Assigned(FAuthorization)) and (FAuthorization.AuthType = atAWSv4) then
+    FAuthorization.AWSv4.QueryAddOrSet(Key, Value.ToString);
 end;
 
 function TGBClientCoreRequest.Resource(Value: String): IGBClientRequest;

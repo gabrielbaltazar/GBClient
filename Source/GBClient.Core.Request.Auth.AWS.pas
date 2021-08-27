@@ -29,8 +29,6 @@ type
 
     function HashSHA256(hashString: string): string;
 
-    procedure SortDictionary(Value: TDictionary<String, String>);
-
     function URLEncodeValue(const Value: String): string;
     function URLEncode(const Str: string; const EncodeChars: array of Char): string;
 
@@ -161,12 +159,17 @@ function TGBClientCoreRequestAuthAWS.GetCannonicalQuery: string;
 var
   name: string;
   value: string;
+  queries: TArray<String>;
+  i: Integer;
 begin
   result := EmptyStr;
-  SortDictionary(FQueries);
+  queries:= FQueries.Keys.ToArray;
 
-  for name in FQueries.Keys do
+  TArray.Sort<String>(queries);
+
+  for i := 0 to Pred(Length(queries)) do
   begin
+    name := queries[i];
     value := URLEncodeValue( FQueries.Items[name] );
     if not Result.IsEmpty then
       result := result + '&';
@@ -337,11 +340,6 @@ function TGBClientCoreRequestAuthAWS.Service(Value: String): IGBClientAuthAWSv4;
 begin
   result := Self;
   FService := Value;
-end;
-
-procedure TGBClientCoreRequestAuthAWS.SortDictionary(Value: TDictionary<String, String>);
-begin
-
 end;
 
 function TGBClientCoreRequestAuthAWS.URLEncode(const Str: string; const EncodeChars: array of Char): string;
