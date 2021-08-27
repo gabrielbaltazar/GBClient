@@ -8,8 +8,8 @@ uses
   GBClient.Core.Request,
   GBClient.Core.Helpers,
   GBClient.Core.Types,
+  GBClient.Core.Exceptions,
   GBClient.IdHTTP.Auth,
-  GBClient.IdHTTP.Exceptions,
   IdBaseComponent,
   IdMultipartFormData,
   IdComponent,
@@ -36,7 +36,6 @@ type TGBClientIdHTTP = class(TGBClientCoreRequest, IGBClientRequest,
     FHandler: TIdSSLIOHandlerSocketOpenSSL;
     FResponseStream: TStringStream;
     FBodyForm: TIdMultiPartFormDataStream;
-    FAuthorization: IGBClientAuth;
     FContentType: string;
 
     FJSONArray: TJSONArray;
@@ -388,7 +387,7 @@ end;
 function TGBClientIdHTTP.Send: IGBClientResponse;
 var
   url: string;
-  LException: EGBIdHTTPException;
+  LException: EGBRestException;
 begin
   FResponseStream.Clear;
   PrepareRequest;
@@ -419,13 +418,13 @@ begin
 
       if StatusCode >= 400 then
       begin
-        LException := EGBIdHTTPException.create(FIdHTTP);
+        LException := EGBRestException.create(StatusCode, StatusText, GetText, GetJSONObject);
         if Assigned(FOnException) then
           FOnException(LException);
         raise LException;
       end;
     except
-      on e: EGBIdHTTPException do
+      on e: EGBRestException do
         raise;
     end;
   finally

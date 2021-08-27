@@ -23,6 +23,7 @@ type TGBClientCoreRequest = class abstract (TInterfacedObject, IGBClientRequest,
     FPaths: TObjectList<TGBClientCoreRequestParam>;
     FQueries: TObjectList<TGBClientCoreRequestParam>;
     FUrlEncodedParams: TObjectList<TGBClientCoreRequestParam>;
+    FAuthorization: IGBClientAuth;
     FBody: TStream;
     FBaseUrl: string;
     FResource: string;
@@ -113,7 +114,7 @@ end;
 function TGBClientCoreRequest.Accept(Value: string): IGBClientRequest;
 begin
   result := Self;
-  HeaderAddOrSet('Accept', Value);
+  HeaderAddOrSet('Accept', Value, False);
 end;
 
 function TGBClientCoreRequest.AcceptCharset(Value: string): IGBClientRequest;
@@ -416,6 +417,9 @@ function TGBClientCoreRequest.QueryAddOrSet(Key, Value: String): IGBClientReques
 begin
   Result := Self;
   TGBClientCoreRequestParam.AddOrSet(FQueries, Key, Value, False);
+
+  if (Assigned(FAuthorization)) and (FAuthorization.AuthType = atAWSv4) then
+    FAuthorization.AWSv4.QueryAddOrSet(Key, Value);
 end;
 
 function TGBClientCoreRequest.QueryAddOrSet(Key: string; Value: TDateTime): IGBClientRequestParams;
