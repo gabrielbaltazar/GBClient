@@ -86,6 +86,8 @@ type TGBClientCoreRequest = class abstract (TInterfacedObject, IGBClientRequest,
 
     function BodyBinary(AFileName: String): IGBClientRequestParams; overload;
     function BodyBinary(AStream : TStream; AOwner: Boolean = False): IGBClientRequestParams; overload;
+
+    function GetBody: String;
     {$ENDREGION}
 
     function &End: IGBClientRequest;
@@ -306,6 +308,22 @@ function TGBClientCoreRequest.GET: IGBClientRequest;
 begin
   result := Self;
   FMethod := gmtGET;
+end;
+
+function TGBClientCoreRequest.GetBody: String;
+var
+  bodyStream: TStringStream;
+begin
+  if Assigned(FBody) then
+  begin
+    bodyStream := TStringStream.Create;
+    try
+      bodyStream.LoadFromStream(FBody);
+      result := bodyStream.DataString;
+    finally
+      bodyStream.Free;
+    end;
+  end;
 end;
 
 function TGBClientCoreRequest.GetFullUrl: String;

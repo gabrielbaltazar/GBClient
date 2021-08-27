@@ -102,6 +102,8 @@ type
     function BodyBinary(AFileName: String): IGBClientRequestParams; overload;
     function BodyBinary(AStream : TStream; AOwner: Boolean = False): IGBClientRequestParams; overload;
 
+    function GetBody: String;
+
     function &End: IGBClientRequest;
   end;
 
