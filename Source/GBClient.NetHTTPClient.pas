@@ -262,7 +262,6 @@ begin
   begin
     if FAuthorization.AuthType = atAWSv4 then
     begin
-      FAuthorization.AWSv4.OnAWSSignature(Self.OnAWSAuthorization);
       FAuthorization.AWSv4
         .Host(GetFullUrl)
         .HTTPVerb(FMethod.value)
@@ -270,7 +269,12 @@ begin
     end;
 
     TGBClientNetHTTPClientAuth(FAuthorization).ApplyAuth;
-  end;
+
+    if FAuthorization.AuthType = atAWSv4 then
+    begin
+      OnAWSAuthorization(FAuthorization.AWSv4.Authorization,
+                         FAuthorization.AWSv4.XAmzDate);
+    end;  end;
 end;
 
 procedure TGBClientNetHTTPClient.PrepareRequestBody;

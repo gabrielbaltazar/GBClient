@@ -189,7 +189,9 @@ type
     function Payload(Value: String): IGBClientAuthAWSv4; overload;
     function Payload(Value: TStream): IGBClientAuthAWSv4; overload;
 
-    function OnAWSSignature(Value: TGBOnAWSSignature): IGBClientAuthAWSv4;
+    function XAmzDate: String;
+    function Authorization: string;
+    function Apply: IGBClientAuthAWSv4;
 
     function &End: IGBClientRequest;
   end;

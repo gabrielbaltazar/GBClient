@@ -17,7 +17,8 @@ uses
   GBClient.NetHTTPClient in '..\..\Source\GBClient.NetHTTPClient.pas',
   GBClient.RestClient.Auth in '..\..\Source\GBClient.RestClient.Auth.pas',
   GBClient.RestClient in '..\..\Source\GBClient.RestClient.pas',
-  GBClient.Core.Request.Auth.AWS in '..\..\Source\GBClient.Core.Request.Auth.AWS.pas';
+  GBClient.Core.Request.Auth.AWS in '..\..\Source\GBClient.Core.Request.Auth.AWS.pas',
+  GBClient.RestClient.Response in '..\..\Source\GBClient.RestClient.Response.pas';
 
 {$R *.res}
 

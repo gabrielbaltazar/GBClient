@@ -40,6 +40,7 @@ type
 
     FHost: String;
     FAmzDate: String;
+    FAuthorization: string;
     FDateStamp: string;
     FSignedHeader: string;
     FPayload: string;
@@ -49,9 +50,6 @@ type
     FSecretKey: String;
     FRegion: string;
     FService: string;
-    FOnAWSSignature: TGBOnAWSSignature;
-
-    function OnAWSSignature(Value: TGBOnAWSSignature): IGBClientAuthAWSv4;
 
     function AccessKey(Value: String): IGBClientAuthAWSv4;
     function SecretKey(Value: String): IGBClientAuthAWSv4;
@@ -66,6 +64,9 @@ type
 
     function Payload(Value: String): IGBClientAuthAWSv4; overload;
     function Payload(Value: TStream): IGBClientAuthAWSv4; overload;
+
+    function XAmzDate: String;
+    function Authorization: string;
 
     function &End: IGBClientRequest;
 
@@ -84,7 +85,7 @@ type
 
   public
 
-    procedure Apply;
+    function Apply: IGBClientAuthAWSv4;
 
     constructor create(Parent: IGBClientRequest);
     class function New(Parent: IGBClientRequest): IGBClientAuthAWSv4;
@@ -207,21 +208,24 @@ begin
   result := Format('%s/%s/%s/aws4_request', [FDateStamp, FRegion, FService]);
 end;
 
-procedure TGBClientCoreRequestAuthAWS.Apply;
+function TGBClientCoreRequestAuthAWS.Apply: IGBClientAuthAWSv4;
 var
   cannonicalRequest: String;
   stringToSignin: string;
   signature: string;
-  authorization: string;
 begin
+  result := Self;
+
   Initialize;
   cannonicalRequest := GetCannonicalRequest;
   stringToSignin := GetStringToSignin(cannonicalRequest);
   signature := CalculateSignature(stringToSignin);
-  authorization := GetAuthorizationHeader(signature);
+  FAuthorization := GetAuthorizationHeader(signature);
+end;
 
-  if Assigned(FOnAWSSignature) then
-    FOnAWSSignature(authorization, FAmzDate);
+function TGBClientCoreRequestAuthAWS.Authorization: string;
+begin
+  result := FAuthorization;
 end;
 
 function TGBClientCoreRequestAuthAWS.CalculateSignature(AStringToSignin: String): string;
@@ -292,12 +296,6 @@ end;
 class function TGBClientCoreRequestAuthAWS.New(Parent: IGBClientRequest): IGBClientAuthAWSv4;
 begin
   result := Self.create(Parent);
-end;
-
-function TGBClientCoreRequestAuthAWS.OnAWSSignature(Value: TGBOnAWSSignature): IGBClientAuthAWSv4;
-begin
-  result := Self;
-  FOnAWSSignature := Value;
 end;
 
 function TGBClientCoreRequestAuthAWS.Payload(Value: TStream): IGBClientAuthAWSv4;
@@ -406,6 +404,11 @@ function TGBClientCoreRequestAuthAWS.URLEncodeValue(const Value: String): string
 begin
   Result := URLEncode(Value, ['=', ':', '/', '+', '(', ')', '/', '!', '"', '$', '@', '&', ',',
                               '''', '?', ';']);
+end;
+
+function TGBClientCoreRequestAuthAWS.XAmzDate: String;
+begin
+  result := FAmzDate;
 end;
 
 end.
