@@ -29,8 +29,6 @@ type
 
     function HashSHA256(hashString: string): string;
 
-    procedure SortDictionary(Value: TDictionary<String, String>);
-
     function URLEncodeValue(const Value: String): string;
     function URLEncode(const Str: string; const EncodeChars: array of Char): string;
 
@@ -42,6 +40,7 @@ type
 
     FHost: String;
     FAmzDate: String;
+    FAuthorization: string;
     FDateStamp: string;
     FSignedHeader: string;
     FPayload: string;
@@ -51,9 +50,6 @@ type
     FSecretKey: String;
     FRegion: string;
     FService: string;
-    FOnAWSSignature: TGBOnAWSSignature;
-
-    function OnAWSSignature(Value: TGBOnAWSSignature): IGBClientAuthAWSv4;
 
     function AccessKey(Value: String): IGBClientAuthAWSv4;
     function SecretKey(Value: String): IGBClientAuthAWSv4;
@@ -68,6 +64,9 @@ type
 
     function Payload(Value: String): IGBClientAuthAWSv4; overload;
     function Payload(Value: TStream): IGBClientAuthAWSv4; overload;
+
+    function XAmzDate: String;
+    function Authorization: string;
 
     function &End: IGBClientRequest;
 
@@ -86,7 +85,7 @@ type
 
   public
 
-    procedure Apply;
+    function Apply: IGBClientAuthAWSv4;
 
     constructor create(Parent: IGBClientRequest);
     class function New(Parent: IGBClientRequest): IGBClientAuthAWSv4;
@@ -161,12 +160,17 @@ function TGBClientCoreRequestAuthAWS.GetCannonicalQuery: string;
 var
   name: string;
   value: string;
+  queries: TArray<String>;
+  i: Integer;
 begin
   result := EmptyStr;
-  SortDictionary(FQueries);
+  queries:= FQueries.Keys.ToArray;
 
-  for name in FQueries.Keys do
+  TArray.Sort<String>(queries);
+
+  for i := 0 to Pred(Length(queries)) do
   begin
+    name := queries[i];
     value := URLEncodeValue( FQueries.Items[name] );
     if not Result.IsEmpty then
       result := result + '&';
@@ -204,21 +208,24 @@ begin
   result := Format('%s/%s/%s/aws4_request', [FDateStamp, FRegion, FService]);
 end;
 
-procedure TGBClientCoreRequestAuthAWS.Apply;
+function TGBClientCoreRequestAuthAWS.Apply: IGBClientAuthAWSv4;
 var
   cannonicalRequest: String;
   stringToSignin: string;
   signature: string;
-  authorization: string;
 begin
+  result := Self;
+
   Initialize;
   cannonicalRequest := GetCannonicalRequest;
   stringToSignin := GetStringToSignin(cannonicalRequest);
   signature := CalculateSignature(stringToSignin);
-  authorization := GetAuthorizationHeader(signature);
+  FAuthorization := GetAuthorizationHeader(signature);
+end;
 
-  if Assigned(FOnAWSSignature) then
-    FOnAWSSignature(authorization, FAmzDate);
+function TGBClientCoreRequestAuthAWS.Authorization: string;
+begin
+  result := FAuthorization;
 end;
 
 function TGBClientCoreRequestAuthAWS.CalculateSignature(AStringToSignin: String): string;
@@ -291,12 +298,6 @@ begin
   result := Self.create(Parent);
 end;
 
-function TGBClientCoreRequestAuthAWS.OnAWSSignature(Value: TGBOnAWSSignature): IGBClientAuthAWSv4;
-begin
-  result := Self;
-  FOnAWSSignature := Value;
-end;
-
 function TGBClientCoreRequestAuthAWS.Payload(Value: TStream): IGBClientAuthAWSv4;
 var
   stream: TStringStream;
@@ -337,11 +338,6 @@ function TGBClientCoreRequestAuthAWS.Service(Value: String): IGBClientAuthAWSv4;
 begin
   result := Self;
   FService := Value;
-end;
-
-procedure TGBClientCoreRequestAuthAWS.SortDictionary(Value: TDictionary<String, String>);
-begin
-
 end;
 
 function TGBClientCoreRequestAuthAWS.URLEncode(const Str: string; const EncodeChars: array of Char): string;
@@ -408,6 +404,11 @@ function TGBClientCoreRequestAuthAWS.URLEncodeValue(const Value: String): string
 begin
   Result := URLEncode(Value, ['=', ':', '/', '+', '(', ')', '/', '!', '"', '$', '@', '&', ',',
                               '''', '?', ';']);
+end;
+
+function TGBClientCoreRequestAuthAWS.XAmzDate: String;
+begin
+  result := FAmzDate;
 end;
 
 end.

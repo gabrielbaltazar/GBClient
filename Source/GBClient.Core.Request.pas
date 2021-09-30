@@ -23,6 +23,7 @@ type TGBClientCoreRequest = class abstract (TInterfacedObject, IGBClientRequest,
     FPaths: TObjectList<TGBClientCoreRequestParam>;
     FQueries: TObjectList<TGBClientCoreRequestParam>;
     FUrlEncodedParams: TObjectList<TGBClientCoreRequestParam>;
+    FAuthorization: IGBClientAuth;
     FBody: TStream;
     FBaseUrl: string;
     FResource: string;
@@ -70,10 +71,10 @@ type TGBClientCoreRequest = class abstract (TInterfacedObject, IGBClientRequest,
     function PathAddOrSet(Key: string; Value: TDateTime): IGBClientRequestParams; overload;
 
     // Query Params
-    function QueryAddOrSet(Key: string; Value: String): IGBClientRequestParams; overload;
-    function QueryAddOrSet(Key: string; Value: Integer): IGBClientRequestParams; overload;
-    function QueryAddOrSet(Key: string; Value: Extended): IGBClientRequestParams; overload;
-    function QueryAddOrSet(Key: string; Value: TDateTime): IGBClientRequestParams; overload;
+    function QueryAddOrSet(Key: string; Value: String; bEncode: Boolean = True): IGBClientRequestParams; overload;
+    function QueryAddOrSet(Key: string; Value: Integer; bEncode: Boolean = True): IGBClientRequestParams; overload;
+    function QueryAddOrSet(Key: string; Value: Extended; bEncode: Boolean = True): IGBClientRequestParams; overload;
+    function QueryAddOrSet(Key: string; Value: TDateTime; bEncode: Boolean = True): IGBClientRequestParams; overload;
 
     // Body Params
     function BodyAddOrSet(Value: String) : IGBClientRequestParams; overload;
@@ -86,6 +87,8 @@ type TGBClientCoreRequest = class abstract (TInterfacedObject, IGBClientRequest,
 
     function BodyBinary(AFileName: String): IGBClientRequestParams; overload;
     function BodyBinary(AStream : TStream; AOwner: Boolean = False): IGBClientRequestParams; overload;
+
+    function GetBody: String;
     {$ENDREGION}
 
     function &End: IGBClientRequest;
@@ -113,7 +116,7 @@ end;
 function TGBClientCoreRequest.Accept(Value: string): IGBClientRequest;
 begin
   result := Self;
-  HeaderAddOrSet('Accept', Value);
+  HeaderAddOrSet('Accept', Value, False);
 end;
 
 function TGBClientCoreRequest.AcceptCharset(Value: string): IGBClientRequest;
@@ -308,6 +311,22 @@ begin
   FMethod := gmtGET;
 end;
 
+function TGBClientCoreRequest.GetBody: String;
+var
+  bodyStream: TStringStream;
+begin
+  if Assigned(FBody) then
+  begin
+    bodyStream := TStringStream.Create;
+    try
+      bodyStream.LoadFromStream(FBody);
+      result := bodyStream.DataString;
+    finally
+      bodyStream.Free;
+    end;
+  end;
+end;
+
 function TGBClientCoreRequest.GetFullUrl: String;
 var
   resource: string;
@@ -406,28 +425,40 @@ begin
   FMethod := gmtPUT;
 end;
 
-function TGBClientCoreRequest.QueryAddOrSet(Key: string; Value: Integer): IGBClientRequestParams;
+function TGBClientCoreRequest.QueryAddOrSet(Key: string; Value: Integer; bEncode: Boolean = True): IGBClientRequestParams;
 begin
   Result := Self;
-  TGBClientCoreRequestParam.AddOrSet(FQueries, Key, Value, False);
+  TGBClientCoreRequestParam.AddOrSet(FQueries, Key, Value, bEncode);
+
+  if (Assigned(FAuthorization)) and (FAuthorization.AuthType = atAWSv4) then
+    FAuthorization.AWSv4.QueryAddOrSet(Key, Value.ToString);
 end;
 
-function TGBClientCoreRequest.QueryAddOrSet(Key, Value: String): IGBClientRequestParams;
+function TGBClientCoreRequest.QueryAddOrSet(Key, Value: String; bEncode: Boolean = True): IGBClientRequestParams;
 begin
   Result := Self;
-  TGBClientCoreRequestParam.AddOrSet(FQueries, Key, Value, False);
+  TGBClientCoreRequestParam.AddOrSet(FQueries, Key, Value, bEncode);
+
+  if (Assigned(FAuthorization)) and (FAuthorization.AuthType = atAWSv4) then
+    FAuthorization.AWSv4.QueryAddOrSet(Key, Value);
 end;
 
-function TGBClientCoreRequest.QueryAddOrSet(Key: string; Value: TDateTime): IGBClientRequestParams;
+function TGBClientCoreRequest.QueryAddOrSet(Key: string; Value: TDateTime; bEncode: Boolean = True): IGBClientRequestParams;
 begin
   Result := Self;
-  TGBClientCoreRequestParam.AddOrSet(FQueries, Key, Value, False);
+  TGBClientCoreRequestParam.AddOrSet(FQueries, Key, Value, bEncode);
+
+  if (Assigned(FAuthorization)) and (FAuthorization.AuthType = atAWSv4) then
+    FAuthorization.AWSv4.QueryAddOrSet(Key, Value.DateTimeToIso8601);
 end;
 
-function TGBClientCoreRequest.QueryAddOrSet(Key: string; Value: Extended): IGBClientRequestParams;
+function TGBClientCoreRequest.QueryAddOrSet(Key: string; Value: Extended; bEncode: Boolean = True): IGBClientRequestParams;
 begin
   Result := Self;
-  TGBClientCoreRequestParam.AddOrSet(FQueries, Key, Value, False);
+  TGBClientCoreRequestParam.AddOrSet(FQueries, Key, Value, bEncode);
+
+  if (Assigned(FAuthorization)) and (FAuthorization.AuthType = atAWSv4) then
+    FAuthorization.AWSv4.QueryAddOrSet(Key, Value.ToString);
 end;
 
 function TGBClientCoreRequest.Resource(Value: String): IGBClientRequest;

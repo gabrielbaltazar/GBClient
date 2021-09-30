@@ -12,8 +12,6 @@ uses
   System.Generics.Collections;
 
 type
-  EGBRestExceptionTimeout = GBClient.Core.Exceptions.EGBRestExceptionTimeout;
-  EGBRestException = GBClient.Core.Exceptions.EGBRestException;
   TGBContentType = GBClient.Core.Types.TGBContentType;
 
   TGBOnParseJSONToObject = procedure (AJSON: TJSONObject; AObject: TObject);
@@ -85,10 +83,10 @@ type
     function PathAddOrSet(Key: string; Value: TDateTime): IGBClientRequestParams; overload;
 
     // Query Params
-    function QueryAddOrSet(Key: string; Value: String): IGBClientRequestParams; overload;
-    function QueryAddOrSet(Key: string; Value: Integer): IGBClientRequestParams; overload;
-    function QueryAddOrSet(Key: string; Value: Extended): IGBClientRequestParams; overload;
-    function QueryAddOrSet(Key: string; Value: TDateTime): IGBClientRequestParams; overload;
+    function QueryAddOrSet(Key: string; Value: String; bEncode: Boolean = True): IGBClientRequestParams; overload;
+    function QueryAddOrSet(Key: string; Value: Integer; bEncode: Boolean = True): IGBClientRequestParams; overload;
+    function QueryAddOrSet(Key: string; Value: Extended; bEncode: Boolean = True): IGBClientRequestParams; overload;
+    function QueryAddOrSet(Key: string; Value: TDateTime; bEncode: Boolean = True): IGBClientRequestParams; overload;
 
     // Body Params
     function BodyAddOrSet(Value: String) : IGBClientRequestParams; overload;
@@ -101,6 +99,8 @@ type
 
     function BodyBinary(AFileName: String): IGBClientRequestParams; overload;
     function BodyBinary(AStream : TStream; AOwner: Boolean = False): IGBClientRequestParams; overload;
+
+    function GetBody: String;
 
     function &End: IGBClientRequest;
   end;
@@ -189,7 +189,9 @@ type
     function Payload(Value: String): IGBClientAuthAWSv4; overload;
     function Payload(Value: TStream): IGBClientAuthAWSv4; overload;
 
-    function OnAWSSignature(Value: TGBOnAWSSignature): IGBClientAuthAWSv4;
+    function XAmzDate: String;
+    function Authorization: string;
+    function Apply: IGBClientAuthAWSv4;
 
     function &End: IGBClientRequest;
   end;

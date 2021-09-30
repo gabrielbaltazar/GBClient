@@ -4,11 +4,12 @@ interface
 
 uses
   GBClient.Interfaces,
+  GBClient.RestClient.Response,
   GBClient.Core.Request,
   GBClient.Core.Helpers,
   GBClient.Core.Types,
+  GBClient.Core.Exceptions,
   GBClient.RestClient.Auth,
-  GBClient.RestClient.Exceptions,
   Data.DB,
   REST.Client,
   REST.Types,
@@ -22,14 +23,12 @@ uses
   System.TypInfo;
 
 type TGBClientRestClient = class(TGBClientCoreRequest, IGBClientRequest,
-                                                       IGBClientRequestParams,
-                                                       IGBClientResponse)
+                                                       IGBClientRequestParams)
   private
     FRestClient: TRESTClient;
     FRestRequest: TRESTRequest;
     FRestResponse: TRESTResponse;
-    FByteStream: TBytesStream;
-    FAuthorization: IGBClientAuth;
+    FResponse: IGBClientResponse;
     FContentType: TRESTContentType;
 
     procedure OnAWSAuthorization(Auth, AmzDate: string);
@@ -51,24 +50,6 @@ type TGBClientRestClient = class(TGBClientCoreRequest, IGBClientRequest,
 
     function Send: IGBClientResponse; override;
     function Response : IGBClientResponse; override;
-
-    // Response
-    function StatusCode: Integer;
-    function StatusText: string;
-
-    function GetText: string;
-    function GetJSONObject: TJSONObject;
-    function GetJSONArray: TJSONArray;
-    function DataSet(Value: TDataSet): IGBClientResponse;
-    function GetObject(Value: TObject): IGBClientResponse;
-    function GetList(Value: TList<TObject>; AType: TClass): IGBClientResponse;
-    function GetBytes: TBytes;
-    function GetStream: TBytesStream;
-
-    function HeaderAsString(Name: String): string;
-    function HeaderAsInteger(Name: String): Integer;
-    function HeaderAsFloat(Name: String): Double;
-    function HeaderAsDateTime(Name: String): TDateTime;
 
   public
     constructor create; override;
@@ -128,106 +109,12 @@ begin
   FRestRequest.Response := FRestResponse;
 end;
 
-function TGBClientRestClient.DataSet(Value: TDataSet): IGBClientResponse;
-var
-  parse: TGBOnParseJSONToDataSet;
-begin
-  result := Self;
-  parse := Settings.OnParseJSONToDataSet;
-  parse(GetJSONObject, Value);
-end;
-
 destructor TGBClientRestClient.Destroy;
 begin
   FreeAndNil(FRestResponse);
   FreeAndNil(FRestRequest);
   FreeAndNil(FRestClient);
-  FreeAndNil(FByteStream);
   inherited;
-end;
-
-function TGBClientRestClient.GetBytes: TBytes;
-begin
-  result := FRestResponse.RawBytes;
-end;
-
-function TGBClientRestClient.GetJSONArray: TJSONArray;
-begin
-  result := TJSONArray(FRestResponse.JSONValue);
-end;
-
-function TGBClientRestClient.GetJSONObject: TJSONObject;
-begin
-  result := TJSONObject(FRestResponse.JSONValue);
-end;
-
-function TGBClientRestClient.GetList(Value: TList<TObject>; AType: TClass): IGBClientResponse;
-var
-  parse : TGBOnParseJSONToObject;
-  jsonArray : TJSONArray;
-  LObject : TObject;
-  i : Integer;
-begin
-  result := Self;
-  jsonArray := GetJSONArray;
-
-  for i := 0 to Pred(jsonArray.Count) do
-  begin
-    parse := Settings.OnParseJSONToObject;
-    if Assigned(parse) then
-    begin
-      LObject := AType.Create;
-      try
-        parse(TJSONObject( jsonArray.Items[i] ), LObject);
-        Value.Add(LObject);
-      except
-        LObject.Free;
-        raise;
-      end;
-    end;
-  end;
-end;
-
-function TGBClientRestClient.GetObject(Value: TObject): IGBClientResponse;
-var
-  parse: TGBOnParseJSONToObject;
-begin
-  Result := Self;
-  parse := Settings.OnParseJSONToObject;
-  if Assigned( Settings.OnParseJSONToObject ) then
-    parse(GetJSONObject, Value);
-end;
-
-function TGBClientRestClient.GetStream: TBytesStream;
-begin
-  FreeAndNil(FByteStream);
-  FByteStream := TBytesStream.Create(GetBytes);
-  result := FByteStream;
-end;
-
-function TGBClientRestClient.GetText: string;
-begin
-  result := FRestResponse.Content;
-end;
-
-function TGBClientRestClient.HeaderAsDateTime(Name: String): TDateTime;
-begin
-  result.fromIso8601ToDateTime( HeaderAsString(Name));
-end;
-
-function TGBClientRestClient.HeaderAsFloat(Name: String): Double;
-begin
-  result := HeaderAsString(Name).ToDouble;
-end;
-
-function TGBClientRestClient.HeaderAsInteger(Name: String): Integer;
-begin
-  result := HeaderAsString(Name).ToInteger;
-end;
-
-function TGBClientRestClient.HeaderAsString(Name: String): string;
-begin
-  result := FRestResponse.Headers.Values[Name];
 end;
 
 class function TGBClientRestClient.New: IGBClientRequest;
@@ -282,7 +169,7 @@ begin
   begin
     if FAuthorization.AuthType = atAWSv4 then
     begin
-      FAuthorization.AWSv4.OnAWSSignature(Self.OnAWSAuthorization);
+      //FAuthorization.AWSv4.OnAWSSignature(Self.OnAWSAuthorization);
       FAuthorization.AWSv4
         .Host(GetFullUrl)
         .HTTPVerb(FMethod.value)
@@ -290,6 +177,12 @@ begin
     end;
 
     TGBClientRestClientAuth(FAuthorization).ApplyAuth;
+
+    if FAuthorization.AuthType = atAWSv4 then
+    begin
+      OnAWSAuthorization(FAuthorization.AWSv4.Authorization,
+                         FAuthorization.AWSv4.XAmzDate);
+    end;
   end;
 end;
 
@@ -358,14 +251,13 @@ end;
 
 function TGBClientRestClient.Response: IGBClientResponse;
 begin
-  result := Self;
+  result := FResponse;
 end;
 
 function TGBClientRestClient.Send: IGBClientResponse;
 var
   LException: EGBRestException;
 begin
-  result := Self;
   createComponents;
   PrepareRequest;
   try
@@ -380,28 +272,25 @@ begin
       end;
     end;
 
-    if FRestResponse.StatusCode >= 400 then
+    FResponse := TGBClientRestClientResponse.New(Self);
+
+    if FResponse.StatusCode >= 400 then
     begin
-      LException := EGBRestRequestException.create(FRestRequest);
+      LException := EGBRestException.create(FResponse.StatusCode,
+                                            FResponse.StatusText,
+                                            FResponse.GetText,
+                                            FResponse.GetJSONObject);
       if Assigned(FOnException) then
         FOnException(LException);
       raise LException;
     end;
+
+    result := FResponse;
   finally
     FRestRequest.Body.ClearBody;
     FRestRequest.Params.Clear;
     Clear;
   end;
-end;
-
-function TGBClientRestClient.StatusCode: Integer;
-begin
-  result := FRestResponse.StatusCode;
-end;
-
-function TGBClientRestClient.StatusText: string;
-begin
-  result := FRestResponse.StatusText;
 end;
 
 end.

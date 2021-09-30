@@ -8,8 +8,8 @@ uses
   GBClient.Core.Request,
   GBClient.Core.Helpers,
   GBClient.Core.Types,
+  GBClient.Core.Exceptions,
   GBClient.IdHTTP.Auth,
-  GBClient.IdHTTP.Exceptions,
   IdBaseComponent,
   IdMultipartFormData,
   IdComponent,
@@ -36,7 +36,6 @@ type TGBClientIdHTTP = class(TGBClientCoreRequest, IGBClientRequest,
     FHandler: TIdSSLIOHandlerSocketOpenSSL;
     FResponseStream: TStringStream;
     FBodyForm: TIdMultiPartFormDataStream;
-    FAuthorization: IGBClientAuth;
     FContentType: string;
 
     FJSONArray: TJSONArray;
@@ -304,7 +303,6 @@ begin
   begin
     if FAuthorization.AuthType = atAWSv4 then
     begin
-      FAuthorization.AWSv4.OnAWSSignature(Self.OnAWSAuthorization);
       FAuthorization.AWSv4
         .Host(GetFullUrl)
         .HTTPVerb(FMethod.value)
@@ -312,6 +310,12 @@ begin
     end;
 
     TGBClientIdHTTPAuth(FAuthorization).ApplyAuth;
+
+    if FAuthorization.AuthType = atAWSv4 then
+    begin
+      OnAWSAuthorization(FAuthorization.AWSv4.Authorization,
+                         FAuthorization.AWSv4.XAmzDate);
+    end;
   end;
 end;
 
@@ -388,7 +392,7 @@ end;
 function TGBClientIdHTTP.Send: IGBClientResponse;
 var
   url: string;
-  LException: EGBIdHTTPException;
+  LException: EGBRestException;
 begin
   FResponseStream.Clear;
   PrepareRequest;
@@ -419,13 +423,13 @@ begin
 
       if StatusCode >= 400 then
       begin
-        LException := EGBIdHTTPException.create(FIdHTTP);
+        LException := EGBRestException.create(StatusCode, StatusText, GetText, GetJSONObject);
         if Assigned(FOnException) then
           FOnException(LException);
         raise LException;
       end;
     except
-      on e: EGBIdHTTPException do
+      on e: EGBRestException do
         raise;
     end;
   finally
