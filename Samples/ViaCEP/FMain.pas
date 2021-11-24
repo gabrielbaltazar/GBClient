@@ -33,10 +33,10 @@ uses
 
 procedure TForm1.btnConsultaClick(Sender: TObject);
 var
-  Client: IGBClientRequest;
+  LClient: IGBClientRequest;
 begin
-  Client := NewClientRequest;
-  Client
+  LClient := NewClientRequest;
+  LClient
     .GET
     .BaseURL('https://viacep.com.br/ws/{cep}/json/')
     .Params
@@ -44,7 +44,7 @@ begin
     .&End
     .Send;
 
-  mmoReposta.Lines.Text := Client.Response.GetText;
+  mmoReposta.Lines.Text := LClient.Response.GetText;
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);

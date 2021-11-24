@@ -47,6 +47,7 @@ type TGBClientIdHTTP = class(TGBClientCoreRequest, IGBClientRequest,
     procedure createComponents;
 
     procedure PrepareRequest;
+    procedure PrepareRequestProxy;
     procedure PrepareRequestHeaders;
     procedure PrepareRequestQueries;
     procedure PrepareRequestPathParams;
@@ -290,6 +291,7 @@ begin
   createComponents;
   FIdHTTP.Request.Method := Self.FMethod.value;
 
+  PrepareRequestProxy;
   PrepareRequestPathParams;
   PrepareRequestHeaders;
   PrepareRequestQueries;
@@ -364,6 +366,14 @@ begin
   end;
 
   FIdHTTP.Request.URL := url;
+end;
+
+procedure TGBClientIdHTTP.PrepareRequestProxy;
+begin
+  FIdHTTP.ProxyParams.ProxyServer := FProxyServer;
+  FIdHTTP.ProxyParams.ProxyPort := FProxyPort;
+  FIdHTTP.ProxyParams.ProxyUsername := FProxyUsername;
+  FIdHTTP.ProxyParams.ProxyPassword := FProxyPassword;;
 end;
 
 procedure TGBClientIdHTTP.PrepareRequestQueries;
