@@ -39,6 +39,7 @@ type TGBClientNetHTTPClient = class(TGBClientCoreRequest, IGBClientRequest,
     procedure createComponents;
 
     procedure PrepareRequest;
+    procedure PrepareRequestProxy;
     procedure PrepareRequestHeaders;
     procedure PrepareRequestQueries;
     procedure PrepareRequestPathParams;
@@ -249,6 +250,7 @@ begin
 
   FRequest.MethodString := FMethod.value;
 
+  PrepareRequestProxy;
   PrepareRequestPathParams;
   PrepareRequestHeaders;
   PrepareRequestQueries;
@@ -321,6 +323,10 @@ begin
   end;
 
   FRequest.URL := url;
+end;
+
+procedure TGBClientNetHTTPClient.PrepareRequestProxy;
+begin
 end;
 
 procedure TGBClientNetHTTPClient.PrepareRequestQueries;

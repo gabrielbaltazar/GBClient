@@ -34,6 +34,7 @@ type
   IGBClientAuthAWSv4 = interface;
   IGBClientSettings = interface;
   IGBClientRequestParams = interface;
+  IGBClientProxy = interface;
 
   TOnPreExecute = reference to procedure(Value: String);
 
@@ -49,6 +50,7 @@ type
 
     function Authorization: IGBClientAuth;
     function Params: IGBClientRequestParams;
+    function Proxy: IGBClientProxy;
 
     function Accept(Value: string): IGBClientRequest;
     function AcceptCharset(Value: string): IGBClientRequest;
@@ -66,6 +68,16 @@ type
 
     function OnException (Value: TGBOnException): IGBClientRequest;
     function OnPreExecute(Value: TOnPreExecute): IGBClientRequest;
+  end;
+
+  IGBClientProxy = interface
+    ['{A2CE47E4-523B-4FC0-B9B7-1BD30CDCB326}']
+    function Server(Value: String): IGBClientProxy;
+    function Port(Value: Integer): IGBClientProxy;
+    function Username(Value: String): IGBClientProxy;
+    function Password(Value: String): IGBClientProxy;
+
+    function &End: IGBClientRequest;
   end;
 
   IGBClientRequestParams = interface

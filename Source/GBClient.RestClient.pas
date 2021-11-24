@@ -36,6 +36,7 @@ type TGBClientRestClient = class(TGBClientCoreRequest, IGBClientRequest,
     procedure createComponents;
 
     procedure PrepareRequest;
+    procedure PrepareRequestProxy;
     procedure PrepareRequestHeaders;
     procedure PrepareRequestQueries;
     procedure PrepareRequestPathParams;
@@ -144,6 +145,7 @@ begin
     gmtPATCH: FRestRequest.Method := rmPATCH;
   end;
 
+  PrepareRequestProxy;
   PrepareRequestHeaders;
   PrepareRequestQueries;
   PrepareRequestPathParams;
@@ -228,6 +230,14 @@ var
 begin
   for i := 0 to Pred(FPaths.Count) do
     FRestRequest.Params.AddUrlSegment(FPaths[i].Key, FPaths[i].Value);
+end;
+
+procedure TGBClientRestClient.PrepareRequestProxy;
+begin
+  FRestClient.ProxyServer := FProxyServer;
+  FRestClient.ProxyPort := FProxyPort;
+  FRestClient.ProxyPassword := FProxyPassword;
+  FRestClient.ProxyUsername := FProxyUsername;
 end;
 
 procedure TGBClientRestClient.PrepareRequestQueries;

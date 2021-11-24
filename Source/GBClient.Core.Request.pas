@@ -15,6 +15,7 @@ uses
   System.Generics.Collections;
 
 type TGBClientCoreRequest = class abstract (TInterfacedObject, IGBClientRequest,
+                                                               IGBClientProxy,
                                                                IGBClientRequestParams)
 
   protected
@@ -28,6 +29,10 @@ type TGBClientCoreRequest = class abstract (TInterfacedObject, IGBClientRequest,
     FBaseUrl: string;
     FResource: string;
     FTimeOut: Integer;
+    FProxyServer: string;
+    FProxyPort: Integer;
+    FProxyUsername: String;
+    FProxyPassword: String;
 
     FSettings: IGBClientSettings;
 
@@ -89,6 +94,14 @@ type TGBClientCoreRequest = class abstract (TInterfacedObject, IGBClientRequest,
     function BodyBinary(AStream : TStream; AOwner: Boolean = False): IGBClientRequestParams; overload;
 
     function GetBody: String;
+    {$ENDREGION}
+
+    {$REGION 'PROXY'}
+    function Proxy: IGBClientProxy;
+    function Server(Value: String): IGBClientProxy;
+    function Port(Value: Integer): IGBClientProxy;
+    function Username(Value: String): IGBClientProxy;
+    function Password(Value: String): IGBClientProxy;
     {$ENDREGION}
 
     function &End: IGBClientRequest;
@@ -383,6 +396,12 @@ begin
   result := Self;
 end;
 
+function TGBClientCoreRequest.Password(Value: String): IGBClientProxy;
+begin
+  result := Self;
+  FProxyPassword := Value;
+end;
+
 function TGBClientCoreRequest.PATCH: IGBClientRequest;
 begin
   result := Self;
@@ -407,6 +426,12 @@ begin
   TGBClientCoreRequestParam.AddOrSet(FPaths, Key, Value, False);
 end;
 
+function TGBClientCoreRequest.Port(Value: Integer): IGBClientProxy;
+begin
+  result := Self;
+  FProxyPort := Value;
+end;
+
 function TGBClientCoreRequest.PathAddOrSet(Key: string; Value: Extended): IGBClientRequestParams;
 begin
   Result := Self;
@@ -417,6 +442,11 @@ function TGBClientCoreRequest.POST: IGBClientRequest;
 begin
   result := Self;
   FMethod := gmtPOST;
+end;
+
+function TGBClientCoreRequest.Proxy: IGBClientProxy;
+begin
+  result := Self;
 end;
 
 function TGBClientCoreRequest.PUT: IGBClientRequest;
@@ -467,6 +497,12 @@ begin
   FResource := Value;
 end;
 
+function TGBClientCoreRequest.Server(Value: String): IGBClientProxy;
+begin
+  result := Self;
+  FProxyServer := Value;
+end;
+
 function TGBClientCoreRequest.Settings: IGBClientSettings;
 begin
   if not Assigned(FSettings) then
@@ -478,6 +514,12 @@ function TGBClientCoreRequest.TimeOut(Value: Integer): IGBClientRequest;
 begin
   result := Self;
   FTimeOut := Value;
+end;
+
+function TGBClientCoreRequest.Username(Value: String): IGBClientProxy;
+begin
+  result := Self;
+  FProxyUsername := Value;
 end;
 
 end.
