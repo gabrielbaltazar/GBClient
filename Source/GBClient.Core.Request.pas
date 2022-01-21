@@ -217,7 +217,7 @@ end;
 function TGBClientCoreRequest.BodyAddOrSet(Value: TJSONObject; AOwner: Boolean): IGBClientRequestParams;
 begin
   result := Self;
-  BodyAddOrSet(Value.ToString);
+  BodyAddOrSet(Value.ToJson);
   ContentType(TGBContentType.ctApplicationJson);
 
   if AOwner then
