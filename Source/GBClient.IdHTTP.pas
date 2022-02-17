@@ -128,6 +128,7 @@ begin
   FIdHTTP := TIdHTTP.Create(nil);
   FIdHTTP.Request.ContentType := FContentType;
   FIdHTTP.ConnectTimeout := FTimeOut;
+  FIdHTTP.HTTPOptions := [hoNoProtocolErrorException, hoWantProtocolErrorContent];
 
   FHandler := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
   FHandler.SSLOptions.Method := sslvTLSv1_2;
@@ -432,13 +433,16 @@ begin
       result := Self;
 
       if StatusCode >= 400 then
+        raise EIdHTTPProtocolException.CreateFmt('%s: %s', [StatusCode.ToString, StatusText]);
+    except
+      on e: EIdHTTPProtocolException do
       begin
         LException := EGBRestException.create(StatusCode, StatusText, GetText, GetJSONObject);
         if Assigned(FOnException) then
           FOnException(LException);
         raise LException;
       end;
-    except
+
       on e: EGBRestException do
         raise;
     end;

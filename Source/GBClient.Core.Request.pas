@@ -210,14 +210,14 @@ function TGBClientCoreRequest.BodyAddOrSet(Value: String): IGBClientRequestParam
 begin
   result := Self;
   FreeAndNil(FBody);
-  FBody := TStringStream.Create(Value);
+  FBody := TStringStream.Create(Value, TEncoding.UTF8);
   FBody.Position := 0;
 end;
 
 function TGBClientCoreRequest.BodyAddOrSet(Value: TJSONObject; AOwner: Boolean): IGBClientRequestParams;
 begin
   result := Self;
-  BodyAddOrSet(Value.ToJson);
+  BodyAddOrSet(Value.ToString);
   ContentType(TGBContentType.ctApplicationJson);
 
   if AOwner then
