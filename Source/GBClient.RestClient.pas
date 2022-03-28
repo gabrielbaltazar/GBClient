@@ -41,6 +41,7 @@ type TGBClientRestClient = class(TGBClientCoreRequest, IGBClientRequest,
     procedure PrepareRequestQueries;
     procedure PrepareRequestPathParams;
     procedure PrepareRequestBody;
+    procedure PrepareRequestFormData;
     procedure PrepareRequestAuth;
 
   protected
@@ -150,6 +151,7 @@ begin
   PrepareRequestQueries;
   PrepareRequestPathParams;
   PrepareRequestBody;
+  PrepareRequestFormData;
   PrepareRequestAuth;
 
   if Assigned(FOnPreExecute) then
@@ -205,6 +207,22 @@ begin
       FRestRequest.AddParameter(name, value, pkGETorPOST);
     end;
   end;
+end;
+
+procedure TGBClientRestClient.PrepareRequestFormData;
+var
+  i: Integer;
+begin
+  for i := 0 to Pred(FFormData.Count) do
+  begin
+//    FRestRequest.Client.ContentType := 'multipart/form-data';
+    FRestRequest.Params.AddItem(FFormData[i].Key,
+                                FFormData[i].Value,
+                                TRESTRequestParameterKind.pkREQUESTBODY,
+                                [],
+                                ctMULTIPART_FORM_DATA);
+  end;
+
 end;
 
 procedure TGBClientRestClient.PrepareRequestHeaders;

@@ -24,6 +24,8 @@ type TGBClientCoreRequest = class abstract (TInterfacedObject, IGBClientRequest,
     FPaths: TObjectList<TGBClientCoreRequestParam>;
     FQueries: TObjectList<TGBClientCoreRequestParam>;
     FUrlEncodedParams: TObjectList<TGBClientCoreRequestParam>;
+    FFormData: TObjectList<TGBClientCoreRequestParam>;
+    FFormDataStream: TDictionary<String, TStream>;
     FAuthorization: IGBClientAuth;
     FBody: TStream;
     FBaseUrl: string;
@@ -93,6 +95,13 @@ type TGBClientCoreRequest = class abstract (TInterfacedObject, IGBClientRequest,
     function BodyBinary(AFileName: String): IGBClientRequestParams; overload;
     function BodyBinary(AStream : TStream; AOwner: Boolean = False): IGBClientRequestParams; overload;
 
+    function FormDataAddOrSet(Key: string; Value: String; bEncode: Boolean = True): IGBClientRequestParams; overload;
+    function FormDataAddOrSet(Key: string; Value: Integer; bEncode: Boolean = True): IGBClientRequestParams; overload;
+    function FormDataAddOrSet(Key: string; Value: Extended; bEncode: Boolean = True): IGBClientRequestParams; overload;
+    function FormDataAddOrSet(Key: string; Value: TDateTime; bEncode: Boolean = True): IGBClientRequestParams; overload;
+    function FormDataAddFile(Key: string; Value: TStream): IGBClientRequestParams; overload;
+    function FormDataAddFile(Key: string; AFileName: String): IGBClientRequestParams; overload;
+
     function GetBody: String;
     {$ENDREGION}
 
@@ -124,6 +133,71 @@ implementation
 function TGBClientCoreRequest.&End: IGBClientRequest;
 begin
   result := Self;
+end;
+
+function TGBClientCoreRequest.FormDataAddFile(Key, AFileName: String): IGBClientRequestParams;
+var
+  LMemoryStream: TMemoryStream;
+begin
+  Result := Self;
+  ContentType(ctMultipart_form_data);
+
+  LMemoryStream := TMemoryStream.Create;
+  try
+    LMemoryStream.LoadFromFile(AFileName);
+    FormDataAddFile(Key, LMemoryStream);
+  finally
+    LMemoryStream.Free;
+  end;
+end;
+
+function TGBClientCoreRequest.FormDataAddFile(Key: string; Value: TStream): IGBClientRequestParams;
+var
+  LMemoryStream: TMemoryStream;
+begin
+  Result := Self;
+  if FFormDataStream.ContainsKey(Key) then
+    Exit;
+
+  ContentType(ctMultipart_form_data);
+
+  LMemoryStream := TMemoryStream.Create;
+  try
+    Value.Position := 0;
+    LMemoryStream.LoadFromStream(Value);
+    FFormDataStream.Add(Key, LMemoryStream);
+  except
+    LMemoryStream.Free;
+    raise;
+  end;
+end;
+
+function TGBClientCoreRequest.FormDataAddOrSet(Key, Value: String; bEncode: Boolean): IGBClientRequestParams;
+begin
+  Result := Self;
+  ContentType(ctMultipart_form_data);
+  TGBClientCoreRequestParam.AddOrSet(FFormData, Key, Value, bEncode);
+end;
+
+function TGBClientCoreRequest.FormDataAddOrSet(Key: string; Value: TDateTime; bEncode: Boolean): IGBClientRequestParams;
+begin
+  Result := Self;
+  ContentType(ctMultipart_form_data);
+  TGBClientCoreRequestParam.AddOrSet(FFormData, Key, Value, bEncode);
+end;
+
+function TGBClientCoreRequest.FormDataAddOrSet(Key: string; Value: Extended; bEncode: Boolean): IGBClientRequestParams;
+begin
+  Result := Self;
+  ContentType(ctMultipart_form_data);
+  TGBClientCoreRequestParam.AddOrSet(FFormData, Key, Value, bEncode);
+end;
+
+function TGBClientCoreRequest.FormDataAddOrSet(Key: string; Value: Integer; bEncode: Boolean): IGBClientRequestParams;
+begin
+  Result := Self;
+  ContentType(ctMultipart_form_data);
+  TGBClientCoreRequestParam.AddOrSet(FFormData, Key, Value, bEncode);
 end;
 
 function TGBClientCoreRequest.Accept(Value: string): IGBClientRequest;
@@ -271,12 +345,17 @@ begin
 end;
 
 procedure TGBClientCoreRequest.Clear;
+var
+  LKey: String;
 begin
   FHeaders.Clear;
   FPaths.Clear;
   FQueries.Clear;
   FUrlEncodedParams.Clear;
   FreeAndNil(FBody);
+
+  for LKey in FFormDataStream.Keys do
+    FFormDataStream.ExtractPair(LKey).Value.Free;
 end;
 
 function TGBClientCoreRequest.ContentType(Value: String): IGBClientRequest;
@@ -291,6 +370,8 @@ begin
   FPaths := TObjectList<TGBClientCoreRequestParam>.create;
   FQueries := TObjectList<TGBClientCoreRequestParam>.create;
   FUrlEncodedParams := TObjectList<TGBClientCoreRequestParam>.create;
+  FFormData := TObjectList<TGBClientCoreRequestParam>.create;
+  FFormDataStream := TDictionary<String, TStream>.create;
 
   FMethod := gmtGET;
   AcceptCharset('utf-8, *;q=0.8');
@@ -315,6 +396,8 @@ begin
   FPaths.Free;
   FQueries.Free;
   FUrlEncodedParams.Free;
+  FFormData.Free;
+  FFormDataStream.Free;
   inherited;
 end;
 

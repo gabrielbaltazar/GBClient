@@ -112,6 +112,14 @@ type
     function BodyBinary(AFileName: String): IGBClientRequestParams; overload;
     function BodyBinary(AStream : TStream; AOwner: Boolean = False): IGBClientRequestParams; overload;
 
+    // FormData
+    function FormDataAddOrSet(Key: string; Value: String; bEncode: Boolean = True): IGBClientRequestParams; overload;
+    function FormDataAddOrSet(Key: string; Value: Integer; bEncode: Boolean = True): IGBClientRequestParams; overload;
+    function FormDataAddOrSet(Key: string; Value: Extended; bEncode: Boolean = True): IGBClientRequestParams; overload;
+    function FormDataAddOrSet(Key: string; Value: TDateTime; bEncode: Boolean = True): IGBClientRequestParams; overload;
+    function FormDataAddFile(Key: string; Value: TStream): IGBClientRequestParams; overload;
+    function FormDataAddFile(Key: string; AFileName: String): IGBClientRequestParams; overload;
+
     function GetBody: String;
 
     function &End: IGBClientRequest;

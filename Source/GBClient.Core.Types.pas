@@ -7,7 +7,8 @@ type
 
   TGBContentType = (ctApplicationJson,
                     ctApplicationXml,
-                    ctApplication_x_www_form_urlencoded);
+                    ctApplication_x_www_form_urlencoded,
+                    ctMultipart_form_data);
 
   TGBContentTypeHelper = record helper for TGBContentType
     public
@@ -29,6 +30,7 @@ begin
     ctApplicationJson : result := 'application/json';
     ctApplicationXml  : result := 'application/xml';
     ctApplication_x_www_form_urlencoded : result := 'application/x-www-form-urlencoded';
+    ctMultipart_form_data: result := 'multipart/form-data';
   end;
 end;
 
