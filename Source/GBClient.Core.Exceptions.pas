@@ -2,6 +2,10 @@ unit GBClient.Core.Exceptions;
 
 interface
 
+{$IFDEF WEAKPACKAGEUNIT}
+	{$WEAKPACKAGEUNIT ON}
+{$ENDIF}
+
 uses
   System.SysUtils,
   System.JSON;

@@ -2,6 +2,10 @@ unit GBClient.RestClient.Auth;
 
 interface
 
+{$IFDEF WEAKPACKAGEUNIT}
+	{$WEAKPACKAGEUNIT ON}
+{$ENDIF}
+
 uses
   GBClient.Interfaces,
   GBClient.Core.Request.Auth,

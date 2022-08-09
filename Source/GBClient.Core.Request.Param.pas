@@ -2,6 +2,10 @@ unit GBClient.Core.Request.Param;
 
 interface
 
+{$IFDEF WEAKPACKAGEUNIT}
+	{$WEAKPACKAGEUNIT ON}
+{$ENDIF}
+
 uses
   GBClient.Core.Helpers,
   System.SysUtils,

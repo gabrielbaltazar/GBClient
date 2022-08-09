@@ -2,6 +2,10 @@ unit GBClient.NetHTTPClient;
 
 interface
 
+{$IFDEF WEAKPACKAGEUNIT}
+	{$WEAKPACKAGEUNIT ON}
+{$ENDIF}
+
 uses
   Data.DB,
   GBClient.Interfaces,

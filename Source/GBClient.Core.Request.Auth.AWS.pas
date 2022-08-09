@@ -2,6 +2,10 @@ unit GBClient.Core.Request.Auth.AWS;
 
 interface
 
+{$IFDEF WEAKPACKAGEUNIT}
+	{$WEAKPACKAGEUNIT ON}
+{$ENDIF}
+
 uses
   GBClient.Interfaces,
   System.Net.URLClient,
