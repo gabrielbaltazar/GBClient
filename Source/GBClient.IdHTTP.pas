@@ -52,6 +52,7 @@ type TGBClientIdHTTP = class(TGBClientCoreRequest, IGBClientRequest,
     procedure PrepareRequestQueries;
     procedure PrepareRequestPathParams;
     procedure PrepareRequestBody;
+    procedure PrepareRequestFormData;
     procedure PrepareRequestAuth;
 
     function GetFullUrl: string;
@@ -297,6 +298,7 @@ begin
   PrepareRequestHeaders;
   PrepareRequestQueries;
   PrepareRequestBody;
+  PrepareRequestFormData;
   PrepareRequestAuth;
 end;
 
@@ -336,6 +338,25 @@ begin
 
     FBodyForm.AddFormField(name, value);
   end;
+end;
+
+procedure TGBClientIdHTTP.PrepareRequestFormData;
+var
+  i: Integer;
+  LName: String;
+  LValue: String;
+begin
+  FBodyForm.Clear;
+  for i := 0 to Pred(FFormData.Count) do
+  begin
+    LName := FFormData[i].Key;
+    LValue := FFormData[i].Value;
+
+    FBodyForm.AddFormField(LName, LValue);
+  end;
+
+  for LName in FFormDataStream.Keys do
+    FBodyForm.AddFormField(LName, '', '', FFormDataStream.Items[LName]);
 end;
 
 procedure TGBClientIdHTTP.PrepareRequestHeaders;
