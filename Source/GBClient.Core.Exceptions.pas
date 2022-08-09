@@ -3,7 +3,7 @@ unit GBClient.Core.Exceptions;
 interface
 
 {$IFDEF WEAKPACKAGEUNIT}
-	{$WEAKPACKAGEUNIT ON}
+  {$WEAKPACKAGEUNIT ON}
 {$ENDIF}
 
 uses
@@ -20,25 +20,22 @@ type
     FStatusText: string;
     FContent: string;
     FJSON: TJSONObject;
-
   public
-    property statusCode: Integer read FStatusCode;
-    property statusText: String read FStatusText;
-    property content: string read FContent;
-    property JSON: TJSONObject read FJSON;
-
-    constructor create(AStatusCode: Integer;
-                       AStatusText: string;
-                       AContent: string;
-                       AJSON: TJSONObject = nil);
+    constructor Create(AStatusCode: Integer; AStatusText: string;
+      AContent: string; AJSON: TJSONObject = nil);
     destructor Destroy; override;
+
+    property StatusCode: Integer read FStatusCode;
+    property StatusText: string read FStatusText;
+    property Content: string read FContent;
+    property JSON: TJSONObject read FJSON;
   end;
 
 implementation
 
 { EGBRestException }
 
-constructor EGBRestException.create(AStatusCode: Integer; AStatusText, AContent: string; AJSON: TJSONObject);
+constructor EGBRestException.Create(AStatusCode: Integer; AStatusText, AContent: string; AJSON: TJSONObject);
 begin
   FStatusCode := AStatusCode;
   FStatusText := AStatusText;
@@ -50,9 +47,8 @@ begin
     FJSON := AJSON.Clone as TJSONObject;
   end;
 
-  Self.Message := Format('%s %s: %s', [FStatusCode.ToString,
-                                       FStatusText,
-                                       FContent]);
+  Self.Message := Format('%s %s: %s',
+    [FStatusCode.ToString, FStatusText, FContent]);
 end;
 
 destructor EGBRestException.Destroy;

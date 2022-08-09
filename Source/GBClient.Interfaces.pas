@@ -3,7 +3,7 @@ unit GBClient.Interfaces;
 interface
 
 {$IFDEF WEAKPACKAGEUNIT}
-	{$WEAKPACKAGEUNIT ON}
+  {$WEAKPACKAGEUNIT ON}
 {$ENDIF}
 
 uses

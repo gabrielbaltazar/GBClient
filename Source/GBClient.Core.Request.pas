@@ -3,7 +3,7 @@ unit GBClient.Core.Request;
 interface
 
 {$IFDEF WEAKPACKAGEUNIT}
-	{$WEAKPACKAGEUNIT ON}
+  {$WEAKPACKAGEUNIT ON}
 {$ENDIF}
 
 uses
@@ -18,10 +18,9 @@ uses
   System.JSON,
   System.Generics.Collections;
 
-type TGBClientCoreRequest = class abstract (TInterfacedObject, IGBClientRequest,
-                                                               IGBClientProxy,
-                                                               IGBClientRequestParams)
-
+type
+  TGBClientCoreRequest = class abstract (TInterfacedObject, IGBClientRequest,
+    IGBClientProxy, IGBClientRequestParams)
   protected
     FMethod: TGBMethodType;
     FHeaders: TObjectList<TGBClientCoreRequestParam>;
@@ -29,7 +28,7 @@ type TGBClientCoreRequest = class abstract (TInterfacedObject, IGBClientRequest,
     FQueries: TObjectList<TGBClientCoreRequestParam>;
     FUrlEncodedParams: TObjectList<TGBClientCoreRequestParam>;
     FFormData: TObjectList<TGBClientCoreRequestParam>;
-    FFormDataStream: TDictionary<String, TStream>;
+    FFormDataStream: TDictionary<string, TStream>;
     FAuthorization: IGBClientAuth;
     FBody: TStream;
     FBaseUrl: string;
@@ -37,16 +36,13 @@ type TGBClientCoreRequest = class abstract (TInterfacedObject, IGBClientRequest,
     FTimeOut: Integer;
     FProxyServer: string;
     FProxyPort: Integer;
-    FProxyUsername: String;
-    FProxyPassword: String;
-
+    FProxyUsername: string;
+    FProxyPassword: string;
     FSettings: IGBClientSettings;
-
     FOnException: TGBOnException;
     FOnPreExecute: TOnPreExecute;
 
-    function GetFullUrl: String;
-
+    function GetFullUrl: string;
     procedure Clear;
     function Component: TComponent; virtual; abstract;
     function Authorization: IGBClientAuth; virtual; abstract;
@@ -57,76 +53,67 @@ type TGBClientCoreRequest = class abstract (TInterfacedObject, IGBClientRequest,
     function DELETE: IGBClientRequest;
     function PATCH: IGBClientRequest;
 
-    function Accept(Value: string): IGBClientRequest;
-    function AcceptCharset(Value: string): IGBClientRequest;
-    function AcceptEncoding(Value: string): IGBClientRequest;
-    function ContentType(Value: TGBContentType): IGBClientRequest; overload; virtual;
-    function ContentType(Value: String): IGBClientRequest; overload;
-    function BaseURL(Value: String): IGBClientRequest;
-    function Resource(Value: String): IGBClientRequest;
-    function TimeOut(Value: Integer): IGBClientRequest;
+    function Accept(AValue: string): IGBClientRequest;
+    function AcceptCharset(AValue: string): IGBClientRequest;
+    function AcceptEncoding(AValue: string): IGBClientRequest;
+    function ContentType(AValue: TGBContentType): IGBClientRequest; overload; virtual;
+    function ContentType(AValue: string): IGBClientRequest; overload;
+    function BaseURL(AValue: string): IGBClientRequest;
+    function Resource(AValue: string): IGBClientRequest;
+    function TimeOut(AValue: Integer): IGBClientRequest;
 
     {$REGION 'PARAMS'}
     function Params: IGBClientRequestParams;
-
     // Header Params
-    function HeaderAddOrSet(Key: string; Value: String; bEncode: Boolean = True): IGBClientRequestParams; overload;
-    function HeaderAddOrSet(Key: string; Value: Integer; bEncode: Boolean = True): IGBClientRequestParams; overload;
-    function HeaderAddOrSet(Key: string; Value: Extended; bEncode: Boolean = True): IGBClientRequestParams; overload;
-    function HeaderAddOrSet(Key: string; Value: TDateTime; bEncode: Boolean = True): IGBClientRequestParams; overload;
-
+    function HeaderAddOrSet(AKey: string; AValue: string; AEncode: Boolean = True): IGBClientRequestParams; overload;
+    function HeaderAddOrSet(AKey: string; AValue: Integer; AEncode: Boolean = True): IGBClientRequestParams; overload;
+    function HeaderAddOrSet(AKey: string; AValue: Extended; AEncode: Boolean = True): IGBClientRequestParams; overload;
+    function HeaderAddOrSet(AKey: string; AValue: TDateTime; AEncode: Boolean = True): IGBClientRequestParams; overload;
     // Path Params
-    function PathAddOrSet(Key: string; Value: String): IGBClientRequestParams; overload;
-    function PathAddOrSet(Key: string; Value: Integer): IGBClientRequestParams; overload;
-    function PathAddOrSet(Key: string; Value: Extended): IGBClientRequestParams; overload;
-    function PathAddOrSet(Key: string; Value: TDateTime): IGBClientRequestParams; overload;
-
+    function PathAddOrSet(AKey: string; AValue: string): IGBClientRequestParams; overload;
+    function PathAddOrSet(AKey: string; AValue: Integer): IGBClientRequestParams; overload;
+    function PathAddOrSet(AKey: string; AValue: Extended): IGBClientRequestParams; overload;
+    function PathAddOrSet(AKey: string; AValue: TDateTime): IGBClientRequestParams; overload;
     // Query Params
-    function QueryAddOrSet(Key: string; Value: String; bEncode: Boolean = True): IGBClientRequestParams; overload;
-    function QueryAddOrSet(Key: string; Value: Integer; bEncode: Boolean = True): IGBClientRequestParams; overload;
-    function QueryAddOrSet(Key: string; Value: Extended; bEncode: Boolean = True): IGBClientRequestParams; overload;
-    function QueryAddOrSet(Key: string; Value: TDateTime; bEncode: Boolean = True): IGBClientRequestParams; overload;
-
+    function QueryAddOrSet(AKey: string; AValue: string; AEncode: Boolean = True): IGBClientRequestParams; overload;
+    function QueryAddOrSet(AKey: string; AValue: Integer; AEncode: Boolean = True): IGBClientRequestParams; overload;
+    function QueryAddOrSet(AKey: string; AValue: Extended; AEncode: Boolean = True): IGBClientRequestParams; overload;
+    function QueryAddOrSet(aKey: string; AValue: TDateTime; AEncode: Boolean = True): IGBClientRequestParams; overload;
     // Body Params
-    function BodyAddOrSet(Value: String) : IGBClientRequestParams; overload;
-    function BodyAddOrSet(Value: TJSONObject; AOwner: Boolean = False): IGBClientRequestParams; overload;
-    function BodyAddOrSet(Value: TJSONArray; AOwner: Boolean = False): IGBClientRequestParams; overload;
-    function BodyAddOrSet(Value: TObject; AOwner: Boolean = False): IGBClientRequestParams; overload;
-    function BodyAddOrSet(Value: TList<TObject>; AOwner: Boolean = False): IGBClientRequestParams; overload;
-    function BodyAddOrSet(Value: TDataSet; ACurrent: Boolean = True): IGBClientRequestParams; overload;
-    function BodyAddOrSet(Key, Value: String): IGBClientRequestParams; overload;
-
-    function BodyBinary(AFileName: String): IGBClientRequestParams; overload;
+    function BodyAddOrSet(AValue: string) : IGBClientRequestParams; overload;
+    function BodyAddOrSet(AValue: TJSONObject; AOwner: Boolean = False): IGBClientRequestParams; overload;
+    function BodyAddOrSet(AValue: TJSONArray; AOwner: Boolean = False): IGBClientRequestParams; overload;
+    function BodyAddOrSet(AValue: TObject; AOwner: Boolean = False): IGBClientRequestParams; overload;
+    function BodyAddOrSet(AValue: TList<TObject>; AOwner: Boolean = False): IGBClientRequestParams; overload;
+    function BodyAddOrSet(AValue: TDataSet; ACurrent: Boolean = True): IGBClientRequestParams; overload;
+    function BodyAddOrSet(AKey, AValue: string): IGBClientRequestParams; overload;
+    function BodyBinary(AFileName: string): IGBClientRequestParams; overload;
     function BodyBinary(AStream : TStream; AOwner: Boolean = False): IGBClientRequestParams; overload;
-
-    function FormDataAddOrSet(Key: string; Value: String; bEncode: Boolean = True): IGBClientRequestParams; overload;
-    function FormDataAddOrSet(Key: string; Value: Integer; bEncode: Boolean = True): IGBClientRequestParams; overload;
-    function FormDataAddOrSet(Key: string; Value: Extended; bEncode: Boolean = True): IGBClientRequestParams; overload;
-    function FormDataAddOrSet(Key: string; Value: TDateTime; bEncode: Boolean = True): IGBClientRequestParams; overload;
-    function FormDataAddFile(Key: string; Value: TStream): IGBClientRequestParams; overload;
-    function FormDataAddFile(Key: string; AFileName: String): IGBClientRequestParams; overload;
-
-    function GetBody: String;
+    function FormDataAddOrSet(AKey: string; AValue: string; AEncode: Boolean = True): IGBClientRequestParams; overload;
+    function FormDataAddOrSet(AKey: string; AValue: Integer; AEncode: Boolean = True): IGBClientRequestParams; overload;
+    function FormDataAddOrSet(AKey: string; AValue: Extended; AEncode: Boolean = True): IGBClientRequestParams; overload;
+    function FormDataAddOrSet(AKey: string; AValue: TDateTime; AEncode: Boolean = True): IGBClientRequestParams; overload;
+    function FormDataAddFile(AKey: string; AValue: TStream): IGBClientRequestParams; overload;
+    function FormDataAddFile(AKey: string; AFileName: string): IGBClientRequestParams; overload;
+    function GetBody: string;
     {$ENDREGION}
 
     {$REGION 'PROXY'}
     function Proxy: IGBClientProxy;
-    function Server(Value: String): IGBClientProxy;
-    function Port(Value: Integer): IGBClientProxy;
-    function Username(Value: String): IGBClientProxy;
-    function Password(Value: String): IGBClientProxy;
+    function Server(AValue: string): IGBClientProxy;
+    function Port(AValue: Integer): IGBClientProxy;
+    function Username(AValue: string): IGBClientProxy;
+    function Password(AValue: string): IGBClientProxy;
     {$ENDREGION}
 
     function &End: IGBClientRequest;
     function Send: IGBClientResponse; virtual; abstract;
     function Response : IGBClientResponse; virtual; abstract;
-
     function Settings: IGBClientSettings;
-
-    function OnException (Value: TGBOnException): IGBClientRequest;
-    function OnPreExecute(Value: TOnPreExecute): IGBClientRequest;
+    function OnException (AValue: TGBOnException): IGBClientRequest;
+    function OnPreExecute(AValue: TOnPreExecute): IGBClientRequest;
   public
-    constructor create; virtual;
+    constructor Create; virtual;
     destructor Destroy; override;
 end;
 
@@ -136,187 +123,179 @@ implementation
 
 function TGBClientCoreRequest.&End: IGBClientRequest;
 begin
-  result := Self;
+  Result := Self;
 end;
 
-function TGBClientCoreRequest.FormDataAddFile(Key, AFileName: String): IGBClientRequestParams;
+function TGBClientCoreRequest.FormDataAddFile(AKey, AFileName: string): IGBClientRequestParams;
 var
   LMemoryStream: TMemoryStream;
 begin
   Result := Self;
   ContentType(ctMultipart_form_data);
-
   LMemoryStream := TMemoryStream.Create;
   try
     LMemoryStream.LoadFromFile(AFileName);
-    FormDataAddFile(Key, LMemoryStream);
+    FormDataAddFile(AKey, LMemoryStream);
   finally
     LMemoryStream.Free;
   end;
 end;
 
-function TGBClientCoreRequest.FormDataAddFile(Key: string; Value: TStream): IGBClientRequestParams;
+function TGBClientCoreRequest.FormDataAddFile(AKey: string; AValue: TStream): IGBClientRequestParams;
 var
   LMemoryStream: TMemoryStream;
 begin
   Result := Self;
-  if FFormDataStream.ContainsKey(Key) then
+  if FFormDataStream.ContainsKey(AKey) then
     Exit;
 
   ContentType(ctMultipart_form_data);
-
   LMemoryStream := TMemoryStream.Create;
   try
-    Value.Position := 0;
-    LMemoryStream.LoadFromStream(Value);
-    FFormDataStream.Add(Key, LMemoryStream);
+    AValue.Position := 0;
+    LMemoryStream.LoadFromStream(AValue);
+    FFormDataStream.Add(AKey, LMemoryStream);
   except
     LMemoryStream.Free;
     raise;
   end;
 end;
 
-function TGBClientCoreRequest.FormDataAddOrSet(Key, Value: String; bEncode: Boolean): IGBClientRequestParams;
+function TGBClientCoreRequest.FormDataAddOrSet(AKey, AValue: string; AEncode: Boolean): IGBClientRequestParams;
 begin
   Result := Self;
   ContentType(ctMultipart_form_data);
-  TGBClientCoreRequestParam.AddOrSet(FFormData, Key, Value, bEncode);
+  TGBClientCoreRequestParam.AddOrSet(FFormData, AKey, AValue, AEncode);
 end;
 
-function TGBClientCoreRequest.FormDataAddOrSet(Key: string; Value: TDateTime; bEncode: Boolean): IGBClientRequestParams;
+function TGBClientCoreRequest.FormDataAddOrSet(AKey: string; AValue: TDateTime; AEncode: Boolean): IGBClientRequestParams;
 begin
   Result := Self;
   ContentType(ctMultipart_form_data);
-  TGBClientCoreRequestParam.AddOrSet(FFormData, Key, Value, bEncode);
+  TGBClientCoreRequestParam.AddOrSet(FFormData, AKey, AValue, AEncode);
 end;
 
-function TGBClientCoreRequest.FormDataAddOrSet(Key: string; Value: Extended; bEncode: Boolean): IGBClientRequestParams;
+function TGBClientCoreRequest.FormDataAddOrSet(AKey: string; AValue: Extended; AEncode: Boolean): IGBClientRequestParams;
 begin
   Result := Self;
   ContentType(ctMultipart_form_data);
-  TGBClientCoreRequestParam.AddOrSet(FFormData, Key, Value, bEncode);
+  TGBClientCoreRequestParam.AddOrSet(FFormData, AKey, AValue, AEncode);
 end;
 
-function TGBClientCoreRequest.FormDataAddOrSet(Key: string; Value: Integer; bEncode: Boolean): IGBClientRequestParams;
+function TGBClientCoreRequest.FormDataAddOrSet(AKey: string; AValue: Integer; AEncode: Boolean): IGBClientRequestParams;
 begin
   Result := Self;
   ContentType(ctMultipart_form_data);
-  TGBClientCoreRequestParam.AddOrSet(FFormData, Key, Value, bEncode);
+  TGBClientCoreRequestParam.AddOrSet(FFormData, AKey, AValue, AEncode);
 end;
 
-function TGBClientCoreRequest.Accept(Value: string): IGBClientRequest;
+function TGBClientCoreRequest.Accept(AValue: string): IGBClientRequest;
 begin
-  result := Self;
-  HeaderAddOrSet('Accept', Value, False);
+  Result := Self;
+  HeaderAddOrSet('Accept', AValue, False);
 end;
 
-function TGBClientCoreRequest.AcceptCharset(Value: string): IGBClientRequest;
+function TGBClientCoreRequest.AcceptCharset(AValue: string): IGBClientRequest;
 begin
-  result := Self;
-  HeaderAddOrSet('Accept-Charset', Value);
+  Result := Self;
+  HeaderAddOrSet('Accept-Charset', AValue);
 end;
 
-function TGBClientCoreRequest.AcceptEncoding(Value: string): IGBClientRequest;
+function TGBClientCoreRequest.AcceptEncoding(AValue: string): IGBClientRequest;
 begin
-  result := Self;
-  HeaderAddOrSet('Accept-Encoding', Value);
+  Result := Self;
+  HeaderAddOrSet('Accept-Encoding', AValue);
 end;
 
-function TGBClientCoreRequest.BaseURL(Value: String): IGBClientRequest;
+function TGBClientCoreRequest.BaseURL(AValue: string): IGBClientRequest;
 begin
-  result := Self;
-  FBaseUrl := Value;
+  Result := Self;
+  FBaseUrl := AValue;
 end;
 
-function TGBClientCoreRequest.BodyAddOrSet(Value: TObject; AOwner: Boolean): IGBClientRequestParams;
+function TGBClientCoreRequest.BodyAddOrSet(AValue: TObject; AOwner: Boolean): IGBClientRequestParams;
 var
-  parse : TGBOnParseObjectToJSON;
-  json: TJSONObject;
+  LParse: TGBOnParseObjectToJSON;
+  LJSON: TJSONObject;
 begin
-  result := Self;
-  parse := Settings.OnParseObjectToJSON;
-  json := parse(Value);
+  Result := Self;
+  LParse := Settings.OnParseObjectToJSON;
+  LJSON := LParse(AValue);
   try
-    BodyAddOrSet(json, False);
-
+    BodyAddOrSet(LJSON, False);
     if AOwner then
-      FreeAndNil(Value);
+      FreeAndNil(AValue);
   finally
-    json.Free;
+    LJSON.Free;
   end;
 end;
 
-function TGBClientCoreRequest.BodyAddOrSet(Value: TList<TObject>; AOwner: Boolean): IGBClientRequestParams;
+function TGBClientCoreRequest.BodyAddOrSet(AValue: TList<TObject>; AOwner: Boolean): IGBClientRequestParams;
 var
-  parse: TGBOnParseObjectToJSON;
-  jsonArray: TJSONArray;
-  i: Integer;
+  LParse: TGBOnParseObjectToJSON;
+  LJsonArray: TJSONArray;
+  I: Integer;
 begin
-  result := Self;
-  parse := Settings.OnParseObjectToJSON;
-
-  jsonArray := TJSONArray.Create;
+  Result := Self;
+  LParse := Settings.OnParseObjectToJSON;
+  LJsonArray := TJSONArray.Create;
   try
-    for i := 0 to Pred(Value.Count) do
-      jsonArray.AddElement(parse(Value[i]));
-
-    BodyAddOrSet(jsonArray);
+    for I := 0 to Pred(AValue.Count) do
+      LJsonArray.AddElement(LParse(AValue[I]));
+    BodyAddOrSet(LJsonArray);
   finally
-    jsonArray.Free;
+    LJsonArray.Free;
     if AOwner then
-      FreeAndNil(Value);
+      FreeAndNil(AValue);
   end;
 end;
 
-function TGBClientCoreRequest.BodyAddOrSet(Key, Value: String): IGBClientRequestParams;
+function TGBClientCoreRequest.BodyAddOrSet(AKey, AValue: string): IGBClientRequestParams;
 begin
-  result := Self;
-  TGBClientCoreRequestParam.AddOrSet(FUrlEncodedParams, Key, Value);
+  Result := Self;
+  TGBClientCoreRequestParam.AddOrSet(FUrlEncodedParams, AKey, AValue);
   ContentType(TGBContentType.ctApplication_x_www_form_urlencoded);
 end;
 
-function TGBClientCoreRequest.BodyAddOrSet(Value: TDataSet; ACurrent: Boolean): IGBClientRequestParams;
+function TGBClientCoreRequest.BodyAddOrSet(AValue: TDataSet; ACurrent: Boolean): IGBClientRequestParams;
 begin
-  result := Self;
+  Result := Self;
   if ACurrent then
-    BodyAddOrSet(Value.ToJSONObject, True)
+    BodyAddOrSet(AValue.ToJSONObject, True)
   else
-    BodyAddOrSet(Value.ToJSONArray, True);
+    BodyAddOrSet(AValue.ToJSONArray, True);
 end;
 
-function TGBClientCoreRequest.BodyAddOrSet(Value: String): IGBClientRequestParams;
+function TGBClientCoreRequest.BodyAddOrSet(AValue: string): IGBClientRequestParams;
 begin
-  result := Self;
+  Result := Self;
   FreeAndNil(FBody);
-  FBody := TStringStream.Create(Value, TEncoding.UTF8);
+  FBody := TStringStream.Create(AValue, TEncoding.UTF8);
   FBody.Position := 0;
 end;
 
-function TGBClientCoreRequest.BodyAddOrSet(Value: TJSONObject; AOwner: Boolean): IGBClientRequestParams;
+function TGBClientCoreRequest.BodyAddOrSet(AValue: TJSONObject; AOwner: Boolean): IGBClientRequestParams;
 begin
-  result := Self;
-  BodyAddOrSet(Value.ToString);
+  Result := Self;
+  BodyAddOrSet(AValue.ToString);
   ContentType(TGBContentType.ctApplicationJson);
-
   if AOwner then
-    FreeAndNil(Value);
+    FreeAndNil(AValue);
 end;
 
-function TGBClientCoreRequest.BodyAddOrSet(Value: TJSONArray; AOwner: Boolean): IGBClientRequestParams;
+function TGBClientCoreRequest.BodyAddOrSet(AValue: TJSONArray; AOwner: Boolean): IGBClientRequestParams;
 begin
-  result := Self;
-  BodyAddOrSet(Value.ToString);
+  Result := Self;
+  BodyAddOrSet(AValue.ToString);
   ContentType(TGBContentType.ctApplicationJson);
-
   if AOwner then
-    FreeAndNil(Value);
+    FreeAndNil(AValue);
 end;
 
-function TGBClientCoreRequest.BodyBinary(AFileName: String): IGBClientRequestParams;
+function TGBClientCoreRequest.BodyBinary(AFileName: string): IGBClientRequestParams;
 begin
-  result := Self;
+  Result := Self;
   FreeAndNil(FBody);
-
   FBody := TMemoryStream.Create;
   try
     TMemoryStream(FBody).LoadFromFile(AFileName);
@@ -329,9 +308,8 @@ end;
 
 function TGBClientCoreRequest.BodyBinary(AStream: TStream; AOwner: Boolean): IGBClientRequestParams;
 begin
-  result := Self;
+  Result := Self;
   FreeAndNil(FBody);
-
   FBody := TMemoryStream.Create;
   try
     TMemoryStream(FBody).LoadFromStream(AStream);
@@ -342,41 +320,39 @@ begin
   end;
 end;
 
-function TGBClientCoreRequest.ContentType(Value: TGBContentType): IGBClientRequest;
+function TGBClientCoreRequest.ContentType(AValue: TGBContentType): IGBClientRequest;
 begin
-  result := Self;
-  ContentType(Value.value);
+  Result := Self;
+  ContentType(AValue.value);
 end;
 
 procedure TGBClientCoreRequest.Clear;
 var
-  LKey: String;
+  LKey: string;
 begin
   FHeaders.Clear;
   FPaths.Clear;
   FQueries.Clear;
   FUrlEncodedParams.Clear;
   FreeAndNil(FBody);
-
   for LKey in FFormDataStream.Keys do
     FFormDataStream.ExtractPair(LKey).Value.Free;
 end;
 
-function TGBClientCoreRequest.ContentType(Value: String): IGBClientRequest;
+function TGBClientCoreRequest.ContentType(AValue: string): IGBClientRequest;
 begin
-  result := Self;
-  HeaderAddOrSet('content-type', Value, False);
+  Result := Self;
+  HeaderAddOrSet('content-type', AValue, False);
 end;
 
-constructor TGBClientCoreRequest.create;
+constructor TGBClientCoreRequest.Create;
 begin
-  FHeaders := TObjectList<TGBClientCoreRequestParam>.create;
-  FPaths := TObjectList<TGBClientCoreRequestParam>.create;
-  FQueries := TObjectList<TGBClientCoreRequestParam>.create;
-  FUrlEncodedParams := TObjectList<TGBClientCoreRequestParam>.create;
-  FFormData := TObjectList<TGBClientCoreRequestParam>.create;
-  FFormDataStream := TDictionary<String, TStream>.create;
-
+  FHeaders := TObjectList<TGBClientCoreRequestParam>.Create;
+  FPaths := TObjectList<TGBClientCoreRequestParam>.Create;
+  FQueries := TObjectList<TGBClientCoreRequestParam>.Create;
+  FUrlEncodedParams := TObjectList<TGBClientCoreRequestParam>.Create;
+  FFormData := TObjectList<TGBClientCoreRequestParam>.Create;
+  FFormDataStream := TDictionary<string, TStream>.Create;
   FMethod := gmtGET;
   AcceptCharset('utf-8, *;q=0.8');
   ContentType('application/json');
@@ -390,7 +366,7 @@ end;
 
 function TGBClientCoreRequest.DELETE: IGBClientRequest;
 begin
-  result := Self;
+  Result := Self;
   FMethod := gmtDELETE;
 end;
 
@@ -407,206 +383,200 @@ end;
 
 function TGBClientCoreRequest.GET: IGBClientRequest;
 begin
-  result := Self;
+  Result := Self;
   FMethod := gmtGET;
 end;
 
-function TGBClientCoreRequest.GetBody: String;
+function TGBClientCoreRequest.GetBody: string;
 var
-  bodyStream: TStringStream;
+  LBodyStream: TStringStream;
 begin
   if Assigned(FBody) then
   begin
-    bodyStream := TStringStream.Create;
+    LBodyStream := TStringStream.Create;
     try
-      bodyStream.LoadFromStream(FBody);
-      result := bodyStream.DataString;
+      LBodyStream.LoadFromStream(FBody);
+      Result := LBodyStream.DataString;
     finally
-      bodyStream.Free;
+      LBodyStream.Free;
     end;
   end;
 end;
 
-function TGBClientCoreRequest.GetFullUrl: String;
+function TGBClientCoreRequest.GetFullUrl: string;
 var
-  resource: string;
+  LResource: string;
 begin
-  result := FBaseUrl;
+  Result := FBaseUrl;
   if not FBaseUrl.EndsWith('/') then
-    Result := result + '/';
-
-  resource := FResource;
-  if resource.StartsWith('/') then
-    resource := Copy(resource, 2, resource.Length - 1);
-
-  result := result + resource;
+    Result := Result + '/';
+  LResource := FResource;
+  if LResource.StartsWith('/') then
+    LResource := Copy(LResource, 2, LResource.Length - 1);
+  Result := Result + LResource;
 end;
 
-function TGBClientCoreRequest.HeaderAddOrSet(Key: string; Value: TDateTime; bEncode: Boolean): IGBClientRequestParams;
+function TGBClientCoreRequest.HeaderAddOrSet(AKey: string; AValue: TDateTime; AEncode: Boolean): IGBClientRequestParams;
 begin
   Result := Self;
-  TGBClientCoreRequestParam.AddOrSet(FHeaders, Key, Value, bEncode);
+  TGBClientCoreRequestParam.AddOrSet(FHeaders, AKey, AValue, AEncode);
 end;
 
-function TGBClientCoreRequest.OnException(Value: TGBOnException): IGBClientRequest;
-begin
-  result := Self;
-  FOnException := Value;
-end;
-
-function TGBClientCoreRequest.OnPreExecute(Value: TOnPreExecute): IGBClientRequest;
-begin
-  result := Self;
-  FOnPreExecute := Value;
-end;
-
-function TGBClientCoreRequest.HeaderAddOrSet(Key: string; Value: Extended; bEncode: Boolean): IGBClientRequestParams;
+function TGBClientCoreRequest.OnException(AValue: TGBOnException): IGBClientRequest;
 begin
   Result := Self;
-  TGBClientCoreRequestParam.AddOrSet(FHeaders, Key, Value, bEncode);
+  FOnException := AValue;
 end;
 
-function TGBClientCoreRequest.HeaderAddOrSet(Key: string; Value: Integer; bEncode: Boolean): IGBClientRequestParams;
+function TGBClientCoreRequest.OnPreExecute(AValue: TOnPreExecute): IGBClientRequest;
 begin
   Result := Self;
-  TGBClientCoreRequestParam.AddOrSet(FHeaders, Key, Value, bEncode);
+  FOnPreExecute := AValue;
 end;
 
-function TGBClientCoreRequest.HeaderAddOrSet(Key, Value: String; bEncode: Boolean): IGBClientRequestParams;
+function TGBClientCoreRequest.HeaderAddOrSet(AKey: string; AValue: Extended; AEncode: Boolean): IGBClientRequestParams;
 begin
   Result := Self;
-  TGBClientCoreRequestParam.AddOrSet(FHeaders, Key, Value, bEncode);
+  TGBClientCoreRequestParam.AddOrSet(FHeaders, AKey, AValue, AEncode);
+end;
+
+function TGBClientCoreRequest.HeaderAddOrSet(AKey: string; AValue: Integer; AEncode: Boolean): IGBClientRequestParams;
+begin
+  Result := Self;
+  TGBClientCoreRequestParam.AddOrSet(FHeaders, AKey, AValue, AEncode);
+end;
+
+function TGBClientCoreRequest.HeaderAddOrSet(AKey, AValue: string; AEncode: Boolean): IGBClientRequestParams;
+begin
+  Result := Self;
+  TGBClientCoreRequestParam.AddOrSet(FHeaders, AKey, AValue, AEncode);
 end;
 
 function TGBClientCoreRequest.Params: IGBClientRequestParams;
 begin
-  result := Self;
+  Result := Self;
 end;
 
-function TGBClientCoreRequest.Password(Value: String): IGBClientProxy;
+function TGBClientCoreRequest.Password(AValue: string): IGBClientProxy;
 begin
-  result := Self;
-  FProxyPassword := Value;
+  Result := Self;
+  FProxyPassword := AValue;
 end;
 
 function TGBClientCoreRequest.PATCH: IGBClientRequest;
 begin
-  result := Self;
+  Result := Self;
   FMethod := gmtPATCH;
 end;
 
-function TGBClientCoreRequest.PathAddOrSet(Key, Value: String): IGBClientRequestParams;
+function TGBClientCoreRequest.PathAddOrSet(AKey, AValue: string): IGBClientRequestParams;
 begin
   Result := Self;
-  TGBClientCoreRequestParam.AddOrSet(FPaths, Key, Value, False);
+  TGBClientCoreRequestParam.AddOrSet(FPaths, AKey, AValue, False);
 end;
 
-function TGBClientCoreRequest.PathAddOrSet(Key: string; Value: Integer): IGBClientRequestParams;
+function TGBClientCoreRequest.PathAddOrSet(AKey: string; AValue: Integer): IGBClientRequestParams;
 begin
   Result := Self;
-  TGBClientCoreRequestParam.AddOrSet(FPaths, Key, Value, False);
+  TGBClientCoreRequestParam.AddOrSet(FPaths, AKey, AValue, False);
 end;
 
-function TGBClientCoreRequest.PathAddOrSet(Key: string; Value: TDateTime): IGBClientRequestParams;
+function TGBClientCoreRequest.PathAddOrSet(AKey: string; AValue: TDateTime): IGBClientRequestParams;
 begin
   Result := Self;
-  TGBClientCoreRequestParam.AddOrSet(FPaths, Key, Value, False);
+  TGBClientCoreRequestParam.AddOrSet(FPaths, AKey, AValue, False);
 end;
 
-function TGBClientCoreRequest.Port(Value: Integer): IGBClientProxy;
-begin
-  result := Self;
-  FProxyPort := Value;
-end;
-
-function TGBClientCoreRequest.PathAddOrSet(Key: string; Value: Extended): IGBClientRequestParams;
+function TGBClientCoreRequest.Port(AValue: Integer): IGBClientProxy;
 begin
   Result := Self;
-  TGBClientCoreRequestParam.AddOrSet(FPaths, Key, Value, False);
+  FProxyPort := AValue;
+end;
+
+function TGBClientCoreRequest.PathAddOrSet(AKey: string; AValue: Extended): IGBClientRequestParams;
+begin
+  Result := Self;
+  TGBClientCoreRequestParam.AddOrSet(FPaths, AKey, AValue, False);
 end;
 
 function TGBClientCoreRequest.POST: IGBClientRequest;
 begin
-  result := Self;
+  Result := Self;
   FMethod := gmtPOST;
 end;
 
 function TGBClientCoreRequest.Proxy: IGBClientProxy;
 begin
-  result := Self;
+  Result := Self;
 end;
 
 function TGBClientCoreRequest.PUT: IGBClientRequest;
 begin
-  result := Self;
+  Result := Self;
   FMethod := gmtPUT;
 end;
 
-function TGBClientCoreRequest.QueryAddOrSet(Key: string; Value: Integer; bEncode: Boolean = True): IGBClientRequestParams;
+function TGBClientCoreRequest.QueryAddOrSet(AKey: string; AValue: Integer; AEncode: Boolean = True): IGBClientRequestParams;
 begin
   Result := Self;
-  TGBClientCoreRequestParam.AddOrSet(FQueries, Key, Value, bEncode);
-
+  TGBClientCoreRequestParam.AddOrSet(FQueries, AKey, AValue, AEncode);
   if (Assigned(FAuthorization)) and (FAuthorization.AuthType = atAWSv4) then
-    FAuthorization.AWSv4.QueryAddOrSet(Key, Value.ToString);
+    FAuthorization.AWSv4.QueryAddOrSet(AKey, AValue.ToString);
 end;
 
-function TGBClientCoreRequest.QueryAddOrSet(Key, Value: String; bEncode: Boolean = True): IGBClientRequestParams;
+function TGBClientCoreRequest.QueryAddOrSet(AKey, AValue: string; AEncode: Boolean = True): IGBClientRequestParams;
 begin
   Result := Self;
-  TGBClientCoreRequestParam.AddOrSet(FQueries, Key, Value, bEncode);
-
+  TGBClientCoreRequestParam.AddOrSet(FQueries, AKey, AValue, AEncode);
   if (Assigned(FAuthorization)) and (FAuthorization.AuthType = atAWSv4) then
-    FAuthorization.AWSv4.QueryAddOrSet(Key, Value);
+    FAuthorization.AWSv4.QueryAddOrSet(AKey, AValue);
 end;
 
-function TGBClientCoreRequest.QueryAddOrSet(Key: string; Value: TDateTime; bEncode: Boolean = True): IGBClientRequestParams;
+function TGBClientCoreRequest.QueryAddOrSet(aKey: string; AValue: TDateTime; AEncode: Boolean = True): IGBClientRequestParams;
 begin
   Result := Self;
-  TGBClientCoreRequestParam.AddOrSet(FQueries, Key, Value, bEncode);
-
+  TGBClientCoreRequestParam.AddOrSet(FQueries, aKey, AValue, AEncode);
   if (Assigned(FAuthorization)) and (FAuthorization.AuthType = atAWSv4) then
-    FAuthorization.AWSv4.QueryAddOrSet(Key, Value.DateTimeToIso8601);
+    FAuthorization.AWSv4.QueryAddOrSet(aKey, AValue.DateTimeToIso8601);
 end;
 
-function TGBClientCoreRequest.QueryAddOrSet(Key: string; Value: Extended; bEncode: Boolean = True): IGBClientRequestParams;
+function TGBClientCoreRequest.QueryAddOrSet(AKey: string; AValue: Extended; AEncode: Boolean = True): IGBClientRequestParams;
 begin
   Result := Self;
-  TGBClientCoreRequestParam.AddOrSet(FQueries, Key, Value, bEncode);
-
+  TGBClientCoreRequestParam.AddOrSet(FQueries, AKey, AValue, AEncode);
   if (Assigned(FAuthorization)) and (FAuthorization.AuthType = atAWSv4) then
-    FAuthorization.AWSv4.QueryAddOrSet(Key, Value.ToString);
+    FAuthorization.AWSv4.QueryAddOrSet(AKey, AValue.ToString);
 end;
 
-function TGBClientCoreRequest.Resource(Value: String): IGBClientRequest;
+function TGBClientCoreRequest.Resource(AValue: string): IGBClientRequest;
 begin
-  result := Self;
-  FResource := Value;
+  Result := Self;
+  FResource := AValue;
 end;
 
-function TGBClientCoreRequest.Server(Value: String): IGBClientProxy;
+function TGBClientCoreRequest.Server(AValue: string): IGBClientProxy;
 begin
-  result := Self;
-  FProxyServer := Value;
+  Result := Self;
+  FProxyServer := AValue;
 end;
 
 function TGBClientCoreRequest.Settings: IGBClientSettings;
 begin
   if not Assigned(FSettings) then
     FSettings := TGBClientCoreSettings.New(Self);
-  result := FSettings;
+  Result := FSettings;
 end;
 
-function TGBClientCoreRequest.TimeOut(Value: Integer): IGBClientRequest;
+function TGBClientCoreRequest.TimeOut(AValue: Integer): IGBClientRequest;
 begin
-  result := Self;
-  FTimeOut := Value;
+  Result := Self;
+  FTimeOut := AValue;
 end;
 
-function TGBClientCoreRequest.Username(Value: String): IGBClientProxy;
+function TGBClientCoreRequest.Username(AValue: string): IGBClientProxy;
 begin
-  result := Self;
-  FProxyUsername := Value;
+  Result := Self;
+  FProxyUsername := AValue;
 end;
 
 end.

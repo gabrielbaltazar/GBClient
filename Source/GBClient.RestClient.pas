@@ -58,7 +58,7 @@ type TGBClientRestClient = class(TGBClientCoreRequest, IGBClientRequest,
     function Response : IGBClientResponse; override;
 
   public
-    constructor create; override;
+    constructor Create; override;
     class function New: IGBClientRequest;
     destructor Destroy; override;
 end;
@@ -91,7 +91,7 @@ begin
 
 end;
 
-constructor TGBClientRestClient.create;
+constructor TGBClientRestClient.Create;
 begin
   inherited;
   FContentType := ctAPPLICATION_JSON;
@@ -125,7 +125,7 @@ end;
 
 class function TGBClientRestClient.New: IGBClientRequest;
 begin
-  result := Self.create;
+  result := Self.Create;
 end;
 
 procedure TGBClientRestClient.OnAWSAuthorization(Auth, AmzDate: string);
@@ -308,7 +308,7 @@ begin
 
     if FResponse.StatusCode >= 400 then
     begin
-      LException := EGBRestException.create(FResponse.StatusCode,
+      LException := EGBRestException.Create(FResponse.StatusCode,
                                             FResponse.StatusText,
                                             FResponse.GetText,
                                             FResponse.GetJSONObject);

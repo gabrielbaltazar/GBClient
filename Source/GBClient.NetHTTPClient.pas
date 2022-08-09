@@ -78,7 +78,7 @@ type TGBClientNetHTTPClient = class(TGBClientCoreRequest, IGBClientRequest,
     function HeaderAsDateTime(Name: String): TDateTime;
 
   public
-    constructor create; override;
+    constructor Create; override;
     class function New: IGBClientRequest;
     destructor Destroy; override;
 end;
@@ -106,7 +106,7 @@ begin
   FContentType := Value.value;
 end;
 
-constructor TGBClientNetHTTPClient.create;
+constructor TGBClientNetHTTPClient.Create;
 begin
   inherited;
   FContentType := 'application/json';
@@ -238,7 +238,7 @@ end;
 
 class function TGBClientNetHTTPClient.New: IGBClientRequest;
 begin
-  result := Self.create;
+  result := Self.Create;
 end;
 
 procedure TGBClientNetHTTPClient.OnAWSAuthorization(Auth, AmzDate: string);
@@ -373,7 +373,7 @@ begin
 
     if FResponse.StatusCode >= 400 then
     begin
-      LException := EGBRestException.create(StatusCode, StatusText, GetText, GetJSONObject);
+      LException := EGBRestException.Create(StatusCode, StatusText, GetText, GetJSONObject);
       if Assigned(FOnException) then
         FOnException(LException);
       raise LException;

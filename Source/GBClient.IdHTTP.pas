@@ -89,7 +89,7 @@ type TGBClientIdHTTP = class(TGBClientCoreRequest, IGBClientRequest,
     function HeaderAsDateTime(Name: String): TDateTime;
 
   public
-    constructor create; override;
+    constructor Create; override;
     class function New: IGBClientRequest;
     destructor Destroy; override;
 end;
@@ -118,7 +118,7 @@ begin
   FContentType := Value.value;
 end;
 
-constructor TGBClientIdHTTP.create;
+constructor TGBClientIdHTTP.Create;
 begin
   inherited;
   FResponseStream := TStringStream.Create;
@@ -283,7 +283,7 @@ end;
 
 class function TGBClientIdHTTP.New: IGBClientRequest;
 begin
-  result := Self.create;
+  result := Self.Create;
 end;
 
 procedure TGBClientIdHTTP.OnAWSAuthorization(Auth, AmzDate: string);
@@ -462,7 +462,7 @@ begin
     except
       on e: EIdHTTPProtocolException do
       begin
-        LException := EGBRestException.create(StatusCode, StatusText, GetText, GetJSONObject);
+        LException := EGBRestException.Create(StatusCode, StatusText, GetText, GetJSONObject);
         if Assigned(FOnException) then
           FOnException(LException);
         raise LException;
