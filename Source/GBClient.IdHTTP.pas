@@ -3,7 +3,7 @@ unit GBClient.IdHTTP;
 interface
 
 {$IFDEF WEAKPACKAGEUNIT}
-	{$WEAKPACKAGEUNIT ON}
+  {$WEAKPACKAGEUNIT ON}
 {$ENDIF}
 
 uses
@@ -32,24 +32,21 @@ uses
   System.Generics.Collections,
   System.TypInfo;
 
-type TGBClientIdHTTP = class(TGBClientCoreRequest, IGBClientRequest,
-                                                   IGBClientRequestParams,
-                                                   IGBClientResponse)
+type
+  TGBClientIdHTTP = class(TGBClientCoreRequest, IGBClientRequest,
+    IGBClientRequestParams, IGBClientResponse)
   private
     FIdHTTP: TIdHTTP;
     FHandler: TIdSSLIOHandlerSocketOpenSSL;
     FResponseStream: TStringStream;
     FBodyForm: TIdMultiPartFormDataStream;
     FContentType: string;
-
     FJSONArray: TJSONArray;
     FJSONObject: TJSONObject;
     FBytes: TBytesStream;
 
-    procedure OnAWSAuthorization(Auth, AmzDate: string);
-
-    procedure createComponents;
-
+    procedure OnAWSAuthorization(AAuth, AAmzDate: string);
+    procedure CreateComponents;
     procedure PrepareRequest;
     procedure PrepareRequestProxy;
     procedure PrepareRequestHeaders;
@@ -60,39 +57,35 @@ type TGBClientIdHTTP = class(TGBClientCoreRequest, IGBClientRequest,
     procedure PrepareRequestAuth;
 
     function GetFullUrl: string;
-
   protected
     function Component: TComponent; override;
     function Authorization: IGBClientAuth; override;
 
-    function ContentType(Value: TGBContentType): IGBClientRequest; override;
+    function ContentType(AValue: TGBContentType): IGBClientRequest; override;
 
     function Send: IGBClientResponse; override;
-    function Response : IGBClientResponse; override;
+    function Response: IGBClientResponse; override;
 
     // Response
     function StatusCode: Integer;
     function StatusText: string;
-
     function GetText: string;
     function GetJSONObject: TJSONObject;
     function GetJSONArray: TJSONArray;
-    function DataSet(Value: TDataSet): IGBClientResponse;
-    function GetObject(Value: TObject): IGBClientResponse;
-    function GetList(Value: TList<TObject>; AType: TClass): IGBClientResponse;
+    function DataSet(AValue: TDataSet): IGBClientResponse;
+    function GetObject(AValue: TObject): IGBClientResponse;
+    function GetList(AValue: TList<TObject>; AType: TClass): IGBClientResponse;
     function GetBytes: TBytes;
     function GetStream: TBytesStream;
-
-    function HeaderAsString(Name: String): string;
-    function HeaderAsInteger(Name: String): Integer;
-    function HeaderAsFloat(Name: String): Double;
-    function HeaderAsDateTime(Name: String): TDateTime;
-
+    function HeaderAsString(AName: string): string;
+    function HeaderAsInteger(AName: string): Integer;
+    function HeaderAsFloat(AName: string): Double;
+    function HeaderAsDateTime(AName: string): TDateTime;
   public
     constructor Create; override;
     class function New: IGBClientRequest;
     destructor Destroy; override;
-end;
+  end;
 
 implementation
 
@@ -107,25 +100,24 @@ end;
 
 function TGBClientIdHTTP.Component: TComponent;
 begin
-  result := FIdHTTP;
+  Result := FIdHTTP;
 end;
 
-function TGBClientIdHTTP.ContentType(Value: TGBContentType): IGBClientRequest;
+function TGBClientIdHTTP.ContentType(AValue: TGBContentType): IGBClientRequest;
 begin
-  result := Self;
-  inherited ContentType(Value);
-
-  FContentType := Value.value;
+  Result := Self;
+  inherited ContentType(AValue);
+  FContentType := AValue.value;
 end;
 
 constructor TGBClientIdHTTP.Create;
 begin
   inherited;
   FResponseStream := TStringStream.Create;
-  FBodyForm:= TIdMultiPartFormDataStream.Create;
+  FBodyForm := TIdMultiPartFormDataStream.Create;
 end;
 
-procedure TGBClientIdHTTP.createComponents;
+procedure TGBClientIdHTTP.CreateComponents;
 begin
   FreeAndNil(FIdHTTP);
   FreeAndNil(FHandler);
@@ -143,10 +135,10 @@ begin
   FIdHTTP.IOHandler := FHandler;
 end;
 
-function TGBClientIdHTTP.DataSet(Value: TDataSet): IGBClientResponse;
+function TGBClientIdHTTP.DataSet(AValue: TDataSet): IGBClientResponse;
 begin
-  result := Self;
-  Value.FromJSON(GetText);
+  Result := Self;
+  AValue.FromJSON(GetText);
 end;
 
 destructor TGBClientIdHTTP.Destroy;
@@ -163,65 +155,65 @@ end;
 
 function TGBClientIdHTTP.GetBytes: TBytes;
 var
-  stream: TBytesStream;
+  LStream: TBytesStream;
 begin
-  stream := TBytesStream.Create;
+  LStream := TBytesStream.Create;
   try
-    stream.LoadFromStream(FIdHTTP.Response.ContentStream);
-    result := stream.Bytes;
+    LStream.LoadFromStream(FIdHTTP.Response.ContentStream);
+    Result := LStream.Bytes;
   finally
-    stream.Free;
+    LStream.Free;
   end;
 end;
 
 function TGBClientIdHTTP.GetFullUrl: string;
 var
-  resource: string;
+  LResource: string;
 begin
-  result := FBaseUrl;
+  Result := FBaseUrl;
   if not FBaseUrl.EndsWith('/') then
-    Result := result + '/';
+    Result := Result + '/';
 
-  resource := FResource;
-  if resource.StartsWith('/') then
-    resource := Copy(resource, 2, resource.Length - 1);
+  LResource := FResource;
+  if LResource.StartsWith('/') then
+    LResource := Copy(LResource, 2, LResource.Length - 1);
 
-  result := result + resource;
+  Result := Result + LResource;
 end;
 
 function TGBClientIdHTTP.GetJSONArray: TJSONArray;
 begin
   FreeAndNil(FJSONArray);
   FJSONArray := TJSONObject.ParseJSONValue(GetText) as TJSONArray;
-  result := FJSONArray;
+  Result := FJSONArray;
 end;
 
 function TGBClientIdHTTP.GetJSONObject: TJSONObject;
 begin
   FreeAndNil(FJSONObject);
   FJSONObject := TJSONObject.ParseJSONValue(GetText) as TJSONObject;
-  result := FJSONObject;
+  Result := FJSONObject;
 end;
 
-function TGBClientIdHTTP.GetList(Value: TList<TObject>; AType: TClass): IGBClientResponse;
+function TGBClientIdHTTP.GetList(AValue: TList<TObject>; AType: TClass): IGBClientResponse;
 var
-  parse     : TGBOnParseJSONToObject;
-  jsonArray : TJSONArray;
-  LObject   : TObject;
-  i         : Integer;
+  LParse: TGBOnParseJSONToObject;
+  LJsonArray: TJSONArray;
+  LObject: TObject;
+  I: Integer;
 begin
-  result := Self;
-  jsonArray := GetJSONArray;
+  Result := Self;
+  LJsonArray := GetJSONArray;
 
-  for i := 0 to Pred(jsonArray.Count) do
+  for I := 0 to Pred(LJsonArray.Count) do
   begin
-    parse := Settings.OnParseJSONToObject;
-    if Assigned(parse) then
+    LParse := Settings.OnParseJSONToObject;
+    if Assigned(LParse) then
     begin
       LObject := AType.Create;
       try
-        parse(TJSONObject( jsonArray.Items[i] ), LObject);
-        Value.Add(LObject);
+        LParse(TJSONObject( LJsonArray.Items[I] ), LObject);
+        AValue.Add(LObject);
       except
         LObject.Free;
         raise;
@@ -230,71 +222,71 @@ begin
   end;
 end;
 
-function TGBClientIdHTTP.GetObject(Value: TObject): IGBClientResponse;
+function TGBClientIdHTTP.GetObject(AValue: TObject): IGBClientResponse;
 var
-  parse: TGBOnParseJSONToObject;
+  LParse: TGBOnParseJSONToObject;
 begin
-  result := Self;
-  parse := Settings.OnParseJSONToObject;
-  if Assigned(parse) then
-    parse(GetJSONObject, Value);
+  Result := Self;
+  LParse := Settings.OnParseJSONToObject;
+  if Assigned(LParse) then
+    LParse(GetJSONObject, AValue);
 end;
 
 function TGBClientIdHTTP.GetStream: TBytesStream;
 begin
   FreeAndNil(FBytes);
   FBytes := TBytesStream.Create(GetBytes);
-  result := FBytes;
+  Result := FBytes;
 end;
 
 function TGBClientIdHTTP.GetText: string;
 var
-  stringStream: TStringStream;
+  LStringStream: TStringStream;
 begin
-  stringStream := TStringStream.Create;
+  LStringStream := TStringStream.Create;
   try
-    stringStream.LoadFromStream(FIdHTTP.Response.ContentStream);
-    result := stringStream.DataString;
-    Result := UTF8ToString( RawByteString( result ));
+    LStringStream.LoadFromStream(FIdHTTP.Response.ContentStream);
+    Result := LStringStream.DataString;
+    Result := UTF8ToString( RawByteString( Result ));
   finally
-    stringStream.Free;
+    LStringStream.Free;
   end;
 end;
 
-function TGBClientIdHTTP.HeaderAsDateTime(Name: String): TDateTime;
+function TGBClientIdHTTP.HeaderAsDateTime(AName: string): TDateTime;
 begin
-  result.fromIso8601ToDateTime(HeaderAsString(Name));
+  Result.fromIso8601ToDateTime(HeaderAsString(AName));
 end;
 
-function TGBClientIdHTTP.HeaderAsFloat(Name: String): Double;
+function TGBClientIdHTTP.HeaderAsFloat(AName: string): Double;
 begin
-  result := StrToFloatDef(HeaderAsString(Name), 0);
+  Result := StrToFloatDef(HeaderAsString(AName), 0);
 end;
 
-function TGBClientIdHTTP.HeaderAsInteger(Name: String): Integer;
+function TGBClientIdHTTP.HeaderAsInteger(AName: string): Integer;
 begin
-  result := StrToIntDef(HeaderAsString(Name), 0);
+  Result := StrToIntDef(HeaderAsString(AName), 0);
 end;
 
-function TGBClientIdHTTP.HeaderAsString(Name: String): string;
+function TGBClientIdHTTP.HeaderAsString(AName: string): string;
 begin
-  result := FIdHTTP.Response.CustomHeaders.Values[Name];
+  Result := FIdHTTP.Response.CustomHeaders.Values[AName];
 end;
 
 class function TGBClientIdHTTP.New: IGBClientRequest;
 begin
-  result := Self.Create;
+  Result := Self.Create;
 end;
 
-procedure TGBClientIdHTTP.OnAWSAuthorization(Auth, AmzDate: string);
+procedure TGBClientIdHTTP.OnAWSAuthorization(AAuth, AAmzDate: string);
 begin
-  FIdHTTP.Request.CustomHeaders.Values['x-amz-date'] := AmzDate;
-  FIdHTTP.Request.CustomHeaders.Values['Authorization'] := Auth;
+  FIdHTTP.Request.CustomHeaders.Values['x-amz-date'] := AAmzDate;
+  FIdHTTP.Request.CustomHeaders.Values['Authorization'] := AAuth;
 end;
 
 procedure TGBClientIdHTTP.PrepareRequest;
 begin
-  createComponents;
+  CreateComponents;
   FIdHTTP.Request.Method := Self.FMethod.value;
 
   PrepareRequestProxy;
@@ -330,32 +322,30 @@ end;
 
 procedure TGBClientIdHTTP.PrepareRequestBody;
 var
-  i: Integer;
-  name: String;
-  value: String;
+  I: Integer;
+  LName: string;
+  LValue: string;
 begin
   FBodyForm.Clear;
-  for i := 0 to Pred(FUrlEncodedParams.Count) do
+  for I := 0 to Pred(FUrlEncodedParams.Count) do
   begin
-    name := FUrlEncodedParams[i].Key;
-    value:= FUrlEncodedParams[i].Value;
-
-    FBodyForm.AddFormField(name, value);
+    LName := FUrlEncodedParams[I].Key;
+    LValue:= FUrlEncodedParams[I].Value;
+    FBodyForm.AddFormField(LName, LValue);
   end;
 end;
 
 procedure TGBClientIdHTTP.PrepareRequestFormData;
 var
-  i: Integer;
-  LName: String;
-  LValue: String;
+  I: Integer;
+  LName: string;
+  LValue: string;
 begin
   FBodyForm.Clear;
-  for i := 0 to Pred(FFormData.Count) do
+  for I := 0 to Pred(FFormData.Count) do
   begin
-    LName := FFormData[i].Key;
-    LValue := FFormData[i].Value;
-
+    LName := FFormData[I].Key;
+    LValue := FFormData[I].Value;
     FBodyForm.AddFormField(LName, LValue);
   end;
 
@@ -365,33 +355,31 @@ end;
 
 procedure TGBClientIdHTTP.PrepareRequestHeaders;
 var
-  i: Integer;
-  name: string;
-  value: string;
+  I: Integer;
+  LName: string;
+  LValue: string;
 begin
-  for i := 0 to Pred(FHeaders.Count) do
+  for I := 0 to Pred(FHeaders.Count) do
   begin
-    name := FHeaders[i].Key;
-    value:= FHeaders[i].Value;
-
-    FIdHTTP.Request.CustomHeaders.Values[name] := value;
+    LName := FHeaders[I].Key;
+    LValue:= FHeaders[I].Value;
+    FIdHTTP.Request.CustomHeaders.Values[LName] := LValue;
   end;
 end;
 
 procedure TGBClientIdHTTP.PrepareRequestPathParams;
 var
-  i : Integer;
-  url : string;
+  I: Integer;
+  LUrl : string;
 begin
-  url := GetFullUrl;
-
+  LUrl := GetFullUrl;
   if Assigned(FPaths) then
   begin
-    for i := 0 to Pred(FPaths.Count) do
-      url := url.Replace(Format('{%s}', [FPaths[i].Key]), FPaths[i].Value);
+    for I := 0 to Pred(FPaths.Count) do
+      LUrl := LUrl.Replace(Format('{%s}', [FPaths[I].Key]), FPaths[I].Value);
   end;
 
-  FIdHTTP.Request.URL := url;
+  FIdHTTP.Request.URL := LUrl;
 end;
 
 procedure TGBClientIdHTTP.PrepareRequestProxy;
@@ -404,63 +392,63 @@ end;
 
 procedure TGBClientIdHTTP.PrepareRequestQueries;
 var
-  i : Integer;
-  queryParam: string;
+  I: Integer;
+  LQueryParam: string;
 begin
-  queryParam := EmptyStr;
-
-  for i := 0 to Pred(FQueries.Count) do
+  LQueryParam := EmptyStr;
+  for I := 0 to Pred(FQueries.Count) do
   begin
-    if i > 0 then
-      queryParam := queryParam + '&';
-    queryParam := queryParam + FQueries[i].Key + '=' + TNetEncoding.URL.EncodeQuery(FQueries[i].Value);
+    if I > 0 then
+      LQueryParam := LQueryParam + '&';
+    LQueryParam := LQueryParam + FQueries[I].Key + '=' + TNetEncoding.URL.EncodeQuery(FQueries[I].Value);
   end;
 
-  if not queryParam.IsEmpty then
-    FIdHTTP.Request.URL := FIdHTTP.Request.URL + '?' + queryParam;
+  if not LQueryParam.IsEmpty then
+    FIdHTTP.Request.URL := FIdHTTP.Request.URL + '?' + LQueryParam;
 end;
 
 function TGBClientIdHTTP.Response: IGBClientResponse;
 begin
-  result := Self;
+  Result := Self;
 end;
 
 function TGBClientIdHTTP.Send: IGBClientResponse;
 var
-  url: string;
+  LUrl: string;
   LException: EGBRestException;
 begin
   FResponseStream.Clear;
   PrepareRequest;
-  url := FIdHTTP.Request.URL;
+  LUrl := FIdHTTP.Request.URL;
   try
     try
       case FMethod of
-        gmtGET    : FIdHTTP.Get(url, FResponseStream);
-        gmtDELETE : FIdHTTP.Delete(url, FResponseStream);
-        gmtPATCH  : FIdHTTP.Patch(url, FResponseStream);
+        gmtGET: FIdHTTP.Get(LUrl, FResponseStream);
+        gmtDELETE: FIdHTTP.Delete(LUrl, FResponseStream);
+        gmtPATCH: FIdHTTP.Patch(LUrl, FResponseStream);
+        gmtPOST:
+          begin
+            if FBodyForm.Size > 0 then
+              FIdHTTP.Post(LUrl, FBodyForm, FResponseStream)
+            else
+              FIdHTTP.Post(LUrl, FBody, FResponseStream);
+          end;
 
-        gmtPOST: begin
-          if FBodyForm.Size > 0 then
-            FIdHTTP.Post(url, FBodyForm, FResponseStream)
-          else
-            FIdHTTP.Post(url, FBody, FResponseStream);
-        end;
-
-        gmtPUT: begin
-          if FBodyForm.Size > 0 then
-            FIdHTTP.Put(url, FBodyForm, FResponseStream)
-          else
-            FIdHTTP.Put(url, FBody, FResponseStream);
-        end;
+        gmtPUT:
+          begin
+            if FBodyForm.Size > 0 then
+              FIdHTTP.Put(LUrl, FBodyForm, FResponseStream)
+            else
+              FIdHTTP.Put(LUrl, FBody, FResponseStream);
+          end;
       end;
 
-      result := Self;
+      Result := Self;
 
       if StatusCode >= 400 then
         raise EIdHTTPProtocolException.CreateFmt('%s: %s', [StatusCode.ToString, StatusText]);
     except
-      on e: EIdHTTPProtocolException do
+      on E: EIdHTTPProtocolException do
       begin
         LException := EGBRestException.Create(StatusCode, StatusText, GetText, GetJSONObject);
         if Assigned(FOnException) then
@@ -468,7 +456,7 @@ begin
         raise LException;
       end;
 
-      on e: EGBRestException do
+      on E: EGBRestException do
         raise;
     end;
   finally
@@ -478,12 +466,12 @@ end;
 
 function TGBClientIdHTTP.StatusCode: Integer;
 begin
-  result := FIdHTTP.ResponseCode;
+  Result := FIdHTTP.ResponseCode;
 end;
 
 function TGBClientIdHTTP.StatusText: string;
 begin
-  result := FIdHTTP.ResponseText;
+  Result := FIdHTTP.ResponseText;
 end;
 
 end.

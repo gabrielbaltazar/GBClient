@@ -3,7 +3,7 @@ unit GBClient.RestClient.Auth;
 interface
 
 {$IFDEF WEAKPACKAGEUNIT}
-	{$WEAKPACKAGEUNIT ON}
+  {$WEAKPACKAGEUNIT ON}
 {$ENDIF}
 
 uses
@@ -15,21 +15,18 @@ uses
   System.Classes,
   System.SysUtils;
 
-type TGBClientRestClientAuth = class(TGBClientCoreRequestAuth, IGBClientAuth,
-                                                               IGBClientAuthBasic,
-                                                               IGBClientAuthBearer)
+type
+  TGBClientRestClientAuth = class(TGBClientCoreRequestAuth, IGBClientAuth,
+    IGBClientAuthBasic, IGBClientAuthBearer)
   private
     FAuthenticator: TCustomAuthenticator;
 
     procedure ApplyBasicAuth;
     procedure ApplyBearerAuth;
-
   public
-    procedure ApplyAuth;
-
     destructor Destroy; override;
-
-end;
+    procedure ApplyAuth;
+  end;
 
 implementation
 
@@ -49,10 +46,8 @@ procedure TGBClientRestClientAuth.ApplyBasicAuth;
 begin
   FreeAndNil(FAuthenticator);
   FAuthenticator := THTTPBasicAuthenticator.Create(nil);
-
   THTTPBasicAuthenticator(FAuthenticator).Username := FUsername;
   THTTPBasicAuthenticator(FAuthenticator).Password := FPassword;
-
   TRESTRequest(FParent.Component).Client.Authenticator := FAuthenticator;
 end;
 
@@ -62,7 +57,6 @@ begin
   FAuthenticator := TOAuth2Authenticator.Create(nil);
   TOAuth2Authenticator(FAuthenticator).AccessToken := FToken;
   TOAuth2Authenticator(FAuthenticator).TokenType := TOAuth2TokenType.ttBEARER;
-
   TRESTRequest(FParent.Component).Client.Authenticator := FAuthenticator;
 end;
 

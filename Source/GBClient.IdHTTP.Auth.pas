@@ -3,7 +3,7 @@ unit GBClient.IdHTTP.Auth;
 interface
 
 {$IFDEF WEAKPACKAGEUNIT}
-	{$WEAKPACKAGEUNIT ON}
+  {$WEAKPACKAGEUNIT ON}
 {$ENDIF}
 
 uses
@@ -12,18 +12,16 @@ uses
   IdHTTP,
   System.SysUtils;
 
-type TGBClientIdHTTPAuth = class(TGBClientCoreRequestAuth, IGBClientAuth,
-                                                           IGBClientAuthBasic,
-                                                           IGBClientAuthBearer)
+type
+  TGBClientIdHTTPAuth = class(TGBClientCoreRequestAuth, IGBClientAuth,
+    IGBClientAuthBasic, IGBClientAuthBearer)
   private
     procedure ApplyBasicAuth;
     procedure ApplyBearerAuth;
-
   public
     procedure ApplyAuth;
-
     destructor Destroy; override;
-end;
+  end;
 
 implementation
 
@@ -50,17 +48,16 @@ const
   HEADER_AUTH = 'Authorization';
   HEADER_BEARER = 'Bearer ';
 var
-  token : string;
+  LToken : string;
 begin
-  token := FToken;
-  if not token.ToLower.StartsWith(HEADER_BEARER.ToLower) then
-    token := HEADER_BEARER + token;
-  TIdHTTP(FParent.Component).Request.CustomHeaders.AddValue(HEADER_AUTH, token);
+  LToken := FToken;
+  if not LToken.ToLower.StartsWith(HEADER_BEARER.ToLower) then
+    LToken := HEADER_BEARER + LToken;
+  TIdHTTP(FParent.Component).Request.CustomHeaders.AddValue(HEADER_AUTH, LToken);
 end;
 
 destructor TGBClientIdHTTPAuth.Destroy;
 begin
-
   inherited;
 end;
 

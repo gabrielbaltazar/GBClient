@@ -3,7 +3,7 @@ unit GBClient.Core.Settings;
 interface
 
 {$IFDEF WEAKPACKAGEUNIT}
-	{$WEAKPACKAGEUNIT ON}
+  {$WEAKPACKAGEUNIT ON}
 {$ENDIF}
 
 uses
@@ -13,44 +13,40 @@ uses
   REST.Json,
   System.JSON;
 
-type TGBClientCoreSettings = class(TInterfacedObject, IGBClientSettings)
-
+type
+  TGBClientCoreSettings = class(TInterfacedObject, IGBClientSettings)
   private
     [Weak]
     FParent : IGBClientRequest;
-
     FOnParseJSONToObject: TGBOnParseJSONToObject;
     FOnParseObjectToJSON: TGBOnParseObjectToJSON;
-
     FOnParseJSONToDataSet: TGBOnParseJSONToDataSet;
     FOnParseDataSetToJSONObject: TGBOnParseDataSetToJSONObject;
     FOnParseDataSetToJSONArray : TGBOnParseDataSetToJSONArray;
-
   protected
-    function OnParseJSONToObject(Value: TGBOnParseJSONToObject): IGBClientSettings; overload;
+    function OnParseJSONToObject(AValue: TGBOnParseJSONToObject): IGBClientSettings; overload;
     function OnParseJSONToObject: TGBOnParseJSONToObject; overload;
 
-    function OnParseObjectToJSON(Value: TGBOnParseObjectToJSON): IGBClientSettings; overload;
+    function OnParseObjectToJSON(AValue: TGBOnParseObjectToJSON): IGBClientSettings; overload;
     function OnParseObjectToJSON: TGBOnParseObjectToJSON; overload;
 
-    function OnParseJSONToDataSet(Value: TGBOnParseJSONToDataSet): IGBClientSettings; overload;
+    function OnParseJSONToDataSet(AValue: TGBOnParseJSONToDataSet): IGBClientSettings; overload;
     function OnParseJSONToDataSet: TGBOnParseJSONToDataSet; overload;
 
-    function OnParseDataSetToJSONObject(Value: TGBOnParseDataSetToJSONObject): IGBClientSettings; overload;
+    function OnParseDataSetToJSONObject(AValue: TGBOnParseDataSetToJSONObject): IGBClientSettings; overload;
     function OnParseDataSetToJSONObject: TGBOnParseDataSetToJSONObject; overload;
 
-    function OnParseDataSetToJSONArray(Value: TGBOnParseDataSetToJSONArray): IGBClientSettings; overload;
+    function OnParseDataSetToJSONArray(AValue: TGBOnParseDataSetToJSONArray): IGBClientSettings; overload;
     function OnParseDataSetToJSONArray: TGBOnParseDataSetToJSONArray; overload;
 
     function &End: IGBClientRequest;
-
   public
-    constructor create(Parent: IGBClientRequest);
-    class function New(Parent: IGBClientRequest): IGBClientSettings;
+    constructor Create(AParent: IGBClientRequest);
+    class function New(AParent: IGBClientRequest): IGBClientSettings;
     destructor  Destroy; override;
 end;
 
-procedure ParseJSONToObject(JSON: TJSONObject; AObject: TObject);
+procedure ParseJSONToObject(AJSON: TJSONObject; AObject: TObject);
 function ParseObjectToJSON(AObject: TObject): TJSONObject;
 
 procedure ParseJSONToDataSet(AJSON: TJSONObject; ADataSet: TDataSet);
@@ -59,15 +55,15 @@ function  ParseDataSetToJSONArray (ADataSet: TDataSet): TJSONArray;
 
 implementation
 
-procedure ParseJSONToObject(JSON: TJSONObject; AObject: TObject);
+procedure ParseJSONToObject(AJSON: TJSONObject; AObject: TObject);
 begin
-  if (Assigned(JSON)) and (Assigned(AObject)) then
-    TJson.JsonToObject(AObject, JSON);
+  if (Assigned(AJSON)) and (Assigned(AObject)) then
+    TJson.JsonToObject(AObject, AJSON);
 end;
 
 function ParseObjectToJSON(AObject: TObject): TJSONObject;
 begin
-  result := TJson.ObjectToJsonObject(AObject);
+  Result := TJson.ObjectToJsonObject(AObject);
 end;
 
 procedure ParseJSONToDataSet(AJSON: TJSONObject; ADataSet: TDataSet);
@@ -77,20 +73,19 @@ end;
 
 function ParseDataSetToJSONObject(ADataSet: TDataSet): TJSONObject;
 begin
-  result := ADataSet.ToJSONObject;
+  Result := ADataSet.ToJSONObject;
 end;
 
 function ParseDataSetToJSONArray (ADataSet: TDataSet): TJSONArray;
 begin
-  result := ADataSet.ToJSONArray;
+  Result := ADataSet.ToJSONArray;
 end;
 
 { TGBClientSettingsDefault }
 
-constructor TGBClientCoreSettings.create(Parent: IGBClientRequest);
+constructor TGBClientCoreSettings.Create(AParent: IGBClientRequest);
 begin
-  FParent := Parent;
-
+  FParent := AParent;
   FOnParseJSONToObject := ParseJSONToObject;
   FOnParseObjectToJSON := ParseObjectToJSON;
   FOnParseJSONToDataSet := ParseJSONToDataSet;
@@ -100,78 +95,77 @@ end;
 
 destructor TGBClientCoreSettings.Destroy;
 begin
-
   inherited;
 end;
 
 function TGBClientCoreSettings.&End: IGBClientRequest;
 begin
-  result := FParent;
+  Result := FParent;
 end;
 
-class function TGBClientCoreSettings.New(Parent: IGBClientRequest): IGBClientSettings;
+class function TGBClientCoreSettings.New(AParent: IGBClientRequest): IGBClientSettings;
 begin
-  result := Self.create(Parent);
+  Result := Self.Create(AParent);
 end;
 
 function TGBClientCoreSettings.OnParseDataSetToJSONArray: TGBOnParseDataSetToJSONArray;
 begin
-  result := FOnParseDataSetToJSONArray;
+  Result := FOnParseDataSetToJSONArray;
 end;
 
-function TGBClientCoreSettings.OnParseDataSetToJSONArray(Value: TGBOnParseDataSetToJSONArray): IGBClientSettings;
+function TGBClientCoreSettings.OnParseDataSetToJSONArray(AValue: TGBOnParseDataSetToJSONArray): IGBClientSettings;
 begin
-  result := Self;
-  if Assigned(Value) then
-    FOnParseDataSetToJSONArray := Value;
+  Result := Self;
+  if Assigned(AValue) then
+    FOnParseDataSetToJSONArray := AValue;
 end;
 
-function TGBClientCoreSettings.OnParseDataSetToJSONObject(Value: TGBOnParseDataSetToJSONObject): IGBClientSettings;
+function TGBClientCoreSettings.OnParseDataSetToJSONObject(AValue: TGBOnParseDataSetToJSONObject): IGBClientSettings;
 begin
-  result := Self;
-  if Assigned(Value) then
-    FOnParseDataSetToJSONObject := Value;
+  Result := Self;
+  if Assigned(AValue) then
+    FOnParseDataSetToJSONObject := AValue;
 end;
 
 function TGBClientCoreSettings.OnParseDataSetToJSONObject: TGBOnParseDataSetToJSONObject;
 begin
-  result := FOnParseDataSetToJSONObject;
+  Result := FOnParseDataSetToJSONObject;
 end;
 
-function TGBClientCoreSettings.OnParseJSONToDataSet(Value: TGBOnParseJSONToDataSet): IGBClientSettings;
+function TGBClientCoreSettings.OnParseJSONToDataSet(AValue: TGBOnParseJSONToDataSet): IGBClientSettings;
 begin
-  result := Self;
-  if Assigned(Value) then
-    FOnParseJSONToDataSet := Value;
+  Result := Self;
+  if Assigned(AValue) then
+    FOnParseJSONToDataSet := AValue;
 end;
 
 function TGBClientCoreSettings.OnParseJSONToDataSet: TGBOnParseJSONToDataSet;
 begin
-  result := FOnParseJSONToDataSet;
+  Result := FOnParseJSONToDataSet;
 end;
 
 function TGBClientCoreSettings.OnParseJSONToObject: TGBOnParseJSONToObject;
 begin
-  result := FOnParseJSONToObject;
+  Result := FOnParseJSONToObject;
 end;
 
 function TGBClientCoreSettings.OnParseObjectToJSON: TGBOnParseObjectToJSON;
 begin
-  result := FOnParseObjectToJSON;
+  Result := FOnParseObjectToJSON;
 end;
 
-function TGBClientCoreSettings.OnParseObjectToJSON(Value: TGBOnParseObjectToJSON): IGBClientSettings;
+function TGBClientCoreSettings.OnParseObjectToJSON(AValue: TGBOnParseObjectToJSON): IGBClientSettings;
 begin
-  result := Self;
-  if Assigned(Value) then
-    FOnParseObjectToJSON := Value;
+  Result := Self;
+  if Assigned(AValue) then
+    FOnParseObjectToJSON := AValue;
 end;
 
-function TGBClientCoreSettings.OnParseJSONToObject(Value: TGBOnParseJSONToObject): IGBClientSettings;
+function TGBClientCoreSettings.OnParseJSONToObject(AValue: TGBOnParseJSONToObject): IGBClientSettings;
 begin
-  result := Self;
-  if Assigned(Value) then
-    FOnParseJSONToObject := Value;
+  Result := Self;
+  if Assigned(AValue) then
+    FOnParseJSONToObject := AValue;
 end;
 
 end.

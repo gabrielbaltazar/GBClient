@@ -3,7 +3,7 @@ unit GBClient.RestClient;
 interface
 
 {$IFDEF WEAKPACKAGEUNIT}
-	{$WEAKPACKAGEUNIT ON}
+  {$WEAKPACKAGEUNIT ON}
 {$ENDIF}
 
 uses
@@ -26,8 +26,9 @@ uses
   System.Generics.Collections,
   System.TypInfo;
 
-type TGBClientRestClient = class(TGBClientCoreRequest, IGBClientRequest,
-                                                       IGBClientRequestParams)
+type
+  TGBClientRestClient = class(TGBClientCoreRequest, IGBClientRequest,
+    IGBClientRequestParams)
   private
     FRestClient: TRESTClient;
     FRestRequest: TRESTRequest;
@@ -35,10 +36,8 @@ type TGBClientRestClient = class(TGBClientCoreRequest, IGBClientRequest,
     FResponse: IGBClientResponse;
     FContentType: TRESTContentType;
 
-    procedure OnAWSAuthorization(Auth, AmzDate: string);
-
-    procedure createComponents;
-
+    procedure OnAWSAuthorization(AAuth, AAmzDate: string);
+    procedure CreateComponents;
     procedure PrepareRequest;
     procedure PrepareRequestProxy;
     procedure PrepareRequestHeaders;
@@ -47,21 +46,19 @@ type TGBClientRestClient = class(TGBClientCoreRequest, IGBClientRequest,
     procedure PrepareRequestBody;
     procedure PrepareRequestFormData;
     procedure PrepareRequestAuth;
-
   protected
     function Component: TComponent; override;
     function Authorization: IGBClientAuth; override;
 
-    function ContentType(Value: TGBContentType): IGBClientRequest; override;
+    function ContentType(AValue: TGBContentType): IGBClientRequest; override;
 
     function Send: IGBClientResponse; override;
-    function Response : IGBClientResponse; override;
-
+    function Response: IGBClientResponse; override;
   public
     constructor Create; override;
     class function New: IGBClientRequest;
     destructor Destroy; override;
-end;
+  end;
 
 implementation
 
@@ -71,24 +68,23 @@ function TGBClientRestClient.Authorization: IGBClientAuth;
 begin
   if not Assigned(FAuthorization) then
     FAuthorization := TGBClientRestClientAuth.New(Self);
-  result := FAuthorization;
+  Result := FAuthorization;
 end;
 
 function TGBClientRestClient.Component: TComponent;
 begin
-  result := FRestRequest;
+  Result := FRestRequest;
 end;
 
-function TGBClientRestClient.ContentType(Value: TGBContentType): IGBClientRequest;
+function TGBClientRestClient.ContentType(AValue: TGBContentType): IGBClientRequest;
 begin
-  result := Self;
-  inherited ContentType(Value);
-  case Value of
+  Result := Self;
+  inherited ContentType(AValue);
+  case AValue of
     ctApplicationJson: FContentType := ctAPPLICATION_JSON;
     ctApplicationXml: FContentType := ctAPPLICATION_XML;
     TGBContentType.ctApplication_x_www_form_urlencoded: FContentType := TRESTContentType.ctAPPLICATION_X_WWW_FORM_URLENCODED;
   end;
-
 end;
 
 constructor TGBClientRestClient.Create;
@@ -97,7 +93,7 @@ begin
   FContentType := ctAPPLICATION_JSON;
 end;
 
-procedure TGBClientRestClient.createComponents;
+procedure TGBClientRestClient.CreateComponents;
 begin
   FreeAndNil(FRestResponse);
   FreeAndNil(FRestRequest);
@@ -125,18 +121,18 @@ end;
 
 class function TGBClientRestClient.New: IGBClientRequest;
 begin
-  result := Self.Create;
+  Result := Self.Create;
 end;
 
-procedure TGBClientRestClient.OnAWSAuthorization(Auth, AmzDate: string);
+procedure TGBClientRestClient.OnAWSAuthorization(AAuth, AAmzDate: string);
 begin
-  FRestRequest.Params.AddItem('x-amz-date', AmzDate, pkHTTPHEADER, [poDoNotEncode]);
-  FRestRequest.Params.AddItem('Authorization', Auth, pkHTTPHEADER, [poDoNotEncode]);
+  FRestRequest.Params.AddItem('x-amz-date', AAmzDate, pkHTTPHEADER, [poDoNotEncode]);
+  FRestRequest.Params.AddItem('Authorization', AAuth, pkHTTPHEADER, [poDoNotEncode]);
 end;
 
 procedure TGBClientRestClient.PrepareRequest;
 var
-  i: Integer;
+  I: Integer;
 begin
   FRestClient.BaseURL := FBaseUrl;
   FRestRequest.Resource := FResource;
@@ -160,12 +156,12 @@ begin
 
   if Assigned(FOnPreExecute) then
   begin
-    for i := 0 to Pred(FRestRequest.Params.Count) do
+    for I := 0 to Pred(FRestRequest.Params.Count) do
     begin
       FOnPreExecute(
-        'ParamName = ' + FRestRequest.Params[i].name + sLineBreak +
-        'ParamType = ' + GetEnumName(TypeInfo(TRESTRequestParameterKind), Integer( FRestRequest.Params[i].Kind)) + sLineBreak +
-        'ParamValue = ' + FRestRequest.Params[i].Value
+        'ParamName = ' + FRestRequest.Params[I].name + sLineBreak +
+        'ParamType = ' + GetEnumName(TypeInfo(TRESTRequestParameterKind), Integer( FRestRequest.Params[I].Kind)) + sLineBreak +
+        'ParamValue = ' + FRestRequest.Params[I].Value
       );
     end;
   end;
@@ -196,32 +192,32 @@ end;
 
 procedure TGBClientRestClient.PrepareRequestBody;
 var
-  i: Integer;
-  name: String;
-  value: string;
+  I: Integer;
+  LName: string;
+  LValue: string;
 begin
   if (FUrlEncodedParams.Count = 0) and (Assigned(FBody)) then
     FRestRequest.AddBody(FBody, FContentType)
   else
   begin
-    for i := 0 to Pred(FUrlEncodedParams.Count) do
+    for I := 0 to Pred(FUrlEncodedParams.Count) do
     begin
-      name := FUrlEncodedParams[i].Key;
-      value := FUrlEncodedParams[i].Value;
-      FRestRequest.AddParameter(name, value, pkGETorPOST);
+      LName := FUrlEncodedParams[I].Key;
+      LValue := FUrlEncodedParams[I].Value;
+      FRestRequest.AddParameter(LName, LValue, pkGETorPOST);
     end;
   end;
 end;
 
 procedure TGBClientRestClient.PrepareRequestFormData;
 var
-  i: Integer;
+  I: Integer;
 begin
-  for i := 0 to Pred(FFormData.Count) do
+  for I := 0 to Pred(FFormData.Count) do
   begin
 //    FRestRequest.Client.ContentType := 'multipart/form-data';
-    FRestRequest.Params.AddItem(FFormData[i].Key,
-                                FFormData[i].Value,
+    FRestRequest.Params.AddItem(FFormData[I].Key,
+                                FFormData[I].Value,
                                 TRESTRequestParameterKind.pkREQUESTBODY,
                                 [],
                                 ctMULTIPART_FORM_DATA);
@@ -231,27 +227,27 @@ end;
 
 procedure TGBClientRestClient.PrepareRequestHeaders;
 var
-  i: Integer;
-  parameter: TRESTRequestParameter;
+  I: Integer;
+  LParameter: TRESTRequestParameter;
 begin
-  for i := 0 to Pred(FHeaders.Count) do
+  for I := 0 to Pred(FHeaders.Count) do
   begin
-    parameter := FRestRequest.Params.AddItem;
-    parameter.Kind := pkHTTPHEADER;
-    parameter.name := FHeaders[i].Key;
-    parameter.Value := FHeaders[i].Value;
+    LParameter := FRestRequest.Params.AddItem;
+    LParameter.Kind := pkHTTPHEADER;
+    LParameter.name := FHeaders[I].Key;
+    LParameter.Value := FHeaders[I].Value;
 
-    if not FHeaders[i].Encoding then
-      parameter.Options := [poDoNotEncode];
+    if not FHeaders[I].Encoding then
+      LParameter.Options := [poDoNotEncode];
   end;
 end;
 
 procedure TGBClientRestClient.PrepareRequestPathParams;
 var
-  i: Integer;
+  I: Integer;
 begin
-  for i := 0 to Pred(FPaths.Count) do
-    FRestRequest.Params.AddUrlSegment(FPaths[i].Key, FPaths[i].Value);
+  for I := 0 to Pred(FPaths.Count) do
+    FRestRequest.Params.AddUrlSegment(FPaths[I].Key, FPaths[I].Value);
 end;
 
 procedure TGBClientRestClient.PrepareRequestProxy;
@@ -264,33 +260,33 @@ end;
 
 procedure TGBClientRestClient.PrepareRequestQueries;
 var
-  i: Integer;
-  options: TRESTRequestParameterOptions;
+  I: Integer;
+  LOptions: TRESTRequestParameterOptions;
 begin
-  for i := 0 to Pred(FQueries.Count) do
+  for I := 0 to Pred(FQueries.Count) do
   begin
-    options := [];
-    if not FQueries[i].Encoding then
-      options := [poDoNotEncode];
+    LOptions := [];
+    if not FQueries[I].Encoding then
+      LOptions := [poDoNotEncode];
 
     {$IF COMPILERVERSION < 33}
     FRestRequest.AddParameter(FQueries[i].Key, FQueries[i].Value, pkGETorPOST, options);
     {$ELSE}
-    FRestRequest.AddParameter(FQueries[i].Key, FQueries[i].Value, pkQuery, options);
+    FRestRequest.AddParameter(FQueries[I].Key, FQueries[I].Value, pkQuery, LOptions);
     {$ENDIF}
   end;
 end;
 
 function TGBClientRestClient.Response: IGBClientResponse;
 begin
-  result := FResponse;
+  Result := FResponse;
 end;
 
 function TGBClientRestClient.Send: IGBClientResponse;
 var
   LException: EGBRestException;
 begin
-  createComponents;
+  CreateComponents;
   PrepareRequest;
   try
     try
@@ -317,7 +313,7 @@ begin
       raise LException;
     end;
 
-    result := FResponse;
+    Result := FResponse;
   finally
     FRestRequest.Body.ClearBody;
     FRestRequest.Params.Clear;
