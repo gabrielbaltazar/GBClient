@@ -270,7 +270,7 @@ begin
       LOptions := [poDoNotEncode];
 
     {$IF COMPILERVERSION < 33}
-    FRestRequest.AddParameter(FQueries[i].Key, FQueries[i].Value, pkGETorPOST, options);
+    FRestRequest.AddParameter(FQueries[i].Key, FQueries[i].Value, pkGETorPOST, LOptions);
     {$ELSE}
     FRestRequest.AddParameter(FQueries[I].Key, FQueries[I].Value, pkQuery, LOptions);
     {$ENDIF}
