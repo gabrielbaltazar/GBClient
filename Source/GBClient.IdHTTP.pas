@@ -364,6 +364,8 @@ begin
     LName := FHeaders[I].Key;
     LValue:= FHeaders[I].Value;
     FIdHTTP.Request.CustomHeaders.Values[LName] := LValue;
+    if LName.ToLower = 'accept' then
+      FIdHTTP.Request.Accept := LValue;
   end;
 end;
 
