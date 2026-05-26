@@ -54,7 +54,7 @@ type
 
   IGBClientRequest = interface
     ['{9287B63B-BF21-4C69-B2B1-7D27FCD1F7FE}']
-    function Component: TComponent;
+    function Component: TObject;
 
     function POST: IGBClientRequest;
     function PUT: IGBClientRequest;
@@ -241,6 +241,9 @@ uses
 {$IFDEF IdHTTP}
   GBClient.IdHTTP,
 {$ENDIF}
+{$IFDEF SYNAPSE}
+  GBClient.Synapse,
+{$ENDIF}
   REST.Json;
 
 function NewClientRequest: IGBClientRequest;
@@ -251,6 +254,10 @@ begin
 
 {$IFDEF IdHTTP}
   Exit(TGBClientIdHTTP.New);
+{$ENDIF}
+
+{$IFDEF SYNAPSE}
+  Exit(TGBClientSynapse.New);
 {$ENDIF}
 
   Result := TGBClientRestClient.New;

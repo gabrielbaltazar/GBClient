@@ -57,7 +57,7 @@ type
 
     function GetFullUrl: string;
   protected
-    function Component: TComponent; override;
+    function Component: TObject; override;
     function Authorization: IGBClientAuth; override;
 
     function ContentType(const AValue: TGBContentType): IGBClientRequest; override;
@@ -99,7 +99,7 @@ begin
   Result := FAuthorization;
 end;
 
-function TGBClientIdHTTP.Component: TComponent;
+function TGBClientIdHTTP.Component: TObject;
 begin
   Result := FIdHTTP;
 end;

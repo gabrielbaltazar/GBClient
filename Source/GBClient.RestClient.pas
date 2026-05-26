@@ -47,7 +47,7 @@ type
     procedure PrepareRequestBody;
     procedure PrepareRequestAuth;
   protected
-    function Component: TComponent; override;
+    function Component: TObject; override;
     function Authorization: IGBClientAuth; override;
 
     function ContentType(const AValue: TGBContentType): IGBClientRequest; override;
@@ -71,7 +71,7 @@ begin
   Result := FAuthorization;
 end;
 
-function TGBClientRestClient.Component: TComponent;
+function TGBClientRestClient.Component: TObject;
 begin
   Result := FRestRequest;
 end;

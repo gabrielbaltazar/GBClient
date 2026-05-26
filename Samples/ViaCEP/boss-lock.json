@@ -1,0 +1,14 @@
+{
+	"hash": "d41d8cd98f00b204e9800998ecf8427e",
+	"updated": "2026-05-26T18:37:50.2085678-03:00",
+	"installedModules": {
+		"github.com/geby/synapse": {
+			"name": "synapse",
+			"version": "master",
+			"hash": "fb6866430d98b63db667bfa4cf4e1e96",
+			"artifacts": {},
+			"failed": false,
+			"changed": false
+		}
+	}
+}

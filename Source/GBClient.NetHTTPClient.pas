@@ -49,7 +49,7 @@ type
     procedure PrepareRequestBody;
     procedure PrepareRequestAuth;
   protected
-    function Component: TComponent; override;
+    function Component: TObject; override;
     function Authorization: IGBClientAuth; override;
 
     function ContentType(const AValue: TGBContentType): IGBClientRequest; override;
@@ -91,7 +91,7 @@ begin
   Result := FAuthorization;
 end;
 
-function TGBClientNetHTTPClient.Component: TComponent;
+function TGBClientNetHTTPClient.Component: TObject;
 begin
   Result := FRequest;
 end;
@@ -356,7 +356,7 @@ begin
 
     if FResponse.StatusCode >= 400 then
     begin
-      LException := EGBRestException.create(StatusCode, StatusText, GetText, GetJSONObject);
+      LException := EGBRestException.Create(StatusCode, StatusText, GetText, GetJSONObject);
       if Assigned(FOnException) then
         FOnException(LException);
       raise LException;

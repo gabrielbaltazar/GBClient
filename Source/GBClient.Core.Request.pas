@@ -44,7 +44,7 @@ type
     function GetFullUrl: string;
 
     procedure Clear;
-    function Component: TComponent; virtual; abstract;
+    function Component: TObject; virtual; abstract;
     function Authorization: IGBClientAuth; virtual; abstract;
 
     function POST: IGBClientRequest;
@@ -53,7 +53,7 @@ type
     function DELETE: IGBClientRequest;
     function PATCH: IGBClientRequest;
 
-    function Accept(const AValue: string): IGBClientRequest;
+    function Accept(const AValue: string): IGBClientRequest; virtual;
     function AcceptCharset(const AValue: string): IGBClientRequest;
     function AcceptEncoding(const AValue: string): IGBClientRequest;
     function ContentType(const AValue: TGBContentType): IGBClientRequest; overload; virtual;
