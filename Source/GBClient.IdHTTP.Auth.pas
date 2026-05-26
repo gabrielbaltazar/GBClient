@@ -2,36 +2,40 @@ unit GBClient.IdHTTP.Auth;
 
 interface
 
+{$IFDEF WEAKPACKAGEUNIT}
+  {$WEAKPACKAGEUNIT ON}
+{$ENDIF}
+
 uses
   GBClient.Interfaces,
-  GBClient.Core.Request.Auth,
-  IdHTTP,
-  System.SysUtils;
+  GBClient.Core.Request.Auth;
 
-type TGBClientIdHTTPAuth = class(TGBClientCoreRequestAuth, IGBClientAuth,
-                                                           IGBClientAuthBasic,
-                                                           IGBClientAuthBearer)
+type
+  TGBClientIdHTTPAuth = class(TGBClientCoreRequestAuth, IGBClientAuth, IGBClientAuthBasic, IGBClientAuthBearer)
   private
     procedure ApplyBasicAuth;
     procedure ApplyBearerAuth;
-
   public
     procedure ApplyAuth;
-
-    destructor Destroy; override;
-end;
+  end;
 
 implementation
+
+uses
+  IdHTTP,
+  System.SysUtils;
 
 { TGBClientIdHTTPAuth }
 
 procedure TGBClientIdHTTPAuth.ApplyAuth;
 begin
   case FAuthType of
-    atNone:;
-    atBasic: ApplyBasicAuth;
-    atBearer: ApplyBearerAuth;
-    atAWSv4: ApplyAWSv4;
+    atBasic:
+      ApplyBasicAuth;
+    atBearer:
+      ApplyBearerAuth;
+    atAWSv4:
+      ApplyAWSv4;
   end;
 end;
 
@@ -43,21 +47,15 @@ end;
 
 procedure TGBClientIdHTTPAuth.ApplyBearerAuth;
 const
-  HEADER_AUTH = 'Authorization';
-  HEADER_BEARER = 'Bearer ';
+  CHeaderAuth = 'Authorization';
+  CHeaderBearer = 'Bearer ';
 var
-  token : string;
+  LToken: string;
 begin
-  token := FToken;
-  if not token.ToLower.StartsWith(HEADER_BEARER.ToLower) then
-    token := HEADER_BEARER + token;
-  TIdHTTP(FParent.Component).Request.CustomHeaders.AddValue(HEADER_AUTH, token);
-end;
-
-destructor TGBClientIdHTTPAuth.Destroy;
-begin
-
-  inherited;
+  LToken := FToken;
+  if not LToken.ToLower.StartsWith(CHeaderBearer.ToLower) then
+    LToken := CHeaderBearer + LToken;
+  TIdHTTP(FParent.Component).Request.CustomHeaders.AddValue(CHeaderAuth, LToken);
 end;
 
 end.

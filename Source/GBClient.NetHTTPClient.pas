@@ -2,15 +2,11 @@ unit GBClient.NetHTTPClient;
 
 interface
 
+{$IFDEF WEAKPACKAGEUNIT}
+  {$WEAKPACKAGEUNIT ON}
+{$ENDIF}
+
 uses
-  Data.DB,
-  GBClient.Interfaces,
-  GBClient.Core.Request,
-  GBClient.Core.Types,
-  GBClient.Core.Helpers,
-  GBClient.Core.Settings,
-  GBClient.Core.Exceptions,
-  GBClient.NetHTTPClient.Auth,
   System.SysUtils,
   System.Classes,
   System.JSON,
@@ -19,24 +15,31 @@ uses
   System.Generics.Collections,
   System.Net.URLClient,
   System.Net.HttpClient,
-  System.Net.HttpClientComponent;
+  System.Net.HttpClientComponent,
+  Data.DB,
+  GBClient.Interfaces,
+  GBClient.Core.Request,
+  GBClient.Core.Types,
+  GBClient.Core.Helpers,
+  GBClient.Core.Settings,
+  GBClient.Core.Exceptions,
+  GBClient.NetHTTPClient.Auth;
 
-type TGBClientNetHTTPClient = class(TGBClientCoreRequest, IGBClientRequest,
-                                                          IGBClientRequestParams,
-                                                          IGBClientResponse)
+type
+  TGBClientNetHTTPClient = class(TGBClientCoreRequest, IGBClientRequest, IGBClientRequestParams, IGBClientResponse)
   private
-    FClient : TNetHTTPClient;
-    FRequest : TNetHTTPRequest;
-    FResponse : IHTTPResponse;
-    FFormData : TMultipartFormData;
-    FByteStream : TBytesStream;
+    FClient: TNetHTTPClient;
+    FRequest: TNetHTTPRequest;
+    FResponse: IHTTPResponse;
+    FFormData: TMultipartFormData;
+    FByteStream: TBytesStream;
     FJSONArray: TJSONArray;
     FJSONObject: TJSONObject;
     FContentType: string;
 
-    procedure OnAWSAuthorization(Auth, AmzDate: string);
+    procedure OnAWSAuthorization(const AAuth, AAmzDate: string);
 
-    procedure createComponents;
+    procedure CreateComponents;
 
     procedure PrepareRequest;
     procedure PrepareRequestProxy;
@@ -45,15 +48,14 @@ type TGBClientNetHTTPClient = class(TGBClientCoreRequest, IGBClientRequest,
     procedure PrepareRequestPathParams;
     procedure PrepareRequestBody;
     procedure PrepareRequestAuth;
-
   protected
     function Component: TComponent; override;
     function Authorization: IGBClientAuth; override;
 
-    function ContentType(Value: TGBContentType): IGBClientRequest; override;
+    function ContentType(const AValue: TGBContentType): IGBClientRequest; override;
 
     function Send: IGBClientResponse; override;
-    function Response : IGBClientResponse; override;
+    function Response: IGBClientResponse; override;
 
     // Response
     function StatusCode: Integer;
@@ -62,22 +64,21 @@ type TGBClientNetHTTPClient = class(TGBClientCoreRequest, IGBClientRequest,
     function GetText: string;
     function GetJSONObject: TJSONObject;
     function GetJSONArray: TJSONArray;
-    function DataSet(Value: TDataSet): IGBClientResponse;
-    function GetObject(Value: TObject): IGBClientResponse;
-    function GetList(Value: TList<TObject>; AType: TClass): IGBClientResponse;
+    function DataSet(const AValue: TDataSet): IGBClientResponse;
+    function GetObject(const AValue: TObject): IGBClientResponse;
+    function GetList(const AValue: TList<TObject>; const AType: TClass): IGBClientResponse;
     function GetBytes: TBytes;
     function GetStream: TBytesStream;
 
-    function HeaderAsString(Name: String): string;
-    function HeaderAsInteger(Name: String): Integer;
-    function HeaderAsFloat(Name: String): Double;
-    function HeaderAsDateTime(Name: String): TDateTime;
-
+    function HeaderAsString(const AName: string): string;
+    function HeaderAsInteger(const AName: string): Integer;
+    function HeaderAsFloat(const AName: string): Double;
+    function HeaderAsDateTime(const AName: string): TDateTime;
   public
-    constructor create; override;
+    constructor Create; override;
     class function New: IGBClientRequest;
     destructor Destroy; override;
-end;
+  end;
 
 implementation
 
@@ -87,41 +88,40 @@ function TGBClientNetHTTPClient.Authorization: IGBClientAuth;
 begin
   if not Assigned(FAuthorization) then
     FAuthorization := TGBClientNetHTTPClientAuth.New(Self);
-  result := FAuthorization;
+  Result := FAuthorization;
 end;
 
 function TGBClientNetHTTPClient.Component: TComponent;
 begin
-  result := FRequest;
+  Result := FRequest;
 end;
 
-function TGBClientNetHTTPClient.ContentType(Value: TGBContentType): IGBClientRequest;
+function TGBClientNetHTTPClient.ContentType(const AValue: TGBContentType): IGBClientRequest;
 begin
-  result := Self;
-  inherited ContentType(Value);
-  FContentType := Value.value;
+  Result := Self;
+  inherited ContentType(AValue);
+  FContentType := AValue.Value;
 end;
 
-constructor TGBClientNetHTTPClient.create;
+constructor TGBClientNetHTTPClient.Create;
 begin
   inherited;
   FContentType := 'application/json';
 end;
 
-procedure TGBClientNetHTTPClient.createComponents;
+procedure TGBClientNetHTTPClient.CreateComponents;
 begin
   FreeAndNil(FRequest);
   FreeAndNil(FClient);
-
   FClient := TNetHTTPClient.Create(nil);
   FRequest := TNetHTTPRequest.Create(nil);
   FRequest.Client := FClient;
 end;
 
-function TGBClientNetHTTPClient.DataSet(Value: TDataSet): IGBClientResponse;
+function TGBClientNetHTTPClient.DataSet(const AValue: TDataSet): IGBClientResponse;
 begin
-  result := Self;
-  Value.FromJSON(GetText);
+  Result := Self;
+  AValue.FromJSON(GetText);
 end;
 
 destructor TGBClientNetHTTPClient.Destroy;
@@ -137,14 +137,14 @@ end;
 
 function TGBClientNetHTTPClient.GetBytes: TBytes;
 var
-  stream: TBytesStream;
+  LStream: TBytesStream;
 begin
-  stream := TBytesStream.Create;
+  LStream := TBytesStream.Create;
   try
-    stream.LoadFromStream(FResponse.ContentStream);
-    result := stream.Bytes;
+    LStream.LoadFromStream(FResponse.ContentStream);
+    Result := LStream.Bytes;
   finally
-    stream.Free;
+    LStream.Free;
   end;
 end;
 
@@ -152,35 +152,34 @@ function TGBClientNetHTTPClient.GetJSONArray: TJSONArray;
 begin
   FreeAndNil(FJSONArray);
   FJSONArray := TJSONObject.ParseJSONValue(GetText) as TJSONArray;
-  result := FJSONArray;
+  Result := FJSONArray;
 end;
 
 function TGBClientNetHTTPClient.GetJSONObject: TJSONObject;
 begin
   FreeAndNil(FJSONArray);
   FJSONObject := TJSONObject.ParseJSONValue(GetText) as TJSONObject;
-  result := FJSONObject;
+  Result := FJSONObject;
 end;
 
-function TGBClientNetHTTPClient.GetList(Value: TList<TObject>; AType: TClass): IGBClientResponse;
+function TGBClientNetHTTPClient.GetList(const AValue: TList<TObject>; const AType: TClass): IGBClientResponse;
 var
-  parse     : TGBOnParseJSONToObject;
-  jsonArray : TJSONArray;
-  LObject   : TObject;
-  i         : Integer;
+  LParse: TGBOnParseJSONToObject;
+  LJsonArray: TJSONArray;
+  LObject: TObject;
+  LCount: Integer;
 begin
-  result := Self;
-  jsonArray := GetJSONArray;
-
-  for i := 0 to Pred(jsonArray.Count) do
+  Result := Self;
+  LJsonArray := GetJSONArray;
+  for LCount := 0 to Pred(LJsonArray.Count) do
   begin
-    parse := Settings.OnParseJSONToObject;
-    if Assigned(parse) then
+    LParse := Settings.OnParseJSONToObject;
+    if Assigned(LParse) then
     begin
       LObject := AType.Create;
       try
-        parse(TJSONObject( jsonArray.Items[i] ), LObject);
-        Value.Add(LObject);
+        LParse(TJSONObject(LJsonArray.Items[LCount]), LObject);
+        AValue.Add(LObject);
       except
         LObject.Free;
         raise;
@@ -189,14 +188,14 @@ begin
   end;
 end;
 
-function TGBClientNetHTTPClient.GetObject(Value: TObject): IGBClientResponse;
+function TGBClientNetHTTPClient.GetObject(const AValue: TObject): IGBClientResponse;
 var
-  parse: TGBOnParseJSONToObject;
+  LParse: TGBOnParseJSONToObject;
 begin
-  result := Self;
-  parse := Settings.OnParseJSONToObject;
-  if Assigned(parse) then
-    parse(GetJSONObject, Value);
+  Result := Self;
+  LParse := Settings.OnParseJSONToObject;
+  if Assigned(LParse) then
+    LParse(GetJSONObject, AValue);
 end;
 
 function TGBClientNetHTTPClient.GetStream: TBytesStream;
@@ -208,47 +207,47 @@ end;
 
 function TGBClientNetHTTPClient.GetText: string;
 begin
-  result := FResponse.ContentAsString;
+  Result := FResponse.ContentAsString;
 end;
 
-function TGBClientNetHTTPClient.HeaderAsDateTime(Name: String): TDateTime;
+function TGBClientNetHTTPClient.HeaderAsDateTime(const AName: string): TDateTime;
 begin
-  result.fromIso8601ToDateTime(HeaderAsString(Name));
+  Result.fromIso8601ToDateTime(HeaderAsString(AName));
 end;
 
-function TGBClientNetHTTPClient.HeaderAsFloat(Name: String): Double;
+function TGBClientNetHTTPClient.HeaderAsFloat(const AName: string): Double;
 begin
-  result := StrToFloatDef(HeaderAsString(Name), 0);
+  Result := StrToFloatDef(HeaderAsString(AName), 0);
 end;
 
-function TGBClientNetHTTPClient.HeaderAsInteger(Name: String): Integer;
+function TGBClientNetHTTPClient.HeaderAsInteger(const AName: string): Integer;
 begin
-  result := StrToIntDef(HeaderAsString(Name), 0);
+  Result := StrToIntDef(HeaderAsString(AName), 0);
 end;
 
-function TGBClientNetHTTPClient.HeaderAsString(Name: String): string;
+function TGBClientNetHTTPClient.HeaderAsString(const AName: string): string;
 begin
-  if FResponse.ContainsHeader(Name) then
-    result := FResponse.HeaderValue[Name];
+  if FResponse.ContainsHeader(AName) then
+    Result := FResponse.HeaderValue[AName];
 end;
 
 class function TGBClientNetHTTPClient.New: IGBClientRequest;
 begin
-  result := Self.create;
+  Result := Self.create;
 end;
 
-procedure TGBClientNetHTTPClient.OnAWSAuthorization(Auth, AmzDate: string);
+procedure TGBClientNetHTTPClient.OnAWSAuthorization(const AAuth, AAmzDate: string);
 begin
-  FRequest.CustomHeaders['x-amz-date'] := AmzDate;
-  FRequest.CustomHeaders['Authorization'] := Auth;
+  FRequest.CustomHeaders['x-amz-date'] := AAmzDate;
+  FRequest.CustomHeaders['Authorization'] := AAuth;
 end;
 
 procedure TGBClientNetHTTPClient.PrepareRequest;
 begin
   FResponse := nil;
-  createComponents;
+  CreateComponents;
 
-  FRequest.MethodString := FMethod.value;
+  FRequest.MethodString := FMethod.Value;
 
   PrepareRequestProxy;
   PrepareRequestPathParams;
@@ -263,32 +262,25 @@ begin
   if Assigned(FAuthorization) then
   begin
     if FAuthorization.AuthType = atAWSv4 then
-    begin
-      FAuthorization.AWSv4
-        .Host(GetFullUrl)
-        .HTTPVerb(FMethod.value)
-        .Payload(FBody);
-    end;
+      FAuthorization.AWSv4.Host(GetFullUrl).HTTPVerb(FMethod.value).Payload(FBody);
 
     TGBClientNetHTTPClientAuth(FAuthorization).ApplyAuth;
 
     if FAuthorization.AuthType = atAWSv4 then
-    begin
-      OnAWSAuthorization(FAuthorization.AWSv4.Authorization,
-                         FAuthorization.AWSv4.XAmzDate);
-    end;  end;
+      OnAWSAuthorization(FAuthorization.AWSv4.Authorization, FAuthorization.AWSv4.XAmzDate);
+  end;
 end;
 
 procedure TGBClientNetHTTPClient.PrepareRequestBody;
 var
-  i: Integer;
+  LCount: Integer;
 begin
   if FUrlEncodedParams.Count > 0 then
   begin
     FreeAndNil(FFormData);
     FFormData := TMultipartFormData.Create(True);
-    for i := 0 to Pred(FUrlEncodedParams.Count) do
-      FFormData.AddField(FUrlEncodedParams[i].Key, FUrlEncodedParams[i].Value);
+    for LCount := 0 to Pred(FUrlEncodedParams.Count) do
+      FFormData.AddField(FUrlEncodedParams[LCount].Key, FUrlEncodedParams[LCount].Value);
 
     FRequest.ContentStream := FFormData.Stream;
   end
@@ -298,31 +290,28 @@ end;
 
 procedure TGBClientNetHTTPClient.PrepareRequestHeaders;
 var
-  i: Integer;
+  LCount: Integer;
 begin
   FClient.ContentType := FContentType;
-  for i := 0 to Pred(FHeaders.Count) do
-    FRequest.CustomHeaders[FHeaders[i].Key] := FHeaders[i].Value;
+  for LCount := 0 to Pred(FHeaders.Count) do
+    FRequest.CustomHeaders[FHeaders[LCount].Key] := FHeaders[LCount].Value;
 end;
 
 procedure TGBClientNetHTTPClient.PrepareRequestPathParams;
 var
-  i : Integer;
-  url : string;
-  name: String;
-  value: string;
+  LCount: Integer;
+  LUrl: string;
+  LName: string;
+  LValue: string;
 begin
-  url := GetFullUrl;
-
-  for i := 0 to Pred(FPaths.Count) do
+  LUrl := GetFullUrl;
+  for LCount := 0 to Pred(FPaths.Count) do
   begin
-    name := FPaths[i].Key;
-    value:= FPaths[i].Value;
-
-    url := url.Replace(Format('{%s}', [name]), value);
+    LName := FPaths[LCount].Key;
+    LValue:= FPaths[LCount].Value;
+    LUrl := LUrl.Replace(Format('{%s}', [LName]), LValue);
   end;
-
-  FRequest.URL := url;
+  FRequest.URL := LUrl;
 end;
 
 procedure TGBClientNetHTTPClient.PrepareRequestProxy;
@@ -331,30 +320,28 @@ end;
 
 procedure TGBClientNetHTTPClient.PrepareRequestQueries;
 var
-  i : Integer;
-  queryParam: string;
-  name: string;
-  value: string;
+  LCount: Integer;
+  LQueryParam: string;
+  LName: string;
+  LValue: string;
 begin
-  queryParam := EmptyStr;
-
-  for i := 0 to Pred(FQueries.Count) do
+  LQueryParam := EmptyStr;
+  for LCount := 0 to Pred(FQueries.Count) do
   begin
-    name := FQueries[i].Key;
-    value:= FQueries[i].Value;
-
-    if i > 0 then
-      queryParam := queryParam + '&';
-    queryParam := queryParam + name + '=' + TNetEncoding.URL.EncodeQuery(value);
+    LName := FQueries[LCount].Key;
+    LValue:= FQueries[LCount].Value;
+    if LCount > 0 then
+      LQueryParam := LQueryParam + '&';
+    LQueryParam := LQueryParam + LName + '=' + TNetEncoding.URL.EncodeQuery(LValue);
   end;
 
-  if not queryParam.IsEmpty then
-    FRequest.URL := FRequest.URL + '?' + queryParam;
+  if not LQueryParam.IsEmpty then
+    FRequest.URL := FRequest.URL + '?' + LQueryParam;
 end;
 
 function TGBClientNetHTTPClient.Response: IGBClientResponse;
 begin
-  result := Self;
+  Result := Self;
 end;
 
 function TGBClientNetHTTPClient.Send: IGBClientResponse;
@@ -381,12 +368,12 @@ end;
 
 function TGBClientNetHTTPClient.StatusCode: Integer;
 begin
-  result := FResponse.StatusCode;
+  Result := FResponse.StatusCode;
 end;
 
 function TGBClientNetHTTPClient.StatusText: string;
 begin
-  result := FResponse.StatusText;
+  Result := FResponse.StatusText;
 end;
 
 end.

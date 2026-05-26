@@ -2,83 +2,99 @@ unit GBClient.Core.Request.Param;
 
 interface
 
+{$IFDEF WEAKPACKAGEUNIT}
+  {$WEAKPACKAGEUNIT ON}
+{$ENDIF}
+
 uses
-  GBClient.Core.Helpers,
-  System.SysUtils,
   System.Generics.Collections;
 
-type TGBClientCoreRequestParam = class
+type
+  TGBClientCoreRequestParam = class
   private
-    FKey: String;
-    FValue: String;
+    FKey: string;
+    FValue: string;
     FEncoding: Boolean;
-
   public
-    property Key: String read FKey;
-    property Value: String read FValue;
+    constructor Create(const AKey, AValue: string; const AEncoding: Boolean = False);
+
+    class function GetParam(const AList: TObjectList<TGBClientCoreRequestParam>; const AKey: string):
+      TGBClientCoreRequestParam;
+    class procedure AddOrSet(const AList: TObjectList<TGBClientCoreRequestParam>; const AKey, AValue: string;
+      const AEncoding: Boolean = False); overload;
+    class procedure AddOrSet(const AList: TObjectList<TGBClientCoreRequestParam>; const AKey: string;
+      const AValue: Integer; const AEncoding: Boolean = False); overload;
+    class procedure AddOrSet(const AList: TObjectList<TGBClientCoreRequestParam>; const AKey: string;
+      const AValue: Extended; AEncoding: Boolean = False); overload;
+    class procedure AddOrSet(const AList: TObjectList<TGBClientCoreRequestParam>; const AKey: string;
+      const AValue: TDateTime; const AEncoding: Boolean = False); overload;
+
+    property Key: string read FKey;
+    property Value: string read FValue;
     property Encoding: Boolean read FEncoding;
-
-    constructor create(AKey: string; AValue: string; bEncoding: Boolean = False);
-
-    class function GetParam(AList: TObjectList<TGBClientCoreRequestParam>; AKey: String): TGBClientCoreRequestParam;
-    class procedure AddOrSet(AList: TObjectList<TGBClientCoreRequestParam>; AKey: String; AValue: string; bEncoding: Boolean = False); overload;
-    class procedure AddOrSet(AList: TObjectList<TGBClientCoreRequestParam>; AKey: String; AValue: Integer; bEncoding: Boolean = False); overload;
-    class procedure AddOrSet(AList: TObjectList<TGBClientCoreRequestParam>; AKey: String; AValue: Extended; bEncoding: Boolean = False); overload;
-    class procedure AddOrSet(AList: TObjectList<TGBClientCoreRequestParam>; AKey: String; AValue: TDateTime; bEncoding: Boolean = False); overload;
-end;
+  end;
 
 implementation
 
+uses
+  GBClient.Core.Helpers,
+  System.SysUtils;
+
 { TGBClientCoreRequestParam }
 
-class procedure TGBClientCoreRequestParam.AddOrSet(AList: TObjectList<TGBClientCoreRequestParam>; AKey, AValue: string; bEncoding: Boolean);
+class procedure TGBClientCoreRequestParam.AddOrSet(const AList: TObjectList<TGBClientCoreRequestParam>;
+  const AKey, AValue: string; const AEncoding: Boolean = False);
 var
-  param: TGBClientCoreRequestParam;
+  LParam: TGBClientCoreRequestParam;
 begin
-  param := GetParam(AList, AKey);
-  if not Assigned(param) then
+  LParam := GetParam(AList, AKey);
+  if not Assigned(LParam) then
   begin
-    param := TGBClientCoreRequestParam.create(AKey, AValue, bEncoding);
-    AList.Add(param);
+    LParam := TGBClientCoreRequestParam.create(AKey, AValue, AEncoding);
+    AList.Add(LParam);
     Exit;
   end;
 
-  param.FKey := AKey;
-  param.FValue := AValue;
-  param.FEncoding := bEncoding;
+  LParam.FKey := AKey;
+  LParam.FValue := AValue;
+  LParam.FEncoding := AEncoding;
 end;
 
-constructor TGBClientCoreRequestParam.create(AKey, AValue: string; bEncoding: Boolean);
+constructor TGBClientCoreRequestParam.Create(const AKey, AValue: string; const AEncoding: Boolean = False);
 begin
   FKey := AKey;
   FValue := AValue;
-  FEncoding := bEncoding;
+  FEncoding := AEncoding;
 end;
 
-class procedure TGBClientCoreRequestParam.AddOrSet(AList: TObjectList<TGBClientCoreRequestParam>; AKey: String; AValue: Integer; bEncoding: Boolean);
+class procedure TGBClientCoreRequestParam.AddOrSet(const AList: TObjectList<TGBClientCoreRequestParam>;
+  const AKey: string; const AValue: Integer; const AEncoding: Boolean = False);
 begin
   AddOrSet(AList, AKey, AValue.ToString);
 end;
 
-class procedure TGBClientCoreRequestParam.AddOrSet(AList: TObjectList<TGBClientCoreRequestParam>; AKey: String; AValue: Extended; bEncoding: Boolean);
+class procedure TGBClientCoreRequestParam.AddOrSet(const AList: TObjectList<TGBClientCoreRequestParam>;
+  const AKey: string; const AValue: Extended; AEncoding: Boolean = False);
 begin
   AddOrSet(AList, AKey, AValue.ToString);
 end;
 
-class procedure TGBClientCoreRequestParam.AddOrSet(AList: TObjectList<TGBClientCoreRequestParam>; AKey: String; AValue: TDateTime; bEncoding: Boolean);
+class procedure TGBClientCoreRequestParam.AddOrSet(const AList: TObjectList<TGBClientCoreRequestParam>;
+  const AKey: string; const AValue: TDateTime; const AEncoding: Boolean = False);
 begin
   AddOrSet(AList, AKey, AValue.DateTimeToIso8601);
 end;
 
-class function TGBClientCoreRequestParam.GetParam(AList: TObjectList<TGBClientCoreRequestParam>; AKey: String): TGBClientCoreRequestParam;
+class function TGBClientCoreRequestParam.GetParam(const AList: TObjectList<TGBClientCoreRequestParam>;
+  const AKey: string): TGBClientCoreRequestParam;
 var
-  i: Integer;
+  LCount: Integer;
 begin
-  result := nil;
-  for i := 0 to Pred(AList.Count) do
+  Result := nil;
+  for LCount := 0 to Pred(AList.Count) do
   begin
-    if AKey.ToLower.Equals(AList[i].Key.ToLower) then
-      Exit(AList[i]);
+    if AKey.ToLower.Equals(AList[LCount].Key.ToLower) then
+      Exit(AList[LCount]);
   end;
 end;
 

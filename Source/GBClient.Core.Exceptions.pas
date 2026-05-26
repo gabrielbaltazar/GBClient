@@ -2,6 +2,10 @@ unit GBClient.Core.Exceptions;
 
 interface
 
+{$IFDEF WEAKPACKAGEUNIT}
+  {$WEAKPACKAGEUNIT ON}
+{$ENDIF}
+
 uses
   System.SysUtils,
   System.JSON;
@@ -15,23 +19,21 @@ type
     FStatusCode: Integer;
     FStatusText: string;
     FContent: string;
-
   public
-    property statusCode: Integer read FStatusCode;
-    property statusText: String read FStatusText;
-    property content: string read FContent;
+    constructor Create(const AStatusCode: Integer; const AStatusText: string; const AContent: string;
+      const AJSON: TJSONObject = nil);
 
-    constructor create(AStatusCode: Integer;
-                       AStatusText: string;
-                       AContent: string;
-                       AJSON: TJSONObject = nil);
+    property StatusCode: Integer read FStatusCode;
+    property StatusText: string read FStatusText;
+    property Content: string read FContent;
   end;
 
 implementation
 
 { EGBRestException }
 
-constructor EGBRestException.create(AStatusCode: Integer; AStatusText, AContent: string; AJSON: TJSONObject);
+constructor EGBRestException.Create(const AStatusCode: Integer; const AStatusText: string;
+  const AContent: string; const AJSON: TJSONObject = nil);
 begin
   FStatusCode := AStatusCode;
   FStatusText := AStatusText;
@@ -40,9 +42,7 @@ begin
   if AJSON <> nil then
     FContent := AJSON.ToString;
 
-  Self.Message := Format('%s %s: %s', [FStatusCode.ToString,
-                                       FStatusText,
-                                       FContent]);
+  Self.Message := Format('%s %s: %s', [FStatusCode.ToString, FStatusText, FContent]);
 end;
 
 end.

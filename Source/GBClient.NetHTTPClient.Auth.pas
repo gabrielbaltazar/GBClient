@@ -2,29 +2,28 @@ unit GBClient.NetHTTPClient.Auth;
 
 interface
 
+{$IFDEF WEAKPACKAGEUNIT}
+  {$WEAKPACKAGEUNIT ON}
+{$ENDIF}
+
 uses
-  GBClient.Interfaces,
-  GBClient.Core.Request.Auth,
   System.Net.HttpClientComponent,
   System.Net.URLClient,
-  System.SysUtils;
+  System.SysUtils,
+  GBClient.Interfaces,
+  GBClient.Core.Request.Auth;
 
-type TGBClientNetHTTPClientAuth = class(TGBClientCoreRequestAuth, IGBClientAuth,
-                                                                  IGBClientAuthBasic,
-                                                                  IGBClientAuthBearer)
+type
+  TGBClientNetHTTPClientAuth = class(TGBClientCoreRequestAuth, IGBClientAuth, IGBClientAuthBasic, IGBClientAuthBearer)
   private
     procedure ApplyBasicAuth;
     procedure ApplyBearerAuth;
 
-    procedure AuthBasicEvent(const Sender: TObject; AnAuthTarget: TAuthTargetType;
-                             const ARealm, AURL: string; var AUserName, APassword: string;
-                             var AbortAuth: Boolean;
-                             var Persistence: TAuthPersistenceType);
+    procedure AuthBasicEvent(const ASender: TObject; AAnAuthTarget: TAuthTargetType; const ARealm, AURL: string;
+      var AUserName, APassword: string; var AAbortAuth: Boolean; var APersistence: TAuthPersistenceType);
   public
     procedure ApplyAuth;
-
-    destructor Destroy; override;
-end;
+  end;
 
 implementation
 
@@ -33,10 +32,12 @@ implementation
 procedure TGBClientNetHTTPClientAuth.ApplyAuth;
 begin
   case FAuthType of
-    atNone:;
-    atBasic: ApplyBasicAuth;
-    atBearer: ApplyBearerAuth;
-    atAWSv4: ApplyAWSv4;
+    atBasic:
+      ApplyBasicAuth;
+    atBearer:
+      ApplyBearerAuth;
+    atAWSv4:
+      ApplyAWSv4;
   end;
 end;
 
@@ -48,32 +49,26 @@ end;
 
 procedure TGBClientNetHTTPClientAuth.ApplyBearerAuth;
 const
-  HEADER_AUTH = 'Authorization';
-  HEADER_BEARER = 'Bearer ';
+  CHeaderAuth = 'Authorization';
+  CHeaderBearer = 'Bearer ';
 var
-  token : string;
+  LToken: string;
 begin
-  token  := FToken;
-  if not token.ToLower.StartsWith(HEADER_BEARER.ToLower) then
-    token := HEADER_BEARER + token;
+  LToken  := FToken;
+  if not LToken.ToLower.StartsWith(CHeaderBearer.ToLower) then
+    LToken := CHeaderBearer + LToken;
 
-  TNetHTTPRequest(FParent.Component).CustomHeaders[HEADER_AUTH] := token;
+  TNetHTTPRequest(FParent.Component).CustomHeaders[CHeaderAuth] := LToken;
 end;
 
-procedure TGBClientNetHTTPClientAuth.AuthBasicEvent(const Sender: TObject;
-  AnAuthTarget: TAuthTargetType; const ARealm, AURL: string; var AUserName,
-  APassword: string; var AbortAuth: Boolean;
-  var Persistence: TAuthPersistenceType);
+procedure TGBClientNetHTTPClientAuth.AuthBasicEvent(const ASender: TObject;
+  AAnAuthTarget: TAuthTargetType; const ARealm, AURL: string; var AUserName,
+  APassword: string; var AAbortAuth: Boolean;
+  var APersistence: TAuthPersistenceType);
 begin
   AUserName := FUsername;
   APassword := FPassword;
-  AbortAuth := FUsername = '';
-end;
-
-destructor TGBClientNetHTTPClientAuth.Destroy;
-begin
-
-  inherited;
+  AAbortAuth := FUsername = '';
 end;
 
 end.

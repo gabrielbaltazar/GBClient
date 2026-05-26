@@ -2,6 +2,10 @@ unit GBClient.Core.Helpers;
 
 interface
 
+{$IFDEF WEAKPACKAGEUNIT}
+  {$WEAKPACKAGEUNIT ON}
+{$ENDIF}
+
 uses
   Data.DB,
   REST.Response.Adapter,
@@ -12,21 +16,19 @@ uses
 type
   TGBClientDatetimeHelper = record helper for TDateTime
   private
-    function Iso8601ToDateTime(AValue: String): TDateTime;
-
+    function Iso8601ToDateTime(const AValue: string): TDateTime;
   public
     function DateTimeToIso8601: string;
-
-    procedure fromIso8601ToDateTime(AValue: String);
+    procedure FromIso8601ToDateTime(const AValue: string);
   end;
 
   TGBClientDataSetHelper = class helper for TDataSet
   public
     function ToJSONObject: TJSONObject;
-    function ToJSONArray : TJSONArray;
+    function ToJSONArray: TJSONArray;
 
-    procedure FromJSON(AJSONValue: TJSONValue); overload;
-    procedure FromJSON(AJSONString: String); overload;
+    procedure FromJSON(const AJSONValue: TJSONValue); overload;
+    procedure FromJSON(const AJSONString: string); overload;
   end;
 
 implementation
@@ -50,12 +52,12 @@ begin
     Result := FormatDateTime('yyyy"-"mm"-"dd"T"hh":"nn":"ss', Self);
 end;
 
-procedure TGBClientDatetimeHelper.fromIso8601ToDateTime(AValue: String);
+procedure TGBClientDatetimeHelper.FromIso8601ToDateTime(const AValue: string);
 begin
   Self := Iso8601ToDateTime(AValue);
 end;
 
-function TGBClientDatetimeHelper.Iso8601ToDateTime(AValue: String): TDateTime;
+function TGBClientDatetimeHelper.Iso8601ToDateTime(const AValue: string): TDateTime;
 var
   Y, M, D, HH, MI, SS: Cardinal;
 begin
@@ -102,38 +104,38 @@ end;
 
 { TGBClientDataSetHelper }
 
-procedure TGBClientDataSetHelper.FromJSON(AJSONValue: TJSONValue);
+procedure TGBClientDataSetHelper.FromJSON(const AJSONValue: TJSONValue);
 var
-  adapter: TCustomJSONDataSetAdapter;
+  LAdapter: TCustomJSONDataSetAdapter;
 begin
-  adapter := TCustomJSONDataSetAdapter.Create(nil);
+  LAdapter := TCustomJSONDataSetAdapter.Create(nil);
   try
-    adapter.Dataset := Self;
-    adapter.UpdateDataSet(AJSONValue);
+    LAdapter.Dataset := Self;
+    LAdapter.UpdateDataSet(AJSONValue);
   finally
-    adapter.Free;
+    LAdapter.Free;
   end;
 end;
 
-procedure TGBClientDataSetHelper.FromJSON(AJSONString: String);
+procedure TGBClientDataSetHelper.FromJSON(const AJSONString: string);
 var
-  json : TJSONValue;
+  LJSON: TJSONValue;
 begin
-  json := TJSONObject.ParseJSONValue(AJSONString);
+  LJSON := TJSONObject.ParseJSONValue(AJSONString);
   try
-    FromJSON(json);
+    FromJSON(LJSON);
   finally
-    json.Free;
+    LJSON.Free;
   end;
 end;
 
 function TGBClientDataSetHelper.ToJSONArray: TJSONArray;
 var
-  bookmark: TBookmark;
+  LBookmark: TBookmark;
 begin
-  bookmark := GetBookmark;
+  LBookmark := GetBookmark;
   try
-    result := TJSONArray.Create;
+    Result := TJSONArray.Create;
     try
       First;
       while not Eof do
@@ -142,39 +144,44 @@ begin
         Next;
       end;
     except
-      result.Free;
+      Result.Free;
       raise;
     end;
   finally
-    GotoBookmark(bookmark);
+    GotoBookmark(LBookmark);
   end;
 end;
 
 function TGBClientDataSetHelper.ToJSONObject: TJSONObject;
 var
-  field: TField;
-  key: string;
+  LField: TField;
+  LKey: string;
 begin
-  result := TJSONObject.Create;
+  Result := TJSONObject.Create;
   try
-    for field in Fields do
+    for LField in Fields do
     begin
-      if field.IsNull then
+      if LField.IsNull then
         Continue;
 
-      key := field.FieldName;
-      case field.DataType of
-        ftString: Result.AddPair(key, field.AsString);
+      LKey := LField.FieldName;
+      case LField.DataType of
+        ftString:
+          Result.AddPair(LKey, LField.AsString);
 
         ftAutoInc, ftInteger, ftSmallint, ftShortint, ftCurrency,
         ftSingle, ftFloat, ftLargeint, ftBCD, ftFMTBcd, ftWord,
-        ftExtended, ftLongWord: Result.AddPair(key, TJSONNumber.Create(field.AsInteger));
+        ftExtended, ftLongWord:
+          Result.AddPair(LKey, TJSONNumber.Create(LField.AsInteger));
 
-        ftMemo, ftWideMemo, ftWideString: Result.AddPair(key, field.AsWideString);
+        ftMemo, ftWideMemo, ftWideString:
+          Result.AddPair(LKey, LField.AsWideString);
 
-        ftBoolean: Result.AddPair(key, TJSONBool.Create( field.AsBoolean));
+        ftBoolean:
+          Result.AddPair(LKey, TJSONBool.Create( LField.AsBoolean));
 
-        ftDate, ftTime, ftTimeStamp, ftDateTime: result.AddPair(key, field.AsDateTime.DateTimeToIso8601);
+        ftDate, ftTime, ftTimeStamp, ftDateTime:
+          Result.AddPair(LKey, LField.AsDateTime.DateTimeToIso8601);
       end;
     end;
   except

@@ -2,21 +2,23 @@ unit GBClient.Core.Request.Auth;
 
 interface
 
-uses
-  GBClient.Interfaces,
-  GBClient.Core.Request.Auth.AWS,
-  System.SysUtils,
-  System.Classes;
+{$IFDEF WEAKPACKAGEUNIT}
+  {$WEAKPACKAGEUNIT ON}
+{$ENDIF}
 
-type TGBClientCoreRequestAuth = class(TInterfacedObject, IGBClientAuth,
-                                                         IGBClientAuthBasic,
-                                                         IGBClientAuthBearer)
+uses
+  System.SysUtils,
+  System.Classes,
+  GBClient.Interfaces,
+  GBClient.Core.Request.Auth.AWS;
+
+type
+  TGBClientCoreRequestAuth = class(TInterfacedObject, IGBClientAuth, IGBClientAuthBasic, IGBClientAuthBearer)
   protected
     [Weak]
     FParent: IGBClientRequest;
-
     FAuthType: TGBAuthType;
-    FUsername: String;
+    FUsername: string;
     FPassword: string;
     FToken: string;
     FAWSv4: IGBClientAuthAWSv4;
@@ -27,18 +29,17 @@ type TGBClientCoreRequestAuth = class(TInterfacedObject, IGBClientAuth,
 
     function AuthType: TGBAuthType;
 
-    function Username(Value: String): IGBClientAuthBasic;
-    function Password(Value: String): IGBClientAuthBasic;
-    function Token(Value: String): IGBClientAuthBearer;
+    function Username(const AValue: string): IGBClientAuthBasic;
+    function Password(const AValue: string): IGBClientAuthBasic;
+    function Token(const AValue: string): IGBClientAuthBearer;
 
     procedure ApplyAWSv4;
 
     function &End: IGBClientRequest;
-
   public
-    constructor create(Parent: IGBClientRequest);
-    class function New(Parent: IGBClientRequest): IGBClientAuth;
-end;
+    constructor Create(const AParent: IGBClientRequest);
+    class function New(const AParent: IGBClientRequest): IGBClientAuth;
+  end;
 
 implementation
 
@@ -51,14 +52,14 @@ end;
 
 function TGBClientCoreRequestAuth.AuthType: TGBAuthType;
 begin
-  result := FAuthType;
+  Result := FAuthType;
 end;
 
 function TGBClientCoreRequestAuth.AWSv4: IGBClientAuthAWSv4;
 begin
   if not Assigned(FAWSv4) then
     FAWSv4 := TGBClientCoreRequestAuthAWS.New(FParent);
-  result := FAWSv4;
+  Result := FAWSv4;
   FAuthType := atAWSv4;
 end;
 
@@ -72,40 +73,40 @@ begin
   Result := Self;
 end;
 
-constructor TGBClientCoreRequestAuth.create(Parent: IGBClientRequest);
+constructor TGBClientCoreRequestAuth.Create(const AParent: IGBClientRequest);
 begin
-  FParent := Parent;
+  FParent := AParent;
   FAuthType := atNone;
 end;
 
 function TGBClientCoreRequestAuth.&End: IGBClientRequest;
 begin
-  result := FParent;
+  Result := FParent;
 end;
 
-class function TGBClientCoreRequestAuth.New(Parent: IGBClientRequest): IGBClientAuth;
+class function TGBClientCoreRequestAuth.New(const AParent: IGBClientRequest): IGBClientAuth;
 begin
-  result := Self.create(Parent);
+  Result := Self.Create(AParent);
 end;
 
-function TGBClientCoreRequestAuth.Password(Value: String): IGBClientAuthBasic;
+function TGBClientCoreRequestAuth.Password(const AValue: string): IGBClientAuthBasic;
 begin
-  result := Self;
-  FPassword := Value;
+  Result := Self;
+  FPassword := AValue;
   FAuthType := atBasic;
 end;
 
-function TGBClientCoreRequestAuth.Token(Value: String): IGBClientAuthBearer;
+function TGBClientCoreRequestAuth.Token(const AValue: string): IGBClientAuthBearer;
 begin
-  result := Self;
-  FToken := Value;
+  Result := Self;
+  FToken := AValue;
   FAuthType := atBearer;
 end;
 
-function TGBClientCoreRequestAuth.Username(Value: String): IGBClientAuthBasic;
+function TGBClientCoreRequestAuth.Username(const AValue: string): IGBClientAuthBasic;
 begin
-  result := Self;
-  FUsername := Value;
+  Result := Self;
+  FUsername := AValue;
   FAuthType := atBasic;
 end;
 

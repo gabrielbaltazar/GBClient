@@ -2,47 +2,57 @@ unit GBClient.Core.Types;
 
 interface
 
+{$IFDEF WEAKPACKAGEUNIT}
+  {$WEAKPACKAGEUNIT ON}
+{$ENDIF}
+
 type
   TGBMethodType = (gmtGET, gmtPOST, gmtPUT, gmtDELETE, gmtPATCH);
 
-  TGBContentType = (ctApplicationJson,
-                    ctApplicationXml,
-                    ctApplication_x_www_form_urlencoded);
+  TGBContentType = (ctApplicationJson, ctApplicationXml, ctApplication_x_www_form_urlencoded);
 
   TGBContentTypeHelper = record helper for TGBContentType
-    public
-      function value: string;
+  public
+    function Value: string;
   end;
 
   TGBMethodTypeHelper = record helper for TGBMethodType
   public
-    function value: string;
+    function Value: string;
   end;
 
 implementation
 
 { TGBContentTypeHelper }
 
-function TGBContentTypeHelper.value: string;
+function TGBContentTypeHelper.Value: string;
 begin
   case Self of
-    ctApplicationJson : result := 'application/json';
-    ctApplicationXml  : result := 'application/xml';
-    ctApplication_x_www_form_urlencoded : result := 'application/x-www-form-urlencoded';
+    ctApplicationJson:
+      Result := 'application/json';
+    ctApplicationXml:
+      Result := 'application/xml';
+    ctApplication_x_www_form_urlencoded:
+      Result := 'application/x-www-form-urlencoded';
   end;
 end;
 
 { TGBMethodTypeHelper }
 
-function TGBMethodTypeHelper.value: string;
+function TGBMethodTypeHelper.Value: string;
 begin
-  result := 'GET';
+  Result := 'GET';
   case Self of
-    gmtGET    : result := 'GET';
-    gmtPOST   : result := 'POST';
-    gmtPUT    : result := 'PUT';
-    gmtDELETE : result := 'DELETE';
-    gmtPATCH  : result := 'PATCH';
+    gmtGET:
+      Result := 'GET';
+    gmtPOST:
+      Result := 'POST';
+    gmtPUT:
+      Result := 'PUT';
+    gmtDELETE:
+      Result := 'DELETE';
+    gmtPATCH:
+      Result := 'PATCH';
   end;
 end;
 

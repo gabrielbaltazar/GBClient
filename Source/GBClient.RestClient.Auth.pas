@@ -2,30 +2,31 @@ unit GBClient.RestClient.Auth;
 
 interface
 
+{$IFDEF WEAKPACKAGEUNIT}
+  {$WEAKPACKAGEUNIT ON}
+{$ENDIF}
+
 uses
-  GBClient.Interfaces,
-  GBClient.Core.Request.Auth,
+  System.Classes,
+  System.SysUtils,
   REST.Client,
   REST.Authenticator.Basic,
   REST.Authenticator.OAuth,
-  System.Classes,
-  System.SysUtils;
+  GBClient.Interfaces,
+  GBClient.Core.Request.Auth;
 
-type TGBClientRestClientAuth = class(TGBClientCoreRequestAuth, IGBClientAuth,
-                                                               IGBClientAuthBasic,
-                                                               IGBClientAuthBearer)
+type
+  TGBClientRestClientAuth = class(TGBClientCoreRequestAuth, IGBClientAuth, IGBClientAuthBasic, IGBClientAuthBearer)
   private
     FAuthenticator: TCustomAuthenticator;
 
     procedure ApplyBasicAuth;
     procedure ApplyBearerAuth;
-
   public
     procedure ApplyAuth;
 
     destructor Destroy; override;
-
-end;
+  end;
 
 implementation
 
@@ -34,10 +35,12 @@ implementation
 procedure TGBClientRestClientAuth.ApplyAuth;
 begin
   case FAuthType of
-    atNone:;
-    atBasic: ApplyBasicAuth;
-    atBearer: ApplyBearerAuth;
-    atAWSv4: ApplyAWSv4;
+    atBasic:
+      ApplyBasicAuth;
+    atBearer:
+      ApplyBearerAuth;
+    atAWSv4:
+      ApplyAWSv4;
   end;
 end;
 
