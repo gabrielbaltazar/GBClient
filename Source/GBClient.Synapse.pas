@@ -15,7 +15,11 @@ uses
   Data.DB,
   blcksock,
   httpsend,
+{$IFDEF OPENSSL3}
+  ssl_openssl3,
+{$ELSE}
   ssl_openssl,
+{$ENDIF}
   synautil,
   syncobjs,
   GBClient.Interfaces,
@@ -243,6 +247,11 @@ var
 begin
   if not Assigned(FHeaders) then
     Exit;
+
+{$IFDEF OPENSSL3}
+  FHTTPSend.Headers.Add('Connection: close');
+  FHTTPSend.Headers.Add('Accept-Encoding: identity');
+{$ENDIF}
 
   for LCount := 0 to Pred(FHeaders.Count) do
     FHTTPSend.Headers.Add(Format('%s:%s', [FHeaders[LCount].Key, FHeaders[LCount].Value]));

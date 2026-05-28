@@ -10,7 +10,11 @@ uses
   System.SysUtils,
   blcksock,
   httpsend,
+{$IFDEF OPENSSL3}
+  ssl_openssl3,
+{$ELSE}
   ssl_openssl,
+{$ENDIF}
   synautil,
   syncobjs,
   GBClient.Interfaces,
