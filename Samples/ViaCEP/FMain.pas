@@ -37,12 +37,11 @@ var
 begin
   LClient := NewClientRequest;
   LClient.GET
-    .BaseURL('https://webhook.site/278c0e90-551f-4541-879b-c4dad22fbfb1')
-//    .BaseURL('https://viacep.com.br/ws')
-//    .Resource(edtCEP.Text + '/json')
+    .BaseURL('https://viacep.com.br/ws')
+    .Resource(edtCEP.Text + '/json')
     .Send;
 
-  mmoReposta.Lines.Text := LClient.Response.GetText;
+  mmoReposta.Lines.Text := LClient.Response.GetJSONObject.ToString;
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);

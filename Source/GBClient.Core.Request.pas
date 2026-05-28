@@ -41,7 +41,7 @@ type
     FOnException: TGBOnException;
     FOnPreExecute: TOnPreExecute;
 
-    function GetFullUrl: string;
+    function GetFullUrl: string; virtual;
 
     procedure Clear;
     function Component: TObject; virtual; abstract;

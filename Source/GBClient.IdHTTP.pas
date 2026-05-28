@@ -54,11 +54,10 @@ type
     procedure PrepareRequestPathParams;
     procedure PrepareRequestBody;
     procedure PrepareRequestAuth;
-
-    function GetFullUrl: string;
   protected
     function Component: TObject; override;
     function Authorization: IGBClientAuth; override;
+    function GetFullUrl: string; override;
 
     function ContentType(const AValue: TGBContentType): IGBClientRequest; override;
 

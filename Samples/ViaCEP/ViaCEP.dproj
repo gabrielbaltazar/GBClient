@@ -150,9 +150,6 @@
         <DCCReference Include="..\..\Source\GBClient.Core.Request.Auth.AWS.pas"/>
         <DCCReference Include="..\..\Source\GBClient.RestClient.Response.pas"/>
         <DCCReference Include="..\..\Source\GBClient.Synapse.pas"/>
-        <DCCReference Include="..\..\Source\GBClient.Synapse.GZIPUtils.pas"/>
-        <DCCReference Include="..\..\Source\GBClient.Synapse.Compress.pas"/>
-        <DCCReference Include="..\..\Source\GBClient.Synapse.Util.pas"/>
         <DCCReference Include="..\..\Source\GBClient.Synapse.Auth.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>

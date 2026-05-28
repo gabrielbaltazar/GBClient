@@ -20,9 +20,6 @@ uses
   GBClient.Core.Request.Auth.AWS in '..\..\Source\GBClient.Core.Request.Auth.AWS.pas',
   GBClient.RestClient.Response in '..\..\Source\GBClient.RestClient.Response.pas',
   GBClient.Synapse in '..\..\Source\GBClient.Synapse.pas',
-  GBClient.Synapse.GZIPUtils in '..\..\Source\GBClient.Synapse.GZIPUtils.pas',
-  GBClient.Synapse.Compress in '..\..\Source\GBClient.Synapse.Compress.pas',
-  GBClient.Synapse.Util in '..\..\Source\GBClient.Synapse.Util.pas',
   GBClient.Synapse.Auth in '..\..\Source\GBClient.Synapse.Auth.pas';
 
 {$R *.res}
